@@ -25,17 +25,20 @@ public:
 private:
   void start_receive()
   {
-    udp::endpoint* remote_endpoint_ = new udp::endpoint(); // endpoint object is cleaned up by handler
-    socket_.receive_from( // Go ahead and make everying synchronous for testing purposes--------------------
-        boost::asio::buffer(recv_buffer_), *remote_endpoint_); // Should stay as a synchronous call to maintain a listening thread.
-          
-    handle_receive(remote_endpoint_);
+      while(true) {
+            udp::endpoint* remote_endpoint_ = new udp::endpoint(); // endpoint object is cleaned up by handler
+            socket_.receive_from( // Go ahead and make everything synchronous for testing purposes--------------------
+                boost::asio::buffer(recv_buffer_), *remote_endpoint_); // Should stay as a synchronous call to maintain a listening thread.
+            cout << "receive_from() called" << endl;
+            handle_receive(remote_endpoint_);
+      }
   }
 
   void handle_receive(udp::endpoint* remote_endpoint_)
   {
         
         if (recv_buffer_[0] == 'p') {
+            cout << "Called and found a p" << endl;
             boost::shared_ptr<std::string> message(
                 new std::string("Hello, world."));
 
@@ -52,54 +55,52 @@ private:
         //delete remote_endpoint_;
   }
   
-    void receiveVehicle(udp::endpoint* remote_endpoint_) {
-        cout << "Receiving vehicle message..." << endl;
-        //std::vector<uint8_t> buff(512, 0);
-        boost::asio::streambuf *buff = new boost::asio::streambuf(512);
-        
-        cout << buff->size() << endl;
-        
-        istream* inStream = new istream(buff); // The vehicle can be parsed directly from this istream if necessary, no CodedInputStream needed.
-        //google::protobuf::io::IstreamInputStream* inputStream = new google::protobuf::io::IstreamInputStream(is);
-        
-        //google::protobuf::io::CodedInputStream* inStream = new google::protobuf::io::CodedInputStream(inputStream);
-        
-        socket_.receive_from(buff->prepare(512), *remote_endpoint_);
-        
-        handleVehicle(inStream, buff, remote_endpoint_);
-    }
     
-    void handleVehicle(istream *inStream, boost::asio::streambuf *buff, udp::endpoint* remote_endpoint_) {
-        buff->commit(512);
-        cout << buff->size() << endl;
-        cout << "Vehicle Message received:" << endl;
-        ChronoMessages::VehicleMessage vehicle;
-        //uint32_t magic = 0;
-        //uint32_t sz = 0;
-        //inStream->ReadLittleEndian32(&magic);
-        //if (magic != 0x600DBEEF) {
-        //    cerr << "Parsing failed, stream is not sane! [BAD_MAGIC: " << std::hex << magic << "]" << endl;
-        //}
-        //else {
-        //    cout << "Stream is sane." << endl;
-        //}
-        //inStream->ReadVarint32(&sz);
-        //cout << "Parsing " << sz << " bytes..." << endl;
-        //vehicle.ParseFromCodedStream(inStream);
-        
-        vehicle.ParseFromIstream(inStream);
-        cout << "Parsed." << endl;
-        cout << vehicle.DebugString() << endl;
-        cout << "Debug string should have printed" << endl;
-        delete buff;
-        delete inStream;
-        receiveVehicle(remote_endpoint_);
+    boost::asio::streambuf* receiveVehicle(udp::endpoint* remote_endpoint_) {
+        while (true) {
+            cout << "Receiving vehicle message..." << endl;
+            //std::vector<uint8_t> buff(512, 0);
+            boost::asio::streambuf *buff = new boost::asio::streambuf(512);
+            
+            cout << buff->size() << endl;
+            
+            istream* inStream = new istream(buff); // The vehicle can be parsed directly from this istream if necessary, no CodedInputStream needed.
+            //google::protobuf::io::IstreamInputStream* inputStream = new google::protobuf::io::IstreamInputStream(is);
+            
+            //google::protobuf::io::CodedInputStream* inStream = new google::protobuf::io::CodedInputStream(inputStream);
+            
+            socket_.receive_from(buff->prepare(512), *remote_endpoint_);
+            
+            buff->commit(512);
+            cout << buff->size() << endl;
+            cout << "Vehicle Message received:" << endl;
+            ChronoMessages::VehicleMessage vehicle;
+            //uint32_t magic = 0;
+            //uint32_t sz = 0;
+            //inStream->ReadLittleEndian32(&magic);
+            //if (magic != 0x600DBEEF) {
+            //    cerr << "Parsing failed, stream is not sane! [BAD_MAGIC: " << std::hex << magic << "]" << endl;
+            //}
+            //else {
+            //    cout << "Stream is sane." << endl;
+            //}
+            //inStream->ReadVarint32(&sz);
+            //cout << "Parsing " << sz << " bytes..." << endl;
+            //vehicle.ParseFromCodedStream(inStream);
+            
+            vehicle.ParseFromIstream(inStream);
+            cout << "Parsed." << endl;
+            cout << vehicle.DebugString() << endl;
+            cout << "Debug string should have printed" << endl;
+            delete buff;
+            delete inStream;
+        }
     }
 
   void handle_send(boost::shared_ptr<std::string> /*message*/)
   {
   }
-
+  vector<udp::endpoint> endpoints;
   udp::socket socket_;
   //udp::endpoint remote_endpoint_;
   boost::array<char, 1> recv_buffer_;

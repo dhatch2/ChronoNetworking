@@ -5,21 +5,21 @@
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/template_project/VehicleServer.cpp" Name="FileName"/>
-      <int Value="392" Name="FirstVisibleLine"/>
-      <int Value="426" Name="CurrentLine"/>
+      <int Value="217" Name="FirstVisibleLine"/>
+      <int Value="227" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Vehicle_Protobuf_Messages/ChronoMessages.pb.h" Name="FileName"/>
-      <int Value="5" Name="FirstVisibleLine"/>
+      <int Value="2" Name="FirstVisibleLine"/>
       <int Value="3" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc" Name="FileName"/>
-      <int Value="5" Name="FirstVisibleLine"/>
+      <int Value="2" Name="FirstVisibleLine"/>
       <int Value="3" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
