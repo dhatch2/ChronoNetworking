@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="BoostNetworking" Database="">
+  <Project Name="BasicClient" Path="BasicClient/BasicClient.project" Active="No"/>
+  <Project Name="BasicServer" Path="BasicServer/BasicServer.project" Active="No"/>
+  <Project Name="BasicUDPClient" Path="BasicUDPClient/BasicUDPClient.project" Active="No"/>
+  <Project Name="BasicUDPServer" Path="BasicUDPServer/BasicUDPServer.project" Active="No"/>
+  <Project Name="BasicVehicleServer" Path="BasicVehicleServer/BasicVehicleServer.project" Active="Yes"/>
+  <Project Name="BasicVehicleClient" Path="BasicVehicleClient/BasicVehicleClient.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="BasicClient" ConfigName="Debug"/>
+      <Project Name="BasicServer" ConfigName="Debug"/>
+      <Project Name="BasicUDPClient" ConfigName="Debug"/>
+      <Project Name="BasicUDPServer" ConfigName="Debug"/>
+      <Project Name="BasicVehicleServer" ConfigName="Debug"/>
+      <Project Name="BasicVehicleClient" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="BasicClient" ConfigName="Release"/>
+      <Project Name="BasicServer" ConfigName="Release"/>
+      <Project Name="BasicUDPClient" ConfigName="Release"/>
+      <Project Name="BasicUDPServer" ConfigName="Release"/>
+      <Project Name="BasicVehicleServer" ConfigName="Release"/>
+      <Project Name="BasicVehicleClient" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
