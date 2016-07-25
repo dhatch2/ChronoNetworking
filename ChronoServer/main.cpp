@@ -20,7 +20,7 @@ void raiseInt(int& i, int n) {
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex);
 
 // Start of the client connection handling thread
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex);
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex, boost::asio::ip::tcp::socket* socket);
 
 int main(int argc, char **argv)
 {
@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*)> listenerFunc = listenForConnection;
     std::thread listener(listenerFunc, std::ref(world), std::ref(worldQueue), queueMutex);
     
+    std::cout << "World queue processing is about to start." << std::endl;
     while(true) {
         if (!worldQueue.empty()){
             worldQueue.front()();
@@ -52,23 +53,26 @@ int main(int argc, char **argv)
     }
 	return 0;
 }
-// TODO: Get started on world object, and making the queue of messages to write to it. After that, start thinking about the listener thread.
 // zero mq or just a standard queue. Or look up an atomic queue implementation.
 void printNum(int num) {
     std::cout << num << std::endl;
 }
 
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex) {
+    std::cout << "Listener thread started" << std::endl;
     boost::asio::io_service ioService;
     boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 1300));
     while(true) {
-        boost::asio::ip::tcp::socket socket(ioService);
-        acceptor.accept(socket);
+        // Deletion of this socket is done in the client connection thread
+        boost::asio::ip::tcp::socket* socket = new boost::asio::ip::tcp::socket(ioService);
+        acceptor.accept(*socket);
         // Create new thread for the client connection here
-        
+        std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*, boost::asio::ip::tcp::socket*)> connectionFunc = processConnection;
+        std::thread connectionProcessor(connectionFunc, std::ref(world), std::ref(queue), queueMutex, socket);
     }
 }
 
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex) {
-    
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex, boost::asio::ip::tcp::socket* socket) {
+    std::cout << "Processing connection" << std::endl;
+    // TODO: Handle requests and world object updates in this thread. This is where the mutex is used to ensure blocking in the queue.
 }
