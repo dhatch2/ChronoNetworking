@@ -4,8 +4,9 @@
   <Project Name="BasicServer" Path="BasicServer/BasicServer.project" Active="No"/>
   <Project Name="BasicUDPClient" Path="BasicUDPClient/BasicUDPClient.project" Active="No"/>
   <Project Name="BasicUDPServer" Path="BasicUDPServer/BasicUDPServer.project" Active="No"/>
-  <Project Name="BasicVehicleServer" Path="BasicVehicleServer/BasicVehicleServer.project" Active="Yes"/>
+  <Project Name="BasicVehicleServer" Path="BasicVehicleServer/BasicVehicleServer.project" Active="No"/>
   <Project Name="BasicVehicleClient" Path="BasicVehicleClient/BasicVehicleClient.project" Active="No"/>
+  <Project Name="ChronoServer" Path="ChronoServer/ChronoServer.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -15,6 +16,7 @@
       <Project Name="BasicUDPServer" ConfigName="Debug"/>
       <Project Name="BasicVehicleServer" ConfigName="Debug"/>
       <Project Name="BasicVehicleClient" ConfigName="Debug"/>
+      <Project Name="ChronoServer" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -24,6 +26,7 @@
       <Project Name="BasicUDPServer" ConfigName="Release"/>
       <Project Name="BasicVehicleServer" ConfigName="Release"/>
       <Project Name="BasicVehicleClient" ConfigName="Release"/>
+      <Project Name="ChronoServer" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

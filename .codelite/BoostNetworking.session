@@ -4,44 +4,23 @@
   <wxString Value="/home/dylan/Documents/BoostNetworking/BoostNetworking.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicVehicleServer/main.cpp" Name="FileName"/>
-      <int Value="18" Name="FirstVisibleLine"/>
-      <int Value="28" Name="CurrentLine"/>
+      <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/main.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="15" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicVehicleServer/ChronoMessages.pb.h" Name="FileName"/>
-      <int Value="934" Name="FirstVisibleLine"/>
-      <int Value="935" Name="CurrentLine"/>
+      <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/World.h" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicVehicleServer/ChronoMessages.pb.cc" Name="FileName"/>
-      <int Value="331" Name="FirstVisibleLine"/>
-      <int Value="329" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicVehicleClient/main.cpp" Name="FileName"/>
-      <int Value="13" Name="FirstVisibleLine"/>
-      <int Value="11" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicUDPServer/src/main.cpp" Name="FileName"/>
-      <int Value="48" Name="FirstVisibleLine"/>
-      <int Value="46" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/dylan/Documents/BoostNetworking/BasicUDPClient/main.cpp" Name="FileName"/>
-      <int Value="25" Name="FirstVisibleLine"/>
-      <int Value="40" Name="CurrentLine"/>
+      <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/World.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>

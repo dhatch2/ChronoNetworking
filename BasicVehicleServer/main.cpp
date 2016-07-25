@@ -3,6 +3,7 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 #include <google/protobuf/message.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -26,11 +27,22 @@ private:
   void start_receive()
   {
       while(true) {
+            boost::asio::streambuf* buff = new boost::asio::streambuf();
             udp::endpoint* remote_endpoint_ = new udp::endpoint(); // endpoint object is cleaned up by handler
             socket_.receive_from( // Go ahead and make everything synchronous for testing purposes--------------------
                 boost::asio::buffer(recv_buffer_), *remote_endpoint_); // Should stay as a synchronous call to maintain a listening thread.
             cout << "receive_from() called" << endl;
-            handle_receive(remote_endpoint_);
+            bool isRecognized = false;
+            for (uint i = 0; i < endpoints.size(); i++)
+                if (endpoints[i] == *remote_endpoint_)
+                    isRecognized = true;
+            if (isRecognized) {
+                boost::thread* th = new boost::thread(boost::bind(&udp_server::receiveVehicle, this, remote_endpoint_));
+                //receiveVehicle(remote_endpoint_);
+            } else {
+                endpoints.insert(endpoints.end(), *remote_endpoint_);
+                handle_receive(remote_endpoint_);
+            }
       }
   }
 
