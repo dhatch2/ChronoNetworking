@@ -39,8 +39,8 @@ LinkOptions            :=  -lpthread
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)/home/dylan/boost_1_61_0/include $(IncludeSwitch)/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)boost_system protobuf 
-ArLibs                 :=  "boost_system protobuf" 
+Libs                   := $(LibrarySwitch)boost_system $(LibrarySwitch)protobuf 
+ArLibs                 :=  "boost_system" "protobuf" 
 LibPath                := $(LibraryPathSwitch). 
 
 ##
@@ -107,13 +107,13 @@ $(IntermediateDirectory)/World.cpp$(DependSuffix): World.cpp
 $(IntermediateDirectory)/World.cpp$(PreprocessSuffix): World.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/World.cpp$(PreprocessSuffix) "World.cpp"
 
-$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix): ../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc $(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/dylan/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix): ../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix) -MF$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix) -MM "../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"
+$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix): ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc $(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix): ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(ObjectSuffix) -MF$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(DependSuffix) -MM "../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"
 
-$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(PreprocessSuffix): ../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(PreprocessSuffix) "../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"
+$(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(PreprocessSuffix): ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Vehicle_Protobuf_Messages_ChronoMessages.pb.cc$(PreprocessSuffix) "../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

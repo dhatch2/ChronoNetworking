@@ -23,8 +23,8 @@
     <File Name="main.cpp"/>
     <File Name="World.h"/>
     <File Name="World.cpp"/>
-    <File Name="../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"/>
-    <File Name="../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.h"/>
+    <File Name="../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"/>
+    <File Name="../Vehicle_Protobuf_Messages/ChronoMessages.pb.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -43,7 +43,8 @@
         <IncludePath Value="/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages"/>
       </Compiler>
       <Linker Options="-lpthread" Required="yes">
-        <Library Value="boost_system protobuf"/>
+        <Library Value="boost_system"/>
+        <Library Value="protobuf"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
