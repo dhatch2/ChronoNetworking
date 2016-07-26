@@ -12,7 +12,7 @@ string makeDaytimeString() {
     return ctime(&now);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv)        
 {
     try {
         boost::asio::io_service ioService;

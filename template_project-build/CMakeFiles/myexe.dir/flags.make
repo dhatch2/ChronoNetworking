@@ -6,5 +6,5 @@ CXX_FLAGS =    -std=c++11 -pthread -fopenmp  -march=native -msse4.2 -mfpmath=sse
 
 CXX_DEFINES = -DCHRONO_DATA_DIR=\"/home/dylan/chrono/data/\"
 
-CXX_INCLUDES = -I/home/dylan/chrono/src -I/home/dylan/chrono/src/chrono -I/home/dylan/chrono/src/chrono/collision/bullet -I/home/dylan/chrono/src/chrono/collision/gimpact -I/home/dylan/chrono/src/chrono/collision/convexdecomposition/HACD -I/home/dylan/chrono-build -I/usr/include/irrlicht -I/home/dylan/boost_1_61_0/include -I/home/dylan/Vehicle_Protobuf_Messages 
+CXX_INCLUDES = -I/home/dylan/chrono/src -I/home/dylan/chrono/src/chrono -I/home/dylan/chrono/src/chrono/collision/bullet -I/home/dylan/chrono/src/chrono/collision/gimpact -I/home/dylan/chrono/src/chrono/collision/convexdecomposition/HACD -I/home/dylan/chrono-build -I/usr/include/irrlicht -I/home/dylan/boost_1_61_0/include -I/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages 
 

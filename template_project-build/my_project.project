@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Project Name="my_project" InternalType="">
   <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0008NoConfig000000000000]]>
-    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "NoConfig",
@@ -16,13 +13,16 @@
   "parentProject": ""
  }]]]>
     </Plugin>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0008NoConfig000000000000]]>
+    </Plugin>
   </Plugins>
   <VirtualDirectory Name="src">
+    <File Name="../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"/>
     <File Name="../template_project/VehicleServer.cpp"/>
-    <File Name="../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.h"/>
+    <File Name="../Vehicle_Protobuf_Messages/ChronoMessages.pb.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

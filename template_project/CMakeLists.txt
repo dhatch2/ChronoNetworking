@@ -19,8 +19,8 @@ cmake_minimum_required(VERSION 2.8)
 project(my_project)
 
 SET(MODEL_FILES    
-    ../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-    ../../../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
+    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -84,7 +84,7 @@ endif()
 # of the requested modules. -- Added protobuf messages and boost include path
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} /home/dylan/boost_1_61_0/include /home/dylan/Vehicle_Protobuf_Messages)
+include_directories(${CHRONO_INCLUDE_DIRS} /home/dylan/boost_1_61_0/include /home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages)
 
 #--------------------------------------------------------------
 # Tweaks to disable some warnings with MSVC

@@ -53,7 +53,7 @@
 using namespace chrono;
 using namespace chrono::vehicle;
 using namespace std;
-using boost::asio::ip::udp;
+using boost::asio::ip::tcp;
 
 // =============================================================================
 
@@ -120,9 +120,6 @@ const std::string pov_dir = out_dir + "/POVRAY";
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle);
 void messageFromVector(ChronoMessages::VehicleMessage_MVector* message, ChVector<> vector);
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, ChQuaternion<> quaternion);
-
-// Socket connection function
-udp::socket& getSocketConnection();
 
 // =============================================================================
 
@@ -234,19 +231,13 @@ int main(int argc, char* argv[]) {
     
     // Setup socket and connect to network
     boost::asio::io_service ioService;
-    udp::resolver resolver(ioService);
-    udp::resolver::query query(udp::v4(), argv[1], "1300");
-    udp::endpoint receiverEndpoint = *resolver.resolve(query);
-    udp::socket socket(ioService);
-    socket.open(udp::v4());
+    tcp::resolver resolver(ioService);
+    tcp::resolver::query query(argv[1], "1300");
+    tcp::resolver::iterator endpointIterator = resolver.resolve(query);
     
-    boost::array<char, 1> b;
-    b[0] = 'p';
-    
-    socket.send_to(boost::asio::buffer(b), receiverEndpoint);
-    
-    boost::array<char, 10> message;
-    socket.receive_from(boost::asio::buffer(message), receiverEndpoint);
+    tcp::socket socket(ioService);
+    //socket.connect(endpoint);
+    boost::asio::connect(socket, endpointIterator);
     
     //cout << message << endl;
     
@@ -306,7 +297,8 @@ int main(int argc, char* argv[]) {
         if (step_number % send_steps == 0) {
             ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle);
             message.SerializeToOstream(&outStream);
-            socket.send_to(buff.data(), receiverEndpoint);
+            //boost::asio::write(socket, buff);
+            socket.send(buff.data());
             buff.consume(message.ByteSize());
         }
 
@@ -424,20 +416,4 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, 
     message->set_e1(quaternion.e1);
     message->set_e2(quaternion.e2);
     message->set_e3(quaternion.e3);
-}
-
-udp::socket* getSocketConnection(char arg[]) {
-    int portNumber = 1300;
-    while (portNumber < 1400) {
-        boost::asio::io_service ioService;
-        udp::resolver resolver(ioService);
-        udp::resolver::query query(udp::v4(), arg, to_string(portNumber));
-        udp::endpoint receiverEndpoint = *resolver.resolve(query);
-        udp::socket socket(ioService);
-        socket.open(udp::v4());
-        
-        portNumber++;
-    }
-    cout << "Error in connecting to server." << endl;
-    return nullptr;
 }

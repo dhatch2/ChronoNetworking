@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ ChronoServer - Debug ]----------"
-	@cd "ChronoServer" && "$(MAKE)" -f  "ChronoServer.mk"
+	@echo "----------Building project:[ BasicServer - Debug ]----------"
+	@cd "BasicServer" && "$(MAKE)" -f  "BasicServer.mk"
 clean:
-	@echo "----------Cleaning project:[ ChronoServer - Debug ]----------"
-	@cd "ChronoServer" && "$(MAKE)" -f  "ChronoServer.mk" clean
+	@echo "----------Cleaning project:[ BasicServer - Debug ]----------"
+	@cd "BasicServer" && "$(MAKE)" -f  "BasicServer.mk" clean

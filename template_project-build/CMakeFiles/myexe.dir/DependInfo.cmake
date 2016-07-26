@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/dylan/Documents/BoostNetworking/template_project/VehicleServer.cpp" "/home/dylan/Documents/BoostNetworking/template_project-build/CMakeFiles/myexe.dir/VehicleServer.cpp.o"
-  "/home/dylan/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc" "/home/dylan/Documents/BoostNetworking/template_project-build/CMakeFiles/myexe.dir/home/dylan/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc.o"
+  "/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc" "/home/dylan/Documents/BoostNetworking/template_project-build/CMakeFiles/myexe.dir/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages/ChronoMessages.pb.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -24,7 +24,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/dylan/chrono-build"
   "/usr/include/irrlicht"
   "/home/dylan/boost_1_61_0/include"
-  "/home/dylan/Vehicle_Protobuf_Messages"
+  "/home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages"
   )
 
 # Targets to which this target links.
