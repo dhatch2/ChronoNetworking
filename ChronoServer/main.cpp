@@ -87,40 +87,18 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
 
 void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex, boost::asio::ip::tcp::socket* socket) {
     std::cout << "Processing connection" << std::endl;
-    // TODO: Handle requests and world object updates in this thread. This is where the mutex is used to ensure blocking in the queue.
-    // Code to test connection of clients:
-    /*std::string message = "Sup.";
-    boost::system::error_code ignoredError;
-    std::cout << "About to send" << std::endl;
-    boost::asio::write(*socket, boost::asio::buffer(message), ignoredError);
-    std::cout << "Message Sent" << std::endl;
-    std::cout << "Waiting for message" << std::endl;
-    char* buffer = (char *) malloc(128 * sizeof(char));
-    boost::system::error_code error;
-    size_t length = socket->read_some(boost::asio::buffer(buffer, 128), error);
-    std::string output(buffer);
-    for (unsigned int i = 0; i < output.length(); i++) {
-        if (output[i] == '_') output[i] = ' ';
-    }
-    std::cout << "Length: " << length << std::endl << "Message received: " << output << std::endl;*/
-    
-    boost::asio::streambuf buffer;
-    std::istream inStream(&buffer);
     
     while(true) {
-        // Listen for a request from the client, update the queue if necessary, and send back world information.
-        //boost::asio::io_service io;
-        //boost::asio::deadline_timer t(io, boost::posix_time::seconds(5));
-        //t.wait();
+        boost::asio::streambuf buffer;
+        std::istream inStream(&buffer);
+        
         std::cout << "Parsing vehicle..." << std::endl;
         ChronoMessages::VehicleMessage* vehicle = new ChronoMessages::VehicleMessage();
         //boost::asio::read(*socket, buffer.prepare(vehicle->ByteSize()));
-        int size = socket->read_some(buffer.prepare(512));
+        socket->receive(buffer.prepare(512));
         buffer.commit(512);
         vehicle->ParseFromIstream(&inStream);
-        buffer.consume(vehicle->ByteSize());
+        //buffer.consume(vehicle->ByteSize());
         std::cout << vehicle->DebugString() << std::endl;
-        
-        if(size == vehicle->ByteSize()) std::cout << "Incoming buffer correct size" << std::endl;
     }
 }
