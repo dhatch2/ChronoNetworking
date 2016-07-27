@@ -109,13 +109,18 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     
     while(true) {
         // Listen for a request from the client, update the queue if necessary, and send back world information.
+        //boost::asio::io_service io;
+        //boost::asio::deadline_timer t(io, boost::posix_time::seconds(5));
+        //t.wait();
         std::cout << "Parsing vehicle..." << std::endl;
         ChronoMessages::VehicleMessage* vehicle = new ChronoMessages::VehicleMessage();
         //boost::asio::read(*socket, buffer.prepare(vehicle->ByteSize()));
-        socket->receive(buffer.prepare(vehicle->ByteSize()));
-        buffer.commit(vehicle->ByteSize());
+        int size = socket->read_some(buffer.prepare(512));
+        buffer.commit(512);
         vehicle->ParseFromIstream(&inStream);
         buffer.consume(vehicle->ByteSize());
         std::cout << vehicle->DebugString() << std::endl;
+        
+        if(size == vehicle->ByteSize()) std::cout << "Incoming buffer correct size" << std::endl;
     }
 }

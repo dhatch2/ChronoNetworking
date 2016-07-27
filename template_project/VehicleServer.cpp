@@ -298,7 +298,7 @@ int main(int argc, char* argv[]) {
             ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle);
             message.SerializeToOstream(&outStream);
             //boost::asio::write(socket, buff);
-            socket.send(buff.data());
+            boost::asio::write(socket, buff);
             buff.consume(message.ByteSize());
         }
 

@@ -5,8 +5,8 @@
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/main.cpp" Name="FileName"/>
-      <int Value="100" Name="FirstVisibleLine"/>
-      <int Value="117" Name="CurrentLine"/>
+      <int Value="87" Name="FirstVisibleLine"/>
+      <int Value="82" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
@@ -40,21 +40,21 @@
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/BasicClient/main.cpp" Name="FileName"/>
-      <int Value="9" Name="FirstVisibleLine"/>
-      <int Value="47" Name="CurrentLine"/>
+      <int Value="31" Name="FirstVisibleLine"/>
+      <int Value="29" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/BasicServer/main.cpp" Name="FileName"/>
-      <int Value="12" Name="FirstVisibleLine"/>
+      <int Value="13" Name="FirstVisibleLine"/>
       <int Value="14" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/BasicVehicleServer/main.cpp" Name="FileName"/>
-      <int Value="72" Name="FirstVisibleLine"/>
+      <int Value="0" Name="FirstVisibleLine"/>
       <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="BoostNetworking" Database="">
   <Project Name="BasicClient" Path="BasicClient/BasicClient.project" Active="No"/>
-  <Project Name="BasicServer" Path="BasicServer/BasicServer.project" Active="Yes"/>
+  <Project Name="BasicServer" Path="BasicServer/BasicServer.project" Active="No"/>
   <Project Name="BasicUDPClient" Path="BasicUDPClient/BasicUDPClient.project" Active="No"/>
   <Project Name="BasicUDPServer" Path="BasicUDPServer/BasicUDPServer.project" Active="No"/>
   <Project Name="BasicVehicleServer" Path="BasicVehicleServer/BasicVehicleServer.project" Active="No"/>
   <Project Name="BasicVehicleClient" Path="BasicVehicleClient/BasicVehicleClient.project" Active="No"/>
-  <Project Name="ChronoServer" Path="ChronoServer/ChronoServer.project" Active="No"/>
+  <Project Name="ChronoServer" Path="ChronoServer/ChronoServer.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
