@@ -5,11 +5,11 @@ World::World(int sizeX, int sizeY)
     numVehicles_ = 0;
     for(int i = 0; i < sizeX; i++) {
         std::vector<std::map <int, ChronoMessages::VehicleMessage>> column;
-        sectionGrid.push_back(column);
         for(int j = 0; j < sizeY; j++) {
             std::map<int, ChronoMessages::VehicleMessage> section;
             column.push_back(section);
         }
+        sectionGrid.push_back(column);
     }
 }
 
