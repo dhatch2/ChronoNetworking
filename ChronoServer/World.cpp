@@ -1,4 +1,5 @@
 #include "World.h"
+#include <iostream>
 
 World::World(int sizeX, int sizeY)
 {
@@ -20,6 +21,7 @@ World::~World()
 void World::addVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message) {
     numVehicles_++;
     sectionGrid[sectionX][sectionY].insert(std::pair<int, ChronoMessages::VehicleMessage>(message.vehicleid(), message));
+    std::cout << "Vehicle added" << std::endl;
 }
 
 void World::updateVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message) {
