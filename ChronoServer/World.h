@@ -22,9 +22,11 @@ public:
     
     // The number of vehicles in the world.
     int numVehicles();
+    
+    std::map<int, ChronoMessages::VehicleMessage>& getSection(int sectionX, int sectionY);
 private:
     // Each section of the world has a mapping of the vehicles within it.
-    std::vector<std::vector<std::map <int, ChronoMessages::VehicleMessage>>> sectionGrid;
+    std::vector<std::vector<std::map<int, ChronoMessages::VehicleMessage>>> sectionGrid;
     
     int numVehicles_;
     // Possibly add a map for world objects?

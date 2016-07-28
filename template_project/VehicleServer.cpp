@@ -117,7 +117,7 @@ const std::string out_dir = "../VEHICLE";
 const std::string pov_dir = out_dir + "/POVRAY";
 
 // Vehicle message generating functions
-ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle);
+ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
 void messageFromVector(ChronoMessages::VehicleMessage_MVector* message, ChVector<> vector);
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, ChQuaternion<> quaternion);
 
@@ -239,7 +239,10 @@ int main(int argc, char* argv[]) {
     //socket.connect(endpoint);
     boost::asio::connect(socket, endpointIterator);
     
-    //cout << message << endl;
+    boost::array<int, 1> b;
+    int num = socket.receive(boost::asio::buffer(b));
+    std::cout << num << " bytes received" << std::endl;
+    int connectionNumber = b[0];
     
     // Create output buffer and ostream
     boost::asio::streambuf buff;
@@ -247,6 +250,9 @@ int main(int argc, char* argv[]) {
     
     // Number of steps to wait before updating the server on the vehicle's location
     int send_steps = 500;
+    
+    // Number of external vehicles in the world
+    int count = 0;
 
 #ifdef USE_IRRLICHT
 
@@ -295,11 +301,33 @@ int main(int argc, char* argv[]) {
         
         // Send vehicle message
         if (step_number % send_steps == 0) {
-            ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle);
+            ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle, connectionNumber);
             message.SerializeToOstream(&outStream);
-            //boost::asio::write(socket, buff);
             boost::asio::write(socket, buff);
             buff.consume(message.ByteSize());
+            
+            boost::array<int, 1> countBuff;
+            std::cout << "about to read" << std::endl;
+            socket.read_some(boost::asio::buffer(countBuff));
+            count = countBuff[0];
+            
+            boost::asio::streambuf worldBuffer;
+            std::istream inStream(&worldBuffer);
+            socket.receive(worldBuffer.prepare(count * 512));
+            worldBuffer.commit(count * 512);
+            
+            std::vector<ChronoMessages::VehicleMessage> worldVehicles;
+            
+            for(int i = 0; i < count; i++) {
+                ChronoMessages::VehicleMessage worldVehicle;
+                worldVehicle.ParseFromIstream(&inStream);
+                std::cout << worldVehicle.DebugString() << std::endl;
+                worldVehicles.push_back(worldVehicle);
+            }
+            
+            std::cout << worldVehicles.size() << " vehicles" << endl;
+            
+            worldBuffer.consume(count * 512);
         }
 
         // Advance simulation for one timestep for all modules
@@ -382,11 +410,11 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle) {
+ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber) {
     ChronoMessages::VehicleMessage message;
     
     message.set_timestamp(time(0));
-    message.set_vehicleid(0);
+    message.set_vehicleid(connectionNumber);
     message.set_chtime(vehicle->GetChTime());
     message.set_speed(vehicle->GetVehicleSpeed());
     

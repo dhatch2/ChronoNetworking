@@ -3,6 +3,15 @@
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
+  "name": "Debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
   "name": "NoConfig",
   "enabled": false,
   "buildDirectory": "build",
@@ -14,7 +23,7 @@
  }]]]>
     </Plugin>
     <Plugin Name="qmake">
-      <![CDATA[00010001N0008NoConfig000000000000]]>
+      <![CDATA[00010001N0005Debug000000000000]]>
     </Plugin>
   </Plugins>
   <VirtualDirectory Name="src">
@@ -34,7 +43,7 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="NoConfig" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>

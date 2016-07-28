@@ -36,3 +36,7 @@ void World::removeVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMes
 int World::numVehicles() {
     return numVehicles_;
 }
+
+std::map<int, ChronoMessages::VehicleMessage>& World::getSection(int sectionX, int sectionY) {
+    return sectionGrid[sectionX][sectionY];
+}
