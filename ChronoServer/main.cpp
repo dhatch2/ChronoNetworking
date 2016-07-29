@@ -7,6 +7,7 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "World.h"
 #include "ChronoMessages.pb.h"
@@ -41,8 +42,6 @@ int main(int argc, char **argv)
     std::mutex* queueMutex = new std::mutex();
     
     World world(1, 1);
-    ChronoMessages::VehicleMessage* vehicle = new ChronoMessages::VehicleMessage();
-    world.addVehicle(0, 0, *vehicle);
     
     std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*)> listenerFunc = listenForConnection;
     std::thread listener(listenerFunc, std::ref(world), std::ref(worldQueue), queueMutex);
@@ -98,8 +97,8 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     std::cout << "Processing connection" << std::endl;
     
     // Send its identification number
-    boost::array<int, 1> b = {connectionNumber};
-    boost::asio::write(*socket, boost::asio::buffer(b));
+    char* connectionBuff = (char *)&connectionNumber;
+    boost::asio::write(*socket, boost::asio::buffer(connectionBuff, sizeof(int)));
     
     boost::asio::streambuf buffer;
     std::istream startStream(&buffer);
@@ -111,7 +110,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     buffer.commit(512);
     vehicle->ParseFromIstream(&startStream);
     buffer.consume(vehicle->ByteSize());
-    std::cout << vehicle->DebugString() << std::endl;
+    //std::cout << vehicle->DebugString() << std::endl;
     
     // Pushes addVehicle to queue so that the vehicle may be added to the world
     std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
@@ -119,6 +118,20 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     delete guard;
     
     while(true) {
+        // Responds to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.
+        int count = world.numVehicles();
+        char* countBuff = (char *)&count;
+        boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
+        std::cout << "Count sent: " << count << std::endl;
+        
+        boost::asio::streambuf worldBuffer;
+        std::ostream outStream(&worldBuffer);
+        
+        for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0))
+            worldPair.second.SerializeToOstream(&outStream);
+        
+        boost::asio::write(*socket, worldBuffer);
+        
         std::istream inStream(&buffer);
         
         // Receives update on vehicle
@@ -127,23 +140,11 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         buffer.commit(512);
         vehicle->ParseFromIstream(&inStream);
         buffer.consume(vehicle->ByteSize());
-        std::cout << vehicle->DebugString() << std::endl;
+        //std::cout << vehicle->DebugString() << std::endl;
         std::cout << "Debug string should have printed" << std::endl;
         // Pushes updateVehicle to queue to update the vehicle state in the world
-        //std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
         queue.push([&world, vehicle] { world.updateVehicle(0, 0, *vehicle); });
-        //delete guard;
-        
-        // TODO: Respond to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.
-        boost::array<int, 1> count = {world.numVehicles()};
-        boost::asio::write(*socket, boost::asio::buffer(count));
-        std::cout << "Count send" << std::endl;
-        boost::asio::streambuf worldBuffer;
-        std::ostream outStream(&worldBuffer);
-        
-        for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0))
-            worldPair.second.SerializeToOstream(&outStream);
-        
-        boost::asio::write(*socket, worldBuffer);
+        delete guard;
     }
 }

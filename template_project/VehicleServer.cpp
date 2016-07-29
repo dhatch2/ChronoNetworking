@@ -239,11 +239,12 @@ int main(int argc, char* argv[]) {
     //socket.connect(endpoint);
     boost::asio::connect(socket, endpointIterator);
     
-    boost::array<int, 1> b;
-    int num = socket.receive(boost::asio::buffer(b));
-    std::cout << num << " bytes received" << std::endl;
-    int connectionNumber = b[0];
-    
+    // Receive the connection number for vehicle identification purposes
+    char* connectionBuff = (char *)malloc(sizeof(int));
+    socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
+    int connectionNumber = *(int *)connectionBuff;
+    std::cout << "Connection number: " << connectionNumber << std::endl;
+
     // Create output buffer and ostream
     boost::asio::streambuf buff;
     ostream outStream(&buff);
@@ -306,10 +307,10 @@ int main(int argc, char* argv[]) {
             boost::asio::write(socket, buff);
             buff.consume(message.ByteSize());
             
-            boost::array<int, 1> countBuff;
-            std::cout << "about to read" << std::endl;
-            socket.read_some(boost::asio::buffer(countBuff));
-            count = countBuff[0];
+            char* countBuff = (char *)malloc(sizeof(int));
+            socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
+            count = *(int *)countBuff;
+            std::cout << "World count: " << count << std::endl;
             
             boost::asio::streambuf worldBuffer;
             std::istream inStream(&worldBuffer);
@@ -322,6 +323,7 @@ int main(int argc, char* argv[]) {
                 ChronoMessages::VehicleMessage worldVehicle;
                 worldVehicle.ParseFromIstream(&inStream);
                 std::cout << worldVehicle.DebugString() << std::endl;
+                //worldBuffer.consume(worldVehicle.ByteSize());
                 worldVehicles.push_back(worldVehicle);
             }
             
