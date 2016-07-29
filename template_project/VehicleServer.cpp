@@ -312,24 +312,26 @@ int main(int argc, char* argv[]) {
             count = *(int *)countBuff;
             std::cout << "World count: " << count << std::endl;
             
-            boost::asio::streambuf worldBuffer;
-            std::istream inStream(&worldBuffer);
-            socket.receive(worldBuffer.prepare(count * 512));
-            worldBuffer.commit(count * 512);
-            
-            std::vector<ChronoMessages::VehicleMessage> worldVehicles;
-            
-            for(int i = 0; i < count; i++) {
-                ChronoMessages::VehicleMessage worldVehicle;
-                worldVehicle.ParseFromIstream(&inStream);
-                std::cout << worldVehicle.DebugString() << std::endl;
-                //worldBuffer.consume(worldVehicle.ByteSize());
-                worldVehicles.push_back(worldVehicle);
+            if(count > 1) {
+                boost::asio::streambuf worldBuffer;
+                std::istream inStream(&worldBuffer);
+                socket.receive(worldBuffer.prepare(count * 512));
+                worldBuffer.commit(count * 512);
+                
+                std::vector<ChronoMessages::VehicleMessage> worldVehicles;
+                
+                for(int i = 0; i < count - 1; i++) {
+                    ChronoMessages::VehicleMessage worldVehicle;
+                    worldVehicle.ParseFromIstream(&inStream);
+                    std::cout << worldVehicle.DebugString() << std::endl;
+                    //worldBuffer.consume(worldVehicle.ByteSize());
+                    worldVehicles.push_back(worldVehicle);
+                }
+                
+                std::cout << worldVehicles.size() << " vehicles" << endl;
+                
+                worldBuffer.consume(count * 512);
             }
-            
-            std::cout << worldVehicles.size() << " vehicles" << endl;
-            
-            worldBuffer.consume(count * 512);
         }
 
         // Advance simulation for one timestep for all modules
