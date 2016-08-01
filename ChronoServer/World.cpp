@@ -22,13 +22,13 @@ void World::addVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessag
     numVehicles_++;
     sectionGrid[sectionX][sectionY].insert(std::pair<int, ChronoMessages::VehicleMessage>(message.vehicleid(), message));
     std::cout << "Vehicle added" << std::endl;
-    std::cout << message.DebugString() << std::endl;
+    //std::cout << message.DebugString() << std::endl;
 }
 
 void World::updateVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message) {
-    std::cout << message.DebugString() << std::endl;
+    //std::cout << message.DebugString() << std::endl;
     sectionGrid[sectionX][sectionY][message.vehicleid()] = message;
-    std::cout << "Section size: " << sectionGrid[sectionX][sectionY].size() << std::endl;
+    //std::cout << "Section size: " << sectionGrid[sectionX][sectionY].size() << std::endl;
 }
 
 void World::removeVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message) {

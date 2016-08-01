@@ -49,11 +49,11 @@ int main(int argc, char **argv)
     std::cout << "World queue processing is about to start." << std::endl;
     while(true) {
         if (!worldQueue.empty()){
-            std::cout << "About to call front function" << std::endl;
+            //std::cout << "About to call front function" << std::endl;
             worldQueue.front()();
-            std::cout << "About to pop" << std::endl;
+            //std::cout << "About to pop" << std::endl;
             worldQueue.pop();
-            std::cout << "Popped" << std::endl;
+            //std::cout << "Popped" << std::endl;
         }
     }
     listener.join();
@@ -104,7 +104,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     std::istream startStream(&buffer);
     
     // Receives Initial state of the vehicle
-    std::cout << "Parsing vehicle..." << std::endl;
+    //std::cout << "Parsing vehicle..." << std::endl;
     ChronoMessages::VehicleMessage* vehicle = new ChronoMessages::VehicleMessage();
     socket->receive(buffer.prepare(512));
     buffer.commit(512);
@@ -122,7 +122,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         int count = world.numVehicles();
         char* countBuff = (char *)&count;
         boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
-        std::cout << "Count sent: " << count << std::endl;
+        //std::cout << "Count sent: " << count << std::endl;
         boost::asio::streambuf worldBuffer;
         std::ostream outStream(&worldBuffer);
         
@@ -136,13 +136,13 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         std::istream inStream(&buffer);
         
         // Receives update on vehicle
-        std::cout << "Parsing vehicle..." << std::endl;
+        //std::cout << "Parsing vehicle..." << std::endl;
         socket->receive(buffer.prepare(512));
         buffer.commit(512);
         vehicle->ParseFromIstream(&inStream);
         buffer.consume(vehicle->ByteSize());
         //std::cout << vehicle->DebugString() << std::endl;
-        std::cout << "Debug string should have printed" << std::endl;
+        //std::cout << "Debug string should have printed" << std::endl;
         // Pushes updateVehicle to queue to update the vehicle state in the world
         std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
         queue.push([&world, vehicle] { world.updateVehicle(0, 0, *vehicle); });

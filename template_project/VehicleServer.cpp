@@ -120,6 +120,7 @@ const std::string pov_dir = out_dir + "/POVRAY";
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
 void messageFromVector(ChronoMessages::VehicleMessage_MVector* message, ChVector<> vector);
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, ChQuaternion<> quaternion);
+void generateWheeledVehicleFromMessage(ChWheeledVehicle& vehicle, ChronoMessages::VehicleMessage& message);
 
 // =============================================================================
 
@@ -133,6 +134,15 @@ int main(int argc, char* argv[]) {
     WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), ChMaterialSurfaceBase::DEM);
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
     ////vehicle.GetChassis()->SetBodyFixed(true);
+    
+    // Create other vehicle from network -- Work on this.
+    WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file)); // Compile error in constructor call, not sure why.
+    otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
+    otherVehicle.GetChassis()->SetBodyFixed(true);
+    otherVehicle.GetWheelBody(WheelID(0, LEFT))->SetBodyFixed(true);
+    otherVehicle.GetWheelBody(WheelID(0, RIGHT))->SetBodyFixed(true);
+    otherVehicle.GetWheelBody(WheelID(1, LEFT))->SetBodyFixed(true);
+    otherVehicle.GetWheelBody(WheelID(1, RIGHT))->SetBodyFixed(true);
 
     // Create the ground
     RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
@@ -250,7 +260,7 @@ int main(int argc, char* argv[]) {
     ostream outStream(&buff);
     
     // Number of steps to wait before updating the server on the vehicle's location
-    int send_steps = 500;
+    int send_steps = 10;
     
     // Number of external vehicles in the world
     int count = 0;
@@ -300,7 +310,7 @@ int main(int argc, char* argv[]) {
             tires[i]->Synchronize(time, wheel_states[i], terrain);
         app.Synchronize(driver.GetInputModeAsString(), steering_input, throttle_input, braking_input);
         
-        // Send vehicle message
+        // Send vehicle message TODO: Make vehicles that are actually updated by received messages.
         if (step_number % send_steps == 0) {
             ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle, connectionNumber);
             message.SerializeToOstream(&outStream);
@@ -310,7 +320,7 @@ int main(int argc, char* argv[]) {
             char* countBuff = (char *)malloc(sizeof(int));
             socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
             count = *(int *)countBuff;
-            std::cout << "World count: " << count << std::endl;
+            //std::cout << "World count: " << count << std::endl;
             
             if(count > 1) {
                 boost::asio::streambuf worldBuffer;
@@ -323,14 +333,18 @@ int main(int argc, char* argv[]) {
                 for(int i = 0; i < count - 1; i++) {
                     ChronoMessages::VehicleMessage worldVehicle;
                     worldVehicle.ParseFromIstream(&inStream);
-                    std::cout << worldVehicle.DebugString() << std::endl;
+                    //std::cout << worldVehicle.DebugString() << std::endl;
                     //worldBuffer.consume(worldVehicle.ByteSize());
                     worldVehicles.push_back(worldVehicle);
                 }
                 
-                std::cout << worldVehicles.size() << " vehicles" << endl;
+                //std::cout << worldVehicles.size() << " vehicles" << endl;
                 
                 worldBuffer.consume(count * 512);
+                
+                generateWheeledVehicleFromMessage(otherVehicle, worldVehicles[0]);
+                
+                //otherVehicle.Advance(realtime_timer.SuggestSimulationStep(step_size));
             }
         }
 
@@ -448,4 +462,18 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, 
     message->set_e1(quaternion.e1);
     message->set_e2(quaternion.e2);
     message->set_e3(quaternion.e3);
+}
+
+void generateWheeledVehicleFromMessage(ChWheeledVehicle& vehicle, ChronoMessages::VehicleMessage& message) {
+    vehicle.GetChassis()->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
+    vehicle.GetWheelBody(WheelID(1, LEFT))->SetPos(ChVector<>(message.backleftwheelcom().x(), message.backleftwheelcom().y(), message.backleftwheelcom().z()));
+    vehicle.GetWheelBody(WheelID(1, RIGHT))->SetPos(ChVector<>(message.backrightwheelcom().x(), message.backrightwheelcom().y(), message.backrightwheelcom().z()));
+    vehicle.GetWheelBody(WheelID(0, LEFT))->SetPos(ChVector<>(message.frontleftwheelcom().x(), message.frontleftwheelcom().y(), message.frontleftwheelcom().z()));
+    vehicle.GetWheelBody(WheelID(0, RIGHT))->SetPos(ChVector<>(message.frontrightwheelcom().x(), message.frontrightwheelcom().y(), message.frontrightwheelcom().z()));
+    
+    vehicle.GetChassis()->SetRot(ChQuaternion<>(message.chassisrot().e0(), message.chassisrot().e1(), message.chassisrot().e2(), message.chassisrot().e3()));
+    vehicle.GetWheelBody(WheelID(1, LEFT))->SetRot(ChQuaternion<>(message.backleftwheelrot().e0(), message.backleftwheelrot().e1(), message.backleftwheelrot().e2(), message.backleftwheelrot().e3()));
+    vehicle.GetWheelBody(WheelID(1, RIGHT))->SetRot(ChQuaternion<>(message.backrightwheelrot().e0(), message.backrightwheelrot().e1(), message.backrightwheelrot().e2(), message.backrightwheelrot().e3()));
+    vehicle.GetWheelBody(WheelID(0, LEFT))->SetRot(ChQuaternion<>(message.frontleftwheelrot().e0(), message.frontleftwheelrot().e1(), message.frontleftwheelrot().e2(), message.frontleftwheelrot().e3()));
+    vehicle.GetWheelBody(WheelID(0, RIGHT))->SetRot(ChQuaternion<>(message.frontrightwheelrot().e0(), message.frontrightwheelrot().e1(), message.frontrightwheelrot().e2(), message.frontrightwheelrot().e3()));
 }
