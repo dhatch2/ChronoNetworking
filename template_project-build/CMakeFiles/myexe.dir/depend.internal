@@ -1065,11 +1065,14 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o
  /home/dylan/chrono/src/chrono/collision/ChCCollisionInfo.h
  /home/dylan/chrono/src/chrono/collision/ChCCollisionModel.h
  /home/dylan/chrono/src/chrono/collision/ChCCollisionSystem.h
+ /home/dylan/chrono/src/chrono/collision/ChCCollisionUtils.h
  /home/dylan/chrono/src/chrono/collision/ChCConvexDecomposition.h
  /home/dylan/chrono/src/chrono/collision/ChCModelBullet.h
  /home/dylan/chrono/src/chrono/collision/bullet/BulletCollision/BroadphaseCollision/btBroadphaseProxy.h
  /home/dylan/chrono/src/chrono/collision/bullet/BulletCollision/CollisionShapes/btCollisionShape.h
  /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btAlignedAllocator.h
+ /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btAlignedObjectArray.h
+ /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btConvexHull.h
  /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btMatrix3x3.h
  /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btMinMax.h
  /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btQuadWord.h
@@ -1163,6 +1166,7 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o
  /home/dylan/chrono/src/chrono/physics/ChAssembly.h
  /home/dylan/chrono/src/chrono/physics/ChBody.h
  /home/dylan/chrono/src/chrono/physics/ChBodyAuxRef.h
+ /home/dylan/chrono/src/chrono/physics/ChBodyEasy.h
  /home/dylan/chrono/src/chrono/physics/ChBodyFrame.h
  /home/dylan/chrono/src/chrono/physics/ChContactContainerBase.h
  /home/dylan/chrono/src/chrono/physics/ChContactable.h
@@ -1185,6 +1189,7 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o
  /home/dylan/chrono/src/chrono/physics/ChLinkMarkers.h
  /home/dylan/chrono/src/chrono/physics/ChLinkMask.h
  /home/dylan/chrono/src/chrono/physics/ChLinkMasked.h
+ /home/dylan/chrono/src/chrono/physics/ChLinkMate.h
  /home/dylan/chrono/src/chrono/physics/ChLinkPneumaticActuator.h
  /home/dylan/chrono/src/chrono/physics/ChLinkPointSpline.h
  /home/dylan/chrono/src/chrono/physics/ChLinkPulley.h

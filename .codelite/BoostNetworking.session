@@ -5,21 +5,21 @@
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/main.cpp" Name="FileName"/>
-      <int Value="129" Name="FirstVisibleLine"/>
-      <int Value="146" Name="CurrentLine"/>
+      <int Value="39" Name="FirstVisibleLine"/>
+      <int Value="59" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/World.h" Name="FileName"/>
-      <int Value="34" Name="FirstVisibleLine"/>
+      <int Value="35" Name="FirstVisibleLine"/>
       <int Value="35" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/dylan/Documents/BoostNetworking/ChronoServer/World.cpp" Name="FileName"/>
-      <int Value="44" Name="FirstVisibleLine"/>
+      <int Value="26" Name="FirstVisibleLine"/>
       <int Value="44" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>

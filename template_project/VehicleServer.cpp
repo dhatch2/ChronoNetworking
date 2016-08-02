@@ -9,6 +9,14 @@
 // and at http://projectchrono.org/license-chrono.txt.
 //
 
+#include "chrono/physics/ChBodyEasy.h"
+#include "chrono/physics/ChLinkMate.h"
+#include "chrono/assets/ChTexture.h"
+#include "chrono/assets/ChColorAsset.h"
+#include "chrono/assets/ChTexture.h"
+#include "chrono/assets/ChTriangleMeshShape.h"
+#include "chrono/geometry/ChTriangleMeshConnected.h"
+
 #include <iostream>
 #include <ctime>
 #include <boost/array.hpp>
@@ -120,7 +128,7 @@ const std::string pov_dir = out_dir + "/POVRAY";
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
 void messageFromVector(ChronoMessages::VehicleMessage_MVector* message, ChVector<> vector);
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, ChQuaternion<> quaternion);
-void generateWheeledVehicleFromMessage(ChWheeledVehicle& vehicle, ChronoMessages::VehicleMessage& message);
+void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages::VehicleMessage& message);
 
 // =============================================================================
 
@@ -135,14 +143,9 @@ int main(int argc, char* argv[]) {
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
     ////vehicle.GetChassis()->SetBodyFixed(true);
     
-    // Create other vehicle from network -- Work on this.
-    WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file)); // Compile error in constructor call, not sure why.
-    otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
-    otherVehicle.GetChassis()->SetBodyFixed(true);
-    otherVehicle.GetWheelBody(WheelID(0, LEFT))->SetBodyFixed(true);
-    otherVehicle.GetWheelBody(WheelID(0, RIGHT))->SetBodyFixed(true);
-    otherVehicle.GetWheelBody(WheelID(1, LEFT))->SetBodyFixed(true);
-    otherVehicle.GetWheelBody(WheelID(1, RIGHT))->SetBodyFixed(true);
+    // Create other vehicles from network -- Work on this.
+    //std::map<int, WheeledVehicle> otherVehicles; // Creating more wheeled vehicles is less efficient.
+    std::map<int, std::shared_ptr<ChBody>> otherVehicles;
 
     // Create the ground
     RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
@@ -260,7 +263,7 @@ int main(int argc, char* argv[]) {
     ostream outStream(&buff);
     
     // Number of steps to wait before updating the server on the vehicle's location
-    int send_steps = 10;
+    int send_steps = render_steps;
     
     // Number of external vehicles in the world
     int count = 0;
@@ -319,7 +322,7 @@ int main(int argc, char* argv[]) {
             
             char* countBuff = (char *)malloc(sizeof(int));
             socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
-            count = *(int *)countBuff;
+            int count = *(int *)countBuff;
             //std::cout << "World count: " << count << std::endl;
             
             if(count > 1) {
@@ -342,9 +345,48 @@ int main(int argc, char* argv[]) {
                 
                 worldBuffer.consume(count * 512);
                 
-                generateWheeledVehicleFromMessage(otherVehicle, worldVehicles[0]);
-                
-                //otherVehicle.Advance(realtime_timer.SuggestSimulationStep(step_size));
+                for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
+                    if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
+                    
+                        auto chassis = std::make_shared<ChBody>();
+                        chassis->SetPos(ChVector<>(0, 0, 0));
+                        //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
+                        chassis->SetBodyFixed(true);
+                        vehicle.GetSystem()->Add(chassis);
+                        geometry::ChTriangleMeshConnected mmeshbox;
+                        mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
+
+                        chassis->GetCollisionModel()->ClearModel();
+                        chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
+                        chassis->GetCollisionModel()->BuildModel();
+                        chassis->SetCollide(true);
+
+                        auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
+                        masset_meshbox->SetMesh(mmeshbox);
+                        chassis->AddAsset(masset_meshbox);
+
+                        auto color = std::make_shared<ChColorAsset>();
+                        color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
+                        chassis->AddAsset(color);
+                        
+                        otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
+                        
+                        // Screwy, less efficient version
+                        /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
+                        otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
+                        otherVehicle.GetChassis()->SetBodyFixed(true);
+                        otherVehicle.GetWheelBody(WheelID(0, LEFT))->SetBodyFixed(true);
+                        otherVehicle.GetWheelBody(WheelID(0, RIGHT))->SetBodyFixed(true);
+                        otherVehicle.GetWheelBody(WheelID(1, LEFT))->SetBodyFixed(true);
+                        otherVehicle.GetWheelBody(WheelID(1, RIGHT))->SetBodyFixed(true);
+                        otherVehicle.GetDriveshaft()->SetShaftFixed(true);
+                        otherVehicles.insert(std::pair<int, WheeledVehicle>(worldVehicle.vehicleid(), otherVehicle));*/
+                        
+                        app.AssetBindAll();
+                        app.AssetUpdateAll();
+                    }
+                    generateChassisFromMessage(otherVehicles.at(worldVehicle.vehicleid()), worldVehicle);
+                }
             }
         }
 
@@ -464,8 +506,8 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, 
     message->set_e3(quaternion.e3);
 }
 
-void generateWheeledVehicleFromMessage(ChWheeledVehicle& vehicle, ChronoMessages::VehicleMessage& message) {
-    vehicle.GetChassis()->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
+void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages::VehicleMessage& message) {
+    /*vehicle.GetChassis()->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
     vehicle.GetWheelBody(WheelID(1, LEFT))->SetPos(ChVector<>(message.backleftwheelcom().x(), message.backleftwheelcom().y(), message.backleftwheelcom().z()));
     vehicle.GetWheelBody(WheelID(1, RIGHT))->SetPos(ChVector<>(message.backrightwheelcom().x(), message.backrightwheelcom().y(), message.backrightwheelcom().z()));
     vehicle.GetWheelBody(WheelID(0, LEFT))->SetPos(ChVector<>(message.frontleftwheelcom().x(), message.frontleftwheelcom().y(), message.frontleftwheelcom().z()));
@@ -475,5 +517,8 @@ void generateWheeledVehicleFromMessage(ChWheeledVehicle& vehicle, ChronoMessages
     vehicle.GetWheelBody(WheelID(1, LEFT))->SetRot(ChQuaternion<>(message.backleftwheelrot().e0(), message.backleftwheelrot().e1(), message.backleftwheelrot().e2(), message.backleftwheelrot().e3()));
     vehicle.GetWheelBody(WheelID(1, RIGHT))->SetRot(ChQuaternion<>(message.backrightwheelrot().e0(), message.backrightwheelrot().e1(), message.backrightwheelrot().e2(), message.backrightwheelrot().e3()));
     vehicle.GetWheelBody(WheelID(0, LEFT))->SetRot(ChQuaternion<>(message.frontleftwheelrot().e0(), message.frontleftwheelrot().e1(), message.frontleftwheelrot().e2(), message.frontleftwheelrot().e3()));
-    vehicle.GetWheelBody(WheelID(0, RIGHT))->SetRot(ChQuaternion<>(message.frontrightwheelrot().e0(), message.frontrightwheelrot().e1(), message.frontrightwheelrot().e2(), message.frontrightwheelrot().e3()));
+    vehicle.GetWheelBody(WheelID(0, RIGHT))->SetRot(ChQuaternion<>(message.frontrightwheelrot().e0(), message.frontrightwheelrot().e1(), message.frontrightwheelrot().e2(), message.frontrightwheelrot().e3()));*/
+    
+    vehicle->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
+    vehicle->SetRot(ChQuaternion<>(message.chassisrot().e0(), message.chassisrot().e1(), message.chassisrot().e2(), message.chassisrot().e3()));
 }

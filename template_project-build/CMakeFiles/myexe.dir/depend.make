@@ -1064,11 +1064,14 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/assets/C
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCCollisionInfo.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCCollisionModel.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCCollisionSystem.h
+CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCCollisionUtils.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCConvexDecomposition.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/ChCModelBullet.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/BulletCollision/BroadphaseCollision/btBroadphaseProxy.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/BulletCollision/CollisionShapes/btCollisionShape.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btAlignedAllocator.h
+CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btAlignedObjectArray.h
+CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btConvexHull.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btMatrix3x3.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btMinMax.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/collision/bullet/LinearMath/btQuadWord.h
@@ -1162,6 +1165,7 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/parallel
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChAssembly.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChBody.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChBodyAuxRef.h
+CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChBodyEasy.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChBodyFrame.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChContactContainerBase.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChContactable.h
@@ -1184,6 +1188,7 @@ CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkMarkers.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkMask.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkMasked.h
+CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkMate.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkPneumaticActuator.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkPointSpline.h
 CMakeFiles/myexe.dir/VehicleServer.cpp.o: /home/dylan/chrono/src/chrono/physics/ChLinkPulley.h
