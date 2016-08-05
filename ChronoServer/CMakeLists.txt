@@ -16,11 +16,14 @@ cmake_minimum_required(VERSION 2.8)
 # Modify the project name if you want: 
 #--------------------------------------------------------------
 
-project(my_project)
+project(ChronoServer)
 
 SET(MODEL_FILES    
     ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
     ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+    main.cpp
+    World.cpp
+    World.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -65,18 +68,20 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # In this example, we only request the Irrlicht module (required)
 #--------------------------------------------------------------
 
-find_package(Chrono
-             COMPONENTS Irrlicht Vehicle
-             CONFIG)
+#find_package(Chrono
+#            COMPONENTS Irrlicht Vehicle
+#           CONFIG)
+
+#find_package(boost)
 
 #--------------------------------------------------------------
 # Return now if Chrono or a required component was not found.
 #--------------------------------------------------------------
 
-if (NOT Chrono_FOUND)
-  message("Could not find Chrono or one of its required modules")
-  return()
-endif()
+#if (NOT Chrono_FOUND)
+#  message("Could not find Chrono or one of its required modules")
+#  return()
+#endif()
 
 
 #--------------------------------------------------------------
@@ -84,7 +89,11 @@ endif()
 # of the requested modules. -- Added protobuf messages and boost include path
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} /home/dylan/boost_1_61_0/include ../Vehicle_Protobuf_Messages)
+if(NOT DEFINED BOOST_DIR)
+set(BOOST_DIR "boost include directory" CACHE STRING "" FORCE)
+endif()
+
+include_directories(${BOOST_DIR} ../Vehicle_Protobuf_Messages)
 
 #--------------------------------------------------------------
 # Tweaks to disable some warnings with MSVC
@@ -103,7 +112,7 @@ endif()
 # files in your project. 
 #--------------------------------------------------------------
 
-add_executable(myexe VehicleServer.cpp ${MODEL_FILES})
+add_executable(ChronoServer ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -114,16 +123,17 @@ add_executable(myexe VehicleServer.cpp ${MODEL_FILES})
 # install tree (if using an installed version of Chrono).
 #--------------------------------------------------------------
 
-set_target_properties(myexe PROPERTIES 
-	    COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-	    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-	    LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+#set_target_properties(ChronoServer PROPERTIES 
+#	    COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+#	    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+#	    LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 
 #--------------------------------------------------------------
-# Link to Chrono libraries and dependency libraries   ----  Added boost_system, pthread, and protobuf to allow network message passing.
+# Link to Chrono libraries and dependency libraries   ----  Added 
+# boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
 
-target_link_libraries(myexe ${CHRONO_LIBRARIES} boost_system pthread protobuf)
+target_link_libraries(ChronoServer boost_system pthread protobuf)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===
@@ -137,4 +147,4 @@ target_link_libraries(myexe ${CHRONO_LIBRARIES} boost_system pthread protobuf)
 #--------------------------------------------------------------
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-add_DLL_copy_command("${CHRONO_DLLS}")
+#add_DLL_copy_command("${CHRONO_DLLS}")

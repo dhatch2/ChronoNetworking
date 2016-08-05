@@ -54,7 +54,7 @@ using namespace irr;
 
 // Initial vehicle location and orientation
 ChVector<> initLoc(0, 0, 2.5);
-ChQuaternion<> initRot(Q_from_AngZ(-1.57));
+ChQuaternion<> initRot(1, 0, 0, 0);
 // ChQuaternion<> initRot(0.866025, 0, 0, 0.5);
 // ChQuaternion<> initRot(0.7071068, 0, 0, 0.7071068);
 // ChQuaternion<> initRot(0.25882, 0, 0, 0.965926);
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
     app.SetTimestep(step_size);
     app.AssetBindAll();
     scene::IMeshSceneNode* node = app.GetSceneManager()->addMeshSceneNode(
-        app.GetSceneManager()->getMesh("../data/madison_flat_mod.obj"), 0, -1, core::vector3df(150, 250, 0.01),
+        app.GetSceneManager()->getMesh("../data/madison_flat_mod.obj"), 0, -1, core::vector3df(0, 0, 0.01),
         core::vector3df(0, 0, 0), core::vector3df(1.0, 1.0, 1.0));
     app.AssetUpdateAll();
 
