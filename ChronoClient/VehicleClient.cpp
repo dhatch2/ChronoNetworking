@@ -341,9 +341,15 @@ int main(int argc, char* argv[]) {
                             chassis->GetCollisionModel()->BuildModel();
                             chassis->SetCollide(false);
 
-                            auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
-                            masset_meshbox->SetMesh(mmeshbox);
-                            chassis->AddAsset(masset_meshbox);
+                            //auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
+                            //masset_meshbox->SetMesh(mmeshbox);
+                            //chassis->AddAsset(masset_meshbox);
+
+                            auto sphere = std::make_shared<ChSphereShape>();
+                            sphere->GetSphereGeometry().rad = 0.1;
+                            //sphere->Pos = m_chassisCOM;
+                            chassis->AddAsset(sphere);
+
 
                             auto color = std::make_shared<ChColorAsset>();
                             color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
