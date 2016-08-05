@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     // --------------
 
     // Create the HMMWV vehicle, set parameters, and initialize
-    HMMWV_Full my_hmmwv;
+	HMMWV_Reduced my_hmmwv;
     my_hmmwv.SetChassisFixed(false);
     my_hmmwv.SetChassisVis(vis_type);
     my_hmmwv.SetWheelVis(vis_type);
@@ -345,7 +345,7 @@ int main(int argc, char* argv[]) {
                             chassis->GetCollisionModel()->ClearModel();
                             chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
                             chassis->GetCollisionModel()->BuildModel();
-                            chassis->SetCollide(true);
+                            chassis->SetCollide(false);
 
                             auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
                             masset_meshbox->SetMesh(mmeshbox);
