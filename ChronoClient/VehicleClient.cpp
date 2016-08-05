@@ -213,11 +213,6 @@ int main(int argc, char* argv[]) {
     // Simulation loop
     // ---------------
 
-    if (debug_output) {
-        GetLog() << "\n\n============ System Configuration ============\n";
-        my_hmmwv.LogHardpointLocations();
-    }
-
     // Number of simulation steps between miscellaneous events
     int render_steps = (int)std::ceil(render_step_size / step_size);
     int debug_steps = (int)std::ceil(debug_step_size / step_size);
@@ -280,7 +275,6 @@ int main(int argc, char* argv[]) {
         if (debug_output && step_number % debug_steps == 0) {
             GetLog() << "\n\n============ System Information ============\n";
             GetLog() << "Time = " << time << "\n\n";
-            my_hmmwv.DebugLog(OUT_SPRINGS | OUT_SHOCKS | OUT_CONSTRAINTS);
         }
 
         // Collect output data from modules (for inter-module communication)
