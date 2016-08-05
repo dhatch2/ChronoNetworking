@@ -84,7 +84,7 @@ endif()
 # of the requested modules. -- Added protobuf messages and boost include path
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} /home/dylan/boost_1_61_0/include /home/dylan/Documents/BoostNetworking/Vehicle_Protobuf_Messages)
+include_directories(${CHRONO_INCLUDE_DIRS} /home/dylan/boost_1_61_0/include ../Vehicle_Protobuf_Messages)
 
 #--------------------------------------------------------------
 # Tweaks to disable some warnings with MSVC

@@ -2,3 +2,4 @@ BoostNetworking.workspace
 *.codelite
 template_project-build
 */Debug
+*.mk
