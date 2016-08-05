@@ -62,6 +62,7 @@ using namespace chrono;
 using namespace chrono::vehicle;
 using namespace std;
 using boost::asio::ip::tcp;
+using namespace irr;
 
 // =============================================================================
 
@@ -350,7 +351,7 @@ int main(int argc, char* argv[]) {
                 
                 for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
                     if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
-                        
+
                         auto chassis = std::make_shared<ChBody>();
                     chassis->SetPos(ChVector<>(0, 0, 0));
                         //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
@@ -371,9 +372,9 @@ int main(int argc, char* argv[]) {
                     auto color = std::make_shared<ChColorAsset>();
                     color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
                     chassis->AddAsset(color);
-                    
+
                     otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
-                    
+
                         // Screwy, less efficient version
                         /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
                         otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
