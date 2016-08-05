@@ -3,3 +3,4 @@ BoostNetworking.workspace
 template_project-build/
 */Debug
 *.mk
+CMakeCache.txt

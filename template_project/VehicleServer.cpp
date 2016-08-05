@@ -175,6 +175,9 @@ int main(int argc, char* argv[]) {
     app.SetTimestep(step_size);
 
     app.AssetBindAll();
+    scene::IMeshSceneNode* node = app.GetSceneManager()->addMeshSceneNode(
+        app.GetSceneManager()->getMesh("../data/madison_flat_mod.obj"), 0, -1, core::vector3df(0, 0, 0.01),
+        core::vector3df(0, 0, 0), core::vector3df(1.0, 1.0, 1.0));
     app.AssetUpdateAll();
 
     /*
@@ -347,30 +350,30 @@ int main(int argc, char* argv[]) {
                 
                 for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
                     if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
-                    
+                        
                         auto chassis = std::make_shared<ChBody>();
-                        chassis->SetPos(ChVector<>(0, 0, 0));
+                    chassis->SetPos(ChVector<>(0, 0, 0));
                         //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
-                        chassis->SetBodyFixed(true);
-                        vehicle.GetSystem()->Add(chassis);
-                        geometry::ChTriangleMeshConnected mmeshbox;
-                        mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
+                    chassis->SetBodyFixed(true);
+                    vehicle.GetSystem()->Add(chassis);
+                    geometry::ChTriangleMeshConnected mmeshbox;
+                    mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
 
-                        chassis->GetCollisionModel()->ClearModel();
-                        chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
-                        chassis->GetCollisionModel()->BuildModel();
-                        chassis->SetCollide(true);
+                    chassis->GetCollisionModel()->ClearModel();
+                    chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
+                    chassis->GetCollisionModel()->BuildModel();
+                    chassis->SetCollide(true);
 
-                        auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
-                        masset_meshbox->SetMesh(mmeshbox);
-                        chassis->AddAsset(masset_meshbox);
+                    auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
+                    masset_meshbox->SetMesh(mmeshbox);
+                    chassis->AddAsset(masset_meshbox);
 
-                        auto color = std::make_shared<ChColorAsset>();
-                        color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
-                        chassis->AddAsset(color);
-                        
-                        otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
-                        
+                    auto color = std::make_shared<ChColorAsset>();
+                    color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
+                    chassis->AddAsset(color);
+                    
+                    otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
+                    
                         // Screwy, less efficient version
                         /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
                         otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
@@ -428,7 +431,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Sim frame:      " << step_number << std::endl;
             std::cout << "Time:           " << time << std::endl;
             std::cout << "   throttle: " << driver.GetThrottle() << "   steering: " << driver.GetSteering()
-                      << "   braking:  " << driver.GetBraking() << std::endl;
+            << "   braking:  " << driver.GetBraking() << std::endl;
             std::cout << std::endl;
             render_frame++;
         }
