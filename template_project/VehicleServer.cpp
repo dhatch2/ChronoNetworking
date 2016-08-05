@@ -1,21 +1,23 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
-// All rights reserved.
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
-
-#include "chrono/physics/ChBodyEasy.h"
-#include "chrono/physics/ChLinkMate.h"
-#include "chrono/assets/ChTexture.h"
-#include "chrono/assets/ChColorAsset.h"
-#include "chrono/assets/ChTexture.h"
-#include "chrono/assets/ChTriangleMeshShape.h"
-#include "chrono/geometry/ChTriangleMeshConnected.h"
+// =============================================================================
+// Authors: Radu Serban, Justin Madsen
+// =============================================================================
+//
+// Main driver function for the HMMWV full model.
+//
+// The vehicle reference frame has Z up, X towards the front of the vehicle, and
+// Y pointing to the left.
+//
+// =============================================================================
 
 #include <iostream>
 #include <ctime>
@@ -34,102 +36,75 @@
 #include "chrono/core/ChStream.h"
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/physics/ChSystem.h"
-#include "chrono/physics/ChLinkDistance.h"
 #include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChConfigVehicle.h"
 #include "chrono_vehicle/ChVehicleModelData.h"
-
-#include "chrono_vehicle/powertrain/SimplePowertrain.h"
-#include "chrono_vehicle/driver/ChDataDriver.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
-#include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
-#include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
-
-#include "chrono_vehicle/ChConfigVehicle.h"
-
-// If Irrlicht support is available...
-#ifdef CHRONO_IRRLICHT
-// ...include additional headers
 #include "chrono_vehicle/driver/ChIrrGuiDriver.h"
+#include "chrono_vehicle/driver/ChDataDriver.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
-
-// ...and specify whether the demo should actually use Irrlicht
-#define USE_IRRLICHT
-#endif
-
+#include "models/vehicle/hmmwv/HMMWV.h"
 using namespace chrono;
 using namespace chrono::vehicle;
-using namespace std;
+using namespace chrono::vehicle::hmmwv;
 using boost::asio::ip::tcp;
 using namespace irr;
-
 // =============================================================================
 
-<<<<<<< HEAD
 // Initial vehicle location and orientation
 ChVector<> initLoc(0, 0, 2.5);
 ChQuaternion<> initRot(Q_from_AngZ(-1.57));
-=======
-// JSON file for vehicle model
-// std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle.json");
-// std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle_simple_lugged.json");
-// std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle_4WD.json");
-std::string vehicle_file("generic/vehicle/Vehicle_DoubleWishbones.json");
-// std::string vehicle_file("generic/vehicle/Vehicle_DoubleWishbones_ARB.json");
-// std::string vehicle_file("MAN_5t/vehicle/MAN_5t_Vehicle_4WD.json");
-// std::string vehicle_file("generic/vehicle/Vehicle_MultiLinks.json");
-// std::string vehicle_file("generic/vehicle/Vehicle_SolidAxles.json");
-// std::string vehicle_file("generic/vehicle/Vehicle_ThreeAxles.json");
-// std::string vehicle_file("generic/vehicle_multisteer/Vehicle_DualFront_Independent.json");
-// std::string vehicle_file("generic/vehicle_multisteer/Vehicle_DualFront_Shared.json");
-// std::string vehicle_file("generic/vehicle/Vehicle_MacPhersonStruts.json");
-
-// JSON files for terrain (rigid plane), and powertrain (simple)
-std::string rigidterrain_file("terrain/RigidPlane.json");
-std::string simplepowertrain_file("generic/powertrain/SimplePowertrain.json");
-
-// JSON files tire models (rigid)
-std::string rigidtire_file("generic/tire/RigidTire.json");
-//std::string rigidtire_file("MAN_5t/tire/MAN_5t_RigidTire.json");
-
-// Driver input file (if not using Irrlicht)
-std::string driver_file("generic/driver/Sample_Maneuver.txt");
-
-// Initial vehicle position
-ChVector<> initLoc(0, 0, 1.0);
-
-// Initial vehicle orientation
-ChQuaternion<> initRot(1, 0, 0, 0);
->>>>>>> parent of e134f35... Rewrote underlying demo to use HMMWV
 // ChQuaternion<> initRot(0.866025, 0, 0, 0.5);
 // ChQuaternion<> initRot(0.7071068, 0, 0, 0.7071068);
 // ChQuaternion<> initRot(0.25882, 0, 0, 0.965926);
 // ChQuaternion<> initRot(0, 0, 0, 1);
 
-// Rigid terrain dimensions
-double terrainHeight = 0;
+enum DriverMode { DEFAULT, RECORD, PLAYBACK };
+DriverMode driver_mode = DEFAULT;
+
+// Visualization type for chassis & wheels (PRIMITIVES, MESH, or NONE)
+VisualizationType vis_type = PRIMITIVES;
+
+// Type of powertrain model (SHAFTS, SIMPLE)
+PowertrainModelType powertrain_model = SHAFTS;
+
+// Drive type (FWD, RWD, or AWD)
+DrivelineType drive_type = AWD;
+
+// Type of tire model (RIGID, PACEJKA, LUGRE, FIALA)
+TireModelType tire_model = RIGID;
+
+// Rigid terrain
+RigidTerrain::Type terrain_model = RigidTerrain::FLAT;
+
+double terrainHeight = 0;       // terrain height (FLAT terrain only)
 double terrainLength = 1000.0;  // size in X direction
 double terrainWidth = 1000.0;   // size in Y direction
 
-// Simulation step size
-double step_size = 1e-3;
+// Point on chassis tracked by the camera
+ChVector<> trackPoint(0.0, 0.0, 1.75);
+
+// Simulation step sizes
+double step_size = 0.001;
+double tire_step_size = step_size;
+
+// Simulation end time
+double t_end = 1000;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
 
-// Time interval between two output frames
-double output_step_size = 1.0 / 1;  // once a second
-
-// Point on chassis tracked by the camera (Irrlicht only)
-ChVector<> trackPoint(0.0, 0.0, 1.75);
-
-// Simulation length (Povray only)
-double tend = 20.0;
-
-// Output directories (Povray only)
-const std::string out_dir = "../VEHICLE";
+// Output directories
+const std::string out_dir = "../HMMWV";
 const std::string pov_dir = out_dir + "/POVRAY";
+
+// Debug logging
+bool debug_output = false;
+double debug_step_size = 1.0 / 1;  // FPS = 1
+
+// POV-Ray output
+bool povray_output = false;
 
 // Vehicle message generating functions
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
@@ -140,77 +115,83 @@ void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages:
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    // --------------------------
-    // Create the various modules
-    // --------------------------
-    //SetChronoDataPath("../../../chrono-build/data/");
-    // Create the vehicle system
+    // --------------
+    // Create systems
+    // --------------
 
-    WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), ChMaterialSurfaceBase::DEM);
-    vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
-    ////vehicle.GetChassis()->SetBodyFixed(true);
-    
+    // Create the HMMWV vehicle, set parameters, and initialize
+    HMMWV_Full my_hmmwv;
+    my_hmmwv.SetChassisFixed(false);
+    my_hmmwv.SetChassisVis(vis_type);
+    my_hmmwv.SetWheelVis(vis_type);
+    my_hmmwv.SetInitPosition(ChCoordsys<>(initLoc, initRot));
+    my_hmmwv.SetPowertrainType(powertrain_model);
+    my_hmmwv.SetDriveType(drive_type);
+    my_hmmwv.SetTireType(tire_model);
+    my_hmmwv.SetTireStepSize(tire_step_size);
+    my_hmmwv.Initialize();
+
+    // Create the terrain
+    RigidTerrain terrain(my_hmmwv.GetSystem());
+    terrain.SetContactMaterial(0.9f, 0.01f, 2e7f, 0.3f);
+    terrain.SetColor(ChColor(0.8f, 0.8f, 0.5f));
+    switch (terrain_model) {
+        case RigidTerrain::FLAT:
+            terrain.SetTexture(vehicle::GetDataFile("terrain/textures/tile4.jpg"), 200, 200);
+            terrain.Initialize(terrainHeight, terrainLength, terrainWidth);
+            break;
+        case RigidTerrain::HEIGHT_MAP:
+            terrain.SetTexture(vehicle::GetDataFile("terrain/textures/grass.jpg"), 16, 16);
+            terrain.Initialize(vehicle::GetDataFile("terrain/height_maps/test64.bmp"), "test64", 128, 128, 0, 4);
+            break;
+        case RigidTerrain::MESH:
+            terrain.SetTexture(vehicle::GetDataFile("terrain/textures/grass.jpg"), 100, 100);
+            terrain.Initialize(vehicle::GetDataFile("terrain/meshes/test.obj"), "test_mesh");
+            break;
+    }
+
     // Create other vehicles from network -- Work on this.
     //std::map<int, WheeledVehicle> otherVehicles; // Creating more wheeled vehicles is less efficient.
     std::map<int, std::shared_ptr<ChBody>> otherVehicles;
 
-    // Create the ground
-    RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
-
-    // Create and initialize the powertrain system
-    SimplePowertrain powertrain(vehicle::GetDataFile(simplepowertrain_file));
-    powertrain.Initialize(vehicle.GetChassis(), vehicle.GetDriveshaft());
-
-    // Create and initialize the tires
-    int num_axles = vehicle.GetNumberAxles();
-    int num_wheels = 2 * num_axles;
-    std::vector<std::shared_ptr<RigidTire> > tires(num_wheels);
-
-    for (int i = 0; i < num_wheels; i++) {
-        tires[i] = std::make_shared<RigidTire>(vehicle::GetDataFile(rigidtire_file));
-        tires[i]->Initialize(vehicle.GetWheelBody(i), VehicleSide(i % 2));
-    }
-
-#ifdef USE_IRRLICHT
-
-    ChVehicleIrrApp app(&vehicle, &powertrain, L"Vehicle Demo");
-
+    // Create the vehicle Irrlicht interface
+    ChWheeledVehicleIrrApp app(&my_hmmwv.GetVehicle(), &my_hmmwv.GetPowertrain(), L"HMMWV Demo");
     app.SetSkyBox();
-    app.AddTypicalLights(irr::core::vector3df(30.f, -30.f, 100.f), irr::core::vector3df(30.f, 50.f, 100.f), 250, 130);
-    app.SetChaseCamera(trackPoint, 6.0, 0.5);
-
+    app.AddLightWithShadow(irr::core::vector3df(0.f, 0.f, 100.f), irr::core::vector3df(0.f, 0.f, 0.f), 1000.0, 1.0, 1000.0, 90.0, 512,
+                irr::video::SColorf(1.f, 1.f, 1.f, 1.f), true, true);    app.SetChaseCamera(trackPoint, 6.0, 0.5);
     app.SetTimestep(step_size);
-
     app.AssetBindAll();
     scene::IMeshSceneNode* node = app.GetSceneManager()->addMeshSceneNode(
         app.GetSceneManager()->getMesh("../data/madison_flat_mod.obj"), 0, -1, core::vector3df(150, 250, 0.01),
         core::vector3df(0, 0, 0), core::vector3df(1.0, 1.0, 1.0));
     app.AssetUpdateAll();
 
-    /*
-    bool do_shadows = false; // shadow map is experimental
-    irr::scene::ILightSceneNode* mlight = 0;
+    // -----------------
+    // Initialize output
+    // -----------------
 
-    if (do_shadows) {
-      mlight = application.AddLightWithShadow(
-        irr::core::vector3df(10.f, 30.f, 60.f),
-        irr::core::vector3df(0.f, 0.f, 0.f),
-        150, 60, 80, 15, 512, irr::video::SColorf(1, 1, 1), false, false);
-    } else {
-      application.AddTypicalLights(
-        irr::core::vector3df(30.f, -30.f, 100.f),
-        irr::core::vector3df(30.f, 50.f, 100.f),
-        250, 130);
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+    if (povray_output) {
+        if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
+            std::cout << "Error creating directory " << pov_dir << std::endl;
+            return 1;
+        }
+        terrain.ExportMeshPovray(out_dir);
     }
 
-    if (do_shadows)
-        application.AddShadowAll();
-    */
+    std::string driver_file = out_dir + "/driver_inputs.txt";
+    utils::CSV_writer driver_csv(" ");
 
+    // ------------------------
+    // Create the driver system
+    // ------------------------
+
+    // Create the interactive driver system
     ChIrrGuiDriver driver(app);
-
     // Set the time response for steering and throttle keyboard inputs.
-    // NOTE: this is not exact, since we do not render quite at the specified FPS.
     double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
     double throttle_time = 1.0;  // time to go from 0 to +1
     double braking_time = 0.3;   // time to go from 0 to +1
@@ -218,14 +199,12 @@ int main(int argc, char* argv[]) {
     driver.SetThrottleDelta(render_step_size / throttle_time);
     driver.SetBrakingDelta(render_step_size / braking_time);
 
-    // Set file with driver input time series
-    driver.SetInputDataFile(vehicle::GetDataFile(driver_file));
-
-#else
-
-    ChDataDriver driver(vehicle, vehicle::GetDataFile(driver_file));
-
-#endif
+    // If in playback mode, attach the data file to the driver system and
+    // force it to playback the driver inputs.
+    if (driver_mode == PLAYBACK) {
+        driver.SetInputDataFile(driver_file);
+        driver.SetInputMode(ChIrrGuiDriverJoystick::DATAFILE);
+    }
 
     driver.Initialize();
 
@@ -233,273 +212,206 @@ int main(int argc, char* argv[]) {
     // Simulation loop
     // ---------------
 
-    // Inter-module communication data
-    TireForces tire_forces(num_wheels);
-    WheelStates wheel_states(num_wheels);
-    double driveshaft_speed;
-    double powertrain_torque;
-    double throttle_input;
-    double steering_input;
-    double braking_input;
+    if (debug_output) {
+        GetLog() << "\n\n============ System Configuration ============\n";
+        my_hmmwv.LogHardpointLocations();
+    }
 
-    // Number of simulation steps between two 3D view render frames
+    // Number of simulation steps between miscellaneous events
     int render_steps = (int)std::ceil(render_step_size / step_size);
-
-    // Number of simulation steps between two output frames
-    int output_steps = (int)std::ceil(output_step_size / step_size);
+    int debug_steps = (int)std::ceil(debug_step_size / step_size);
 
     // Initialize simulation frame counter and simulation time
-    int step_number = 0;
-    double time = 0;
-    
-    // Setup socket and connect to network
-    boost::asio::io_service ioService;
-    tcp::resolver resolver(ioService);
-    tcp::resolver::query query("128.104.191.115", "8082");
-    tcp::resolver::iterator endpointIterator = resolver.resolve(query);
-    
-    tcp::socket socket(ioService);
-    //socket.connect(endpoint);
-    boost::asio::connect(socket, endpointIterator);
-    
-    // Receive the connection number for vehicle identification purposes
-    char* connectionBuff = (char *)malloc(sizeof(int));
-    socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
-    int connectionNumber = *(int *)connectionBuff;
-    std::cout << "Connection number: " << connectionNumber << std::endl;
-
-    // Create output buffer and ostream
-    boost::asio::streambuf buff;
-    ostream outStream(&buff);
-    
-    // Number of steps to wait before updating the server on the vehicle's location
-    int send_steps = render_steps;
-    
-    // Number of external vehicles in the world
-    int count = 0;
-
-#ifdef USE_IRRLICHT
-
     ChRealtimeStepTimer realtime_timer;
+    int step_number = 0;
+    int render_frame = 0;
+    double time = 0;
+
+    // Setup socket and connect to network
+        boost::asio::io_service ioService;
+        tcp::resolver resolver(ioService);
+        tcp::resolver::query query("128.104.191.115", "8082");
+        tcp::resolver::iterator endpointIterator = resolver.resolve(query);
+
+        tcp::socket socket(ioService);
+        //socket.connect(endpoint);
+        boost::asio::connect(socket, endpointIterator);
+
+        // Receive the connection number for vehicle identification purposes
+        char* connectionBuff = (char *)malloc(sizeof(int));
+        socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
+        int connectionNumber = *(int *)connectionBuff;
+        std::cout << "Connection number: " << connectionNumber << std::endl;
+
+        // Create output buffer and ostream
+        boost::asio::streambuf buff;
+        std::ostream outStream(&buff);
+
+        // Number of steps to wait before updating the server on the vehicle's location
+        int send_steps = render_steps;
+
+        // Number of external vehicles in the world
+        int count = 0;
 
     while (app.GetDevice()->run()) {
-        // Render scene
-        if (step_number % render_steps == 0) {
-            // Update the position of the shadow mapping so that it follows the car
-            ////if (do_shadows) {
-            ////  ChVector<> lightaim = vehicle.GetChassisPos();
-            ////  ChVector<> lightpos = vehicle.GetChassisPos() + ChVector<>(10, 30, 60);
-            ////  irr::core::vector3df mlightpos((irr::f32)lightpos.x, (irr::f32)lightpos.y, (irr::f32)lightpos.z);
-            ////  irr::core::vector3df mlightaim((irr::f32)lightaim.x, (irr::f32)lightaim.y, (irr::f32)lightaim.z);
-            ////  application.GetEffects()->getShadowLight(0).setPosition(mlightpos);
-            ////  application.GetEffects()->getShadowLight(0).setTarget(mlightaim);
-            ////  mlight->setPosition(mlightpos);
-            ////}
+        time = my_hmmwv.GetSystem()->GetChTime();
 
-            // Draw all scene elements
+        // End simulation
+        if (time >= t_end)
+            break;
+
+        // Render scene and output POV-Ray data
+        if (step_number % render_steps == 0) {
             app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             app.DrawAll();
             app.EndScene();
+
+            if (povray_output) {
+                char filename[100];
+                sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), render_frame + 1);
+                utils::WriteShapesPovray(my_hmmwv.GetSystem(), filename);
+            }
+
+            render_frame++;
+        }
+
+        // Debug logging
+        if (debug_output && step_number % debug_steps == 0) {
+            GetLog() << "\n\n============ System Information ============\n";
+            GetLog() << "Time = " << time << "\n\n";
+            my_hmmwv.DebugLog(OUT_SPRINGS | OUT_SHOCKS | OUT_CONSTRAINTS);
         }
 
         // Collect output data from modules (for inter-module communication)
-        throttle_input = driver.GetThrottle();
-        steering_input = driver.GetSteering();
-        braking_input = driver.GetBraking();
-        powertrain_torque = powertrain.GetOutputTorque();
-        driveshaft_speed = vehicle.GetDriveshaftSpeed();
-        for (int i = 0; i < num_wheels; i++) {
-            tire_forces[i] = tires[i]->GetTireForce();
-            wheel_states[i] = vehicle.GetWheelState(i);
+        double throttle_input = driver.GetThrottle();
+        double steering_input = driver.GetSteering();
+        double braking_input = driver.GetBraking();
+
+        // Driver output
+        if (driver_mode == RECORD) {
+            driver_csv << time << steering_input << throttle_input << braking_input << std::endl;
         }
 
         // Update modules (process inputs from other modules)
-        time = vehicle.GetSystem()->GetChTime();
         driver.Synchronize(time);
-        powertrain.Synchronize(time, throttle_input, driveshaft_speed);
-        vehicle.Synchronize(time, steering_input, braking_input, powertrain_torque, tire_forces);
         terrain.Synchronize(time);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Synchronize(time, wheel_states[i], terrain);
+        my_hmmwv.Synchronize(time, steering_input, braking_input, throttle_input, terrain);
         app.Synchronize(driver.GetInputModeAsString(), steering_input, throttle_input, braking_input);
-        
+
         // Send vehicle message TODO: Make vehicles that are actually updated by received messages.
-        if (step_number % send_steps == 0) {
-            ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&vehicle, connectionNumber);
-            message.SerializeToOstream(&outStream);
-            boost::asio::write(socket, buff);
-            buff.consume(message.ByteSize());
-            
-            char* countBuff = (char *)malloc(sizeof(int));
-            socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
-            int count = *(int *)countBuff;
-            //std::cout << "World count: " << count << std::endl;
-            
-            if(count > 1) {
-                boost::asio::streambuf worldBuffer;
-                std::istream inStream(&worldBuffer);
-                socket.receive(worldBuffer.prepare(count * 512));
-                worldBuffer.commit(count * 512);
-                
-                std::vector<ChronoMessages::VehicleMessage> worldVehicles;
-                
-                for(int i = 0; i < count - 1; i++) {
-                    ChronoMessages::VehicleMessage worldVehicle;
-                    worldVehicle.ParseFromIstream(&inStream);
-                    //std::cout << worldVehicle.DebugString() << std::endl;
-                    //worldBuffer.consume(worldVehicle.ByteSize());
-                    worldVehicles.push_back(worldVehicle);
-                }
-                
-                //std::cout << worldVehicles.size() << " vehicles" << endl;
-                
-                worldBuffer.consume(count * 512);
-                
-                for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
-                    if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
+                if (step_number % send_steps == 0) {
+                    ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), connectionNumber);
+                    message.SerializeToOstream(&outStream);
+                    boost::asio::write(socket, buff);
+                    buff.consume(message.ByteSize());
 
-                        auto chassis = std::make_shared<ChBody>();
-                    chassis->SetPos(ChVector<>(0, 0, 0));
-                        //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
-                    chassis->SetBodyFixed(true);
-                    vehicle.GetSystem()->Add(chassis);
-                    geometry::ChTriangleMeshConnected mmeshbox;
-                    mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
+                    char* countBuff = (char *)malloc(sizeof(int));
+                    socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
+                    int count = *(int *)countBuff;
+                    //std::cout << "World count: " << count << std::endl;
 
-                    chassis->GetCollisionModel()->ClearModel();
-                    chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
-                    chassis->GetCollisionModel()->BuildModel();
-                    chassis->SetCollide(true);
+                    if(count > 1) {
+                        boost::asio::streambuf worldBuffer;
+                        std::istream inStream(&worldBuffer);
+                        socket.receive(worldBuffer.prepare(count * 512));
+                        worldBuffer.commit(count * 512);
 
-                    auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
-                    masset_meshbox->SetMesh(mmeshbox);
-                    chassis->AddAsset(masset_meshbox);
+                        std::vector<ChronoMessages::VehicleMessage> worldVehicles;
 
-                    auto color = std::make_shared<ChColorAsset>();
-                    color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
-                    chassis->AddAsset(color);
+                        for(int i = 0; i < count - 1; i++) {
+                            ChronoMessages::VehicleMessage worldVehicle;
+                            worldVehicle.ParseFromIstream(&inStream);
+                            //std::cout << worldVehicle.DebugString() << std::endl;
+                            //worldBuffer.consume(worldVehicle.ByteSize());
+                            worldVehicles.push_back(worldVehicle);
+                        }
 
-                    otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
+                        //std::cout << worldVehicles.size() << " vehicles" << endl;
 
-                        // Screwy, less efficient version
-                        /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
-                        otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
-                        otherVehicle.GetChassis()->SetBodyFixed(true);
-                        otherVehicle.GetWheelBody(WheelID(0, LEFT))->SetBodyFixed(true);
-                        otherVehicle.GetWheelBody(WheelID(0, RIGHT))->SetBodyFixed(true);
-                        otherVehicle.GetWheelBody(WheelID(1, LEFT))->SetBodyFixed(true);
-                        otherVehicle.GetWheelBody(WheelID(1, RIGHT))->SetBodyFixed(true);
-                        otherVehicle.GetDriveshaft()->SetShaftFixed(true);
-                        otherVehicles.insert(std::pair<int, WheeledVehicle>(worldVehicle.vehicleid(), otherVehicle));*/
-                        
-                        app.AssetBindAll();
-                        app.AssetUpdateAll();
+                        worldBuffer.consume(count * 512);
+
+                        for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
+                            if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
+
+                                auto chassis = std::make_shared<ChBody>();
+                            chassis->SetPos(ChVector<>(0, 0, 0));
+                                //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
+                            chassis->SetBodyFixed(true);
+                            my_hmmwv.GetVehicle().GetSystem()->Add(chassis);
+                            geometry::ChTriangleMeshConnected mmeshbox;
+                            mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
+
+                            chassis->GetCollisionModel()->ClearModel();
+                            chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
+                            chassis->GetCollisionModel()->BuildModel();
+                            chassis->SetCollide(true);
+
+                            auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
+                            masset_meshbox->SetMesh(mmeshbox);
+                            chassis->AddAsset(masset_meshbox);
+
+                            auto color = std::make_shared<ChColorAsset>();
+                            color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
+                            chassis->AddAsset(color);
+
+                            otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
+
+                                // Screwy, less efficient version
+                                /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
+                                otherVehicle.Initialize(vehicle.GetLocalDriverCoordsys());
+                                otherVehicle.GetChassis()->SetBodyFixed(true);
+                                otherVehicle.GetWheelBody(WheelID(0, LEFT))->SetBodyFixed(true);
+                                otherVehicle.GetWheelBody(WheelID(0, RIGHT))->SetBodyFixed(true);
+                                otherVehicle.GetWheelBody(WheelID(1, LEFT))->SetBodyFixed(true);
+                                otherVehicle.GetWheelBody(WheelID(1, RIGHT))->SetBodyFixed(true);
+                                otherVehicle.GetDriveshaft()->SetShaftFixed(true);
+                                otherVehicles.insert(std::pair<int, WheeledVehicle>(worldVehicle.vehicleid(), otherVehicle));*/
+
+                                app.AssetBindAll();
+                                app.AssetUpdateAll();
+                            }
+                            generateChassisFromMessage(otherVehicles.at(worldVehicle.vehicleid()), worldVehicle);
+                        }
                     }
-                    generateChassisFromMessage(otherVehicles.at(worldVehicle.vehicleid()), worldVehicle);
                 }
-            }
-        }
 
         // Advance simulation for one timestep for all modules
         double step = realtime_timer.SuggestSimulationStep(step_size);
         driver.Advance(step);
-        powertrain.Advance(step);
-        vehicle.Advance(step);
         terrain.Advance(step);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Advance(step);
+        my_hmmwv.Advance(step);
         app.Advance(step);
 
         // Increment frame number
         step_number++;
     }
 
-#else
-
-    int render_frame = 0;
-
-    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
-        std::cout << "Error creating directory " << out_dir << std::endl;
-        return 1;
+    if (driver_mode == RECORD) {
+        driver_csv.write_to_file(driver_file);
     }
-    if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
-        std::cout << "Error creating directory " << pov_dir << std::endl;
-        return 1;
-    }
-
-    char filename[100];
-
-    while (time < tend) {
-        if (step_number % render_steps == 0) {
-            // Output render data
-            sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), render_frame + 1);
-            utils::WriteShapesPovray(vehicle.GetSystem(), filename);
-            std::cout << "Output frame:   " << render_frame << std::endl;
-            std::cout << "Sim frame:      " << step_number << std::endl;
-            std::cout << "Time:           " << time << std::endl;
-            std::cout << "   throttle: " << driver.GetThrottle() << "   steering: " << driver.GetSteering()
-            << "   braking:  " << driver.GetBraking() << std::endl;
-            std::cout << std::endl;
-            render_frame++;
-        }
-
-        // Collect output data from modules (for inter-module communication)
-        throttle_input = driver.GetThrottle();
-        steering_input = driver.GetSteering();
-        braking_input = driver.GetBraking();
-        powertrain_torque = powertrain.GetOutputTorque();
-        driveshaft_speed = vehicle.GetDriveshaftSpeed();
-        for (int i = 0; i < num_wheels; i++) {
-            tire_forces[i] = tires[i]->GetTireForce();
-            wheel_states[i] = vehicle.GetWheelState(i);
-        }
-
-        // Update modules (process inputs from other modules)
-        time = vehicle.GetSystem()->GetChTime();
-        driver.Synchronize(time);
-        powertrain.Synchronize(time, throttle_input, driveshaft_speed);
-        vehicle.Synchronize(time, steering_input, braking_input, powertrain_torque, tire_forces);
-        terrain.Synchronize(time);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Synchronize(time, wheel_states[i], terrain);
-
-        // Advance simulation for one timestep for all modules
-        driver.Advance(step_size);
-        powertrain.Advance(step_size);
-        vehicle.Advance(step_size);
-        terrain.Advance(step_size);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Advance(step_size);
-
-        // Increment frame number
-        step_number++;
-    }
-
-#endif
 
     return 0;
 }
-
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber) {
     ChronoMessages::VehicleMessage message;
-    
+
     message.set_timestamp(time(0));
     message.set_vehicleid(connectionNumber);
     message.set_chtime(vehicle->GetChTime());
     message.set_speed(vehicle->GetVehicleSpeed());
-    
+
     messageFromVector(message.mutable_chassiscom(), vehicle->GetChassisPos());
     messageFromVector(message.mutable_backleftwheelcom(), vehicle->GetWheelPos(WheelID(1, LEFT)));
     messageFromVector(message.mutable_backrightwheelcom(), vehicle->GetWheelPos(WheelID(1, RIGHT)));
     messageFromVector(message.mutable_frontleftwheelcom(), vehicle->GetWheelPos(WheelID(0, LEFT)));
     messageFromVector(message.mutable_frontrightwheelcom(), vehicle->GetWheelPos(WheelID(0, RIGHT)));
-    
+
     messageFromQuaternion(message.mutable_chassisrot(), vehicle->GetChassisRot());
     messageFromQuaternion(message.mutable_backleftwheelrot(), vehicle->GetWheelRot(WheelID(1, LEFT)));
     messageFromQuaternion(message.mutable_backrightwheelrot(), vehicle->GetWheelRot(WheelID(1, RIGHT)));
     messageFromQuaternion(message.mutable_frontleftwheelrot(), vehicle->GetWheelRot(WheelID(0, LEFT)));
     messageFromQuaternion(message.mutable_frontrightwheelrot(), vehicle->GetWheelRot(WheelID(0, RIGHT)));
-    
+
     return message;
 }
 
@@ -522,13 +434,13 @@ void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages:
     vehicle.GetWheelBody(WheelID(1, RIGHT))->SetPos(ChVector<>(message.backrightwheelcom().x(), message.backrightwheelcom().y(), message.backrightwheelcom().z()));
     vehicle.GetWheelBody(WheelID(0, LEFT))->SetPos(ChVector<>(message.frontleftwheelcom().x(), message.frontleftwheelcom().y(), message.frontleftwheelcom().z()));
     vehicle.GetWheelBody(WheelID(0, RIGHT))->SetPos(ChVector<>(message.frontrightwheelcom().x(), message.frontrightwheelcom().y(), message.frontrightwheelcom().z()));
-    
+
     vehicle.GetChassis()->SetRot(ChQuaternion<>(message.chassisrot().e0(), message.chassisrot().e1(), message.chassisrot().e2(), message.chassisrot().e3()));
     vehicle.GetWheelBody(WheelID(1, LEFT))->SetRot(ChQuaternion<>(message.backleftwheelrot().e0(), message.backleftwheelrot().e1(), message.backleftwheelrot().e2(), message.backleftwheelrot().e3()));
     vehicle.GetWheelBody(WheelID(1, RIGHT))->SetRot(ChQuaternion<>(message.backrightwheelrot().e0(), message.backrightwheelrot().e1(), message.backrightwheelrot().e2(), message.backrightwheelrot().e3()));
     vehicle.GetWheelBody(WheelID(0, LEFT))->SetRot(ChQuaternion<>(message.frontleftwheelrot().e0(), message.frontleftwheelrot().e1(), message.frontleftwheelrot().e2(), message.frontleftwheelrot().e3()));
     vehicle.GetWheelBody(WheelID(0, RIGHT))->SetRot(ChQuaternion<>(message.frontrightwheelrot().e0(), message.frontrightwheelrot().e1(), message.frontrightwheelrot().e2(), message.frontrightwheelrot().e3()));*/
-    
+
     vehicle->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
     vehicle->SetRot(ChQuaternion<>(message.chassisrot().e0(), message.chassisrot().e1(), message.chassisrot().e2(), message.chassisrot().e3()));
 }
