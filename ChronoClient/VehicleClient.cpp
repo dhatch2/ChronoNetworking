@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     // --------------
 
     // Create the HMMWV vehicle, set parameters, and initialize
-	HMMWV_Reduced my_hmmwv;
+	HMMWV_Full my_hmmwv;
     my_hmmwv.SetChassisFixed(false);
     my_hmmwv.SetChassisVis(vis_type);
     my_hmmwv.SetWheelVis(vis_type);
