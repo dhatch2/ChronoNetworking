@@ -1,5 +1,5 @@
 BoostNetworking.workspace
 *.codelite
-template_project-build
+template_project-build/
 */Debug
 *.mk

@@ -102,8 +102,8 @@ ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Rigid terrain dimensions
 double terrainHeight = 0;
-double terrainLength = 300.0;  // size in X direction
-double terrainWidth = 200.0;   // size in Y direction
+double terrainLength = 1000.0;  // size in X direction
+double terrainWidth = 1000.0;   // size in Y direction
 
 // Simulation step size
 double step_size = 1e-3;
@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
     // Setup socket and connect to network
     boost::asio::io_service ioService;
     tcp::resolver resolver(ioService);
-    tcp::resolver::query query(argv[1], "1300");
+    tcp::resolver::query query("128.104.191.115", "8082");
     tcp::resolver::iterator endpointIterator = resolver.resolve(query);
     
     tcp::socket socket(ioService);
