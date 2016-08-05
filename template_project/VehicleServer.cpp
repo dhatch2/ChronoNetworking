@@ -203,7 +203,7 @@ int main(int argc, char* argv[]) {
     // force it to playback the driver inputs.
     if (driver_mode == PLAYBACK) {
         driver.SetInputDataFile(driver_file);
-        driver.SetInputMode(ChIrrGuiDriverJoystick::DATAFILE);
+        driver.SetInputMode(ChIrrGuiDriver::DATAFILE);
     }
 
     driver.Initialize();
