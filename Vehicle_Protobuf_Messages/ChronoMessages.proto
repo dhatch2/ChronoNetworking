@@ -31,3 +31,9 @@ message VehicleMessage {
 	required MQuaternion BackRightWheelRot = 13;
 	required MQuaternion BackLeftWheelRot = 14;
 }
+
+message SectionMessage {
+	required int32 xCoord = 1;
+	required int32 yCoord = 2;
+	repeated VehicleMessage message = 3;
+}

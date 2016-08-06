@@ -36,6 +36,7 @@ void protobuf_ShutdownFile_ChronoMessages_2eproto();
 class VehicleMessage;
 class VehicleMessage_MVector;
 class VehicleMessage_MQuaternion;
+class SectionMessage;
 
 // ===================================================================
 
@@ -476,6 +477,108 @@ class VehicleMessage : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static VehicleMessage* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class SectionMessage : public ::google::protobuf::Message {
+ public:
+  SectionMessage();
+  virtual ~SectionMessage();
+
+  SectionMessage(const SectionMessage& from);
+
+  inline SectionMessage& operator=(const SectionMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SectionMessage& default_instance();
+
+  void Swap(SectionMessage* other);
+
+  // implements Message ----------------------------------------------
+
+  SectionMessage* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const SectionMessage& from);
+  void MergeFrom(const SectionMessage& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int32 xCoord = 1;
+  inline bool has_xcoord() const;
+  inline void clear_xcoord();
+  static const int kXCoordFieldNumber = 1;
+  inline ::google::protobuf::int32 xcoord() const;
+  inline void set_xcoord(::google::protobuf::int32 value);
+
+  // required int32 yCoord = 2;
+  inline bool has_ycoord() const;
+  inline void clear_ycoord();
+  static const int kYCoordFieldNumber = 2;
+  inline ::google::protobuf::int32 ycoord() const;
+  inline void set_ycoord(::google::protobuf::int32 value);
+
+  // repeated .ChronoMessages.VehicleMessage message = 3;
+  inline int message_size() const;
+  inline void clear_message();
+  static const int kMessageFieldNumber = 3;
+  inline const ::ChronoMessages::VehicleMessage& message(int index) const;
+  inline ::ChronoMessages::VehicleMessage* mutable_message(int index);
+  inline ::ChronoMessages::VehicleMessage* add_message();
+  inline const ::google::protobuf::RepeatedPtrField< ::ChronoMessages::VehicleMessage >&
+      message() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ChronoMessages::VehicleMessage >*
+      mutable_message();
+
+  // @@protoc_insertion_point(class_scope:ChronoMessages.SectionMessage)
+ private:
+  inline void set_has_xcoord();
+  inline void clear_has_xcoord();
+  inline void set_has_ycoord();
+  inline void clear_has_ycoord();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::int32 xcoord_;
+  ::google::protobuf::int32 ycoord_;
+  ::google::protobuf::RepeatedPtrField< ::ChronoMessages::VehicleMessage > message_;
+  friend void  protobuf_AddDesc_ChronoMessages_2eproto();
+  friend void protobuf_AssignDesc_ChronoMessages_2eproto();
+  friend void protobuf_ShutdownFile_ChronoMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static SectionMessage* default_instance_;
 };
 // ===================================================================
 
@@ -1164,6 +1267,88 @@ inline void VehicleMessage::set_allocated_backleftwheelrot(::ChronoMessages::Veh
     clear_has_backleftwheelrot();
   }
   // @@protoc_insertion_point(field_set_allocated:ChronoMessages.VehicleMessage.BackLeftWheelRot)
+}
+
+// -------------------------------------------------------------------
+
+// SectionMessage
+
+// required int32 xCoord = 1;
+inline bool SectionMessage::has_xcoord() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SectionMessage::set_has_xcoord() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void SectionMessage::clear_has_xcoord() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void SectionMessage::clear_xcoord() {
+  xcoord_ = 0;
+  clear_has_xcoord();
+}
+inline ::google::protobuf::int32 SectionMessage::xcoord() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.SectionMessage.xCoord)
+  return xcoord_;
+}
+inline void SectionMessage::set_xcoord(::google::protobuf::int32 value) {
+  set_has_xcoord();
+  xcoord_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.SectionMessage.xCoord)
+}
+
+// required int32 yCoord = 2;
+inline bool SectionMessage::has_ycoord() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void SectionMessage::set_has_ycoord() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void SectionMessage::clear_has_ycoord() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void SectionMessage::clear_ycoord() {
+  ycoord_ = 0;
+  clear_has_ycoord();
+}
+inline ::google::protobuf::int32 SectionMessage::ycoord() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.SectionMessage.yCoord)
+  return ycoord_;
+}
+inline void SectionMessage::set_ycoord(::google::protobuf::int32 value) {
+  set_has_ycoord();
+  ycoord_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.SectionMessage.yCoord)
+}
+
+// repeated .ChronoMessages.VehicleMessage message = 3;
+inline int SectionMessage::message_size() const {
+  return message_.size();
+}
+inline void SectionMessage::clear_message() {
+  message_.Clear();
+}
+inline const ::ChronoMessages::VehicleMessage& SectionMessage::message(int index) const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.SectionMessage.message)
+  return message_.Get(index);
+}
+inline ::ChronoMessages::VehicleMessage* SectionMessage::mutable_message(int index) {
+  // @@protoc_insertion_point(field_mutable:ChronoMessages.SectionMessage.message)
+  return message_.Mutable(index);
+}
+inline ::ChronoMessages::VehicleMessage* SectionMessage::add_message() {
+  // @@protoc_insertion_point(field_add:ChronoMessages.SectionMessage.message)
+  return message_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ChronoMessages::VehicleMessage >&
+SectionMessage::message() const {
+  // @@protoc_insertion_point(field_list:ChronoMessages.SectionMessage.message)
+  return message_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ChronoMessages::VehicleMessage >*
+SectionMessage::mutable_message() {
+  // @@protoc_insertion_point(field_mutable_list:ChronoMessages.SectionMessage.message)
+  return &message_;
 }
 
 

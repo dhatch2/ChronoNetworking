@@ -73,7 +73,7 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     // Setting up socket
     std::vector<std::thread> clientConnections;
     boost::asio::io_service ioService;
-    boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 1300));
+    boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
     
     // Making function for listener threads
     std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*, boost::asio::ip::tcp::socket*, int)> connectionFunc = processConnection;
@@ -114,8 +114,10 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     
     // Pushes addVehicle to queue so that the vehicle may be added to the world
     std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-    queue.push([&world, vehicle] { world.addVehicle(0, 0, *vehicle); });
+    queue.push([&world, vehicle] { world.addVehicle(0, 0, vehicle); });
     delete guard;
+    
+    while(world.getSection(0, 0).find(connectionNumber) == world.getSection(0, 0).end());
     
     while(true) {
         // Responds to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.

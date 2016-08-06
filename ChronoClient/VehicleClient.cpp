@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
     // Setup socket and connect to network
         boost::asio::io_service ioService;
         tcp::resolver resolver(ioService);
-        tcp::resolver::query query("128.104.191.115", "8082");
+        tcp::resolver::query query("gore", "8082"); // Change to the correct port and ip address
         tcp::resolver::iterator endpointIterator = resolver.resolve(query);
 
         tcp::socket socket(ioService);
@@ -308,14 +308,15 @@ int main(int argc, char* argv[]) {
                     if(count > 1) {
                         boost::asio::streambuf worldBuffer;
                         std::istream inStream(&worldBuffer);
-                        socket.receive(worldBuffer.prepare(count * 512));
-                        worldBuffer.commit(count * 512);
+                        socket.receive(worldBuffer.prepare(count * 361));
+                        worldBuffer.commit(count * 361);
 
                         std::vector<ChronoMessages::VehicleMessage> worldVehicles;
 
                         for(int i = 0; i < count - 1; i++) {
                             ChronoMessages::VehicleMessage worldVehicle;
                             worldVehicle.ParseFromIstream(&inStream);
+                            //std::cout << worldVehicle.ByteSize() << std::endl;
                             //std::cout << worldVehicle.DebugString() << std::endl;
                             //worldBuffer.consume(worldVehicle.ByteSize());
                             worldVehicles.push_back(worldVehicle);
@@ -323,7 +324,7 @@ int main(int argc, char* argv[]) {
 
                         //std::cout << worldVehicles.size() << " vehicles" << endl;
 
-                        worldBuffer.consume(count * 512);
+                        worldBuffer.consume(count * 361);
 
                         for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
                             if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
