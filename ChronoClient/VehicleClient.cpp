@@ -20,6 +20,7 @@
 // =============================================================================
 
 #include <iostream>
+#include <thread>
 #include <ctime>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
@@ -112,6 +113,9 @@ void messageFromVector(ChronoMessages::VehicleMessage_MVector* message, ChVector
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message, ChQuaternion<> quaternion);
 void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages::VehicleMessage& message);
 
+// Listening thread function
+void listenToServer(std::map<int, ChronoMessages::VehicleMessage>& worldVehicles, tcp::socket& socket);
+
 // =============================================================================
 
 int main(int argc, char* argv[]) {
@@ -153,6 +157,7 @@ int main(int argc, char* argv[]) {
     // Create other vehicles from network -- Work on this.
     //std::map<int, WheeledVehicle> otherVehicles; // Creating more wheeled vehicles is less efficient.
     std::map<int, std::shared_ptr<ChBody>> otherVehicles;
+    std::map<int, ChronoMessages::VehicleMessage> worldVehicles;
 
     // Create the vehicle Irrlicht interface
     ChWheeledVehicleIrrApp app(&my_hmmwv.GetVehicle(), &my_hmmwv.GetPowertrain(), L"HMMWV Demo");
@@ -222,32 +227,34 @@ int main(int argc, char* argv[]) {
     int step_number = 0;
     int render_frame = 0;
     double time = 0;
-
+    
     // Setup socket and connect to network
-        boost::asio::io_service ioService;
-        tcp::resolver resolver(ioService);
-        tcp::resolver::query query("gore", "8082"); // Change to the correct port and ip address
-        tcp::resolver::iterator endpointIterator = resolver.resolve(query);
+    boost::asio::io_service ioService;
+    tcp::resolver resolver(ioService);
+    tcp::resolver::query query("gore", "8082"); // Change to the correct port and ip address
+    tcp::resolver::iterator endpointIterator = resolver.resolve(query);
 
-        tcp::socket socket(ioService);
-        //socket.connect(endpoint);
-        boost::asio::connect(socket, endpointIterator);
+    tcp::socket socket(ioService);
+    //socket.connect(endpoint);
+    boost::asio::connect(socket, endpointIterator);
 
-        // Receive the connection number for vehicle identification purposes
-        char* connectionBuff = (char *)malloc(sizeof(int));
-        socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
-        int connectionNumber = *(int *)connectionBuff;
-        std::cout << "Connection number: " << connectionNumber << std::endl;
+    // Receive the connection number for vehicle identification purposes
+    char* connectionBuff = (char *)malloc(sizeof(int));
+    socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
+    int connectionNumber = *(int *)connectionBuff;
+    std::cout << "Connection number: " << connectionNumber << std::endl;
 
-        // Create output buffer and ostream
-        boost::asio::streambuf buff;
-        std::ostream outStream(&buff);
-
-        // Number of steps to wait before updating the server on the vehicle's location
-        int send_steps = render_steps;
-
-        // Number of external vehicles in the world
-        int count = 0;
+    // Create output buffer and ostream
+    boost::asio::streambuf buff;
+    std::ostream outStream(&buff);
+    
+    // Creating listener thread
+    std::function<void(std::map<int, ChronoMessages::VehicleMessage>&, tcp::socket&)> listenFunc = listenToServer;
+    std::thread listener(listenFunc, std::ref(worldVehicles), std::ref(socket));
+    std::cout << "New thread created" << std::endl;
+    
+    // Number of steps to wait before updating the server on the vehicle's location
+    int send_steps = render_steps;
 
     while (app.GetDevice()->run()) {
         time = my_hmmwv.GetSystem()->GetChTime();
@@ -297,66 +304,48 @@ int main(int argc, char* argv[]) {
                 if (step_number % send_steps == 0) {
                     ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), connectionNumber);
                     message.SerializeToOstream(&outStream);
+                    std::cout << "About to send" << std::endl;
                     boost::asio::write(socket, buff);
+                    std::cout << "sent" << std::endl;
                     buff.consume(message.ByteSize());
 
-                    char* countBuff = (char *)malloc(sizeof(int));
-                    socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
-                    int count = *(int *)countBuff;
+                    //char* countBuff = (char *)malloc(sizeof(int));
+                    //socket.read_some(boost::asio::buffer(countBuff, sizeof(int)));
+                    //int count = *(int *)countBuff;
                     //std::cout << "World count: " << count << std::endl;
 
-                    if(count > 1) {
-                        boost::asio::streambuf worldBuffer;
-                        std::istream inStream(&worldBuffer);
-                        socket.receive(worldBuffer.prepare(count * 361));
-                        worldBuffer.commit(count * 361);
-
-                        std::vector<ChronoMessages::VehicleMessage> worldVehicles;
-
-                        for(int i = 0; i < count - 1; i++) {
-                            ChronoMessages::VehicleMessage worldVehicle;
-                            worldVehicle.ParseFromIstream(&inStream);
-                            //std::cout << worldVehicle.ByteSize() << std::endl;
-                            //std::cout << worldVehicle.DebugString() << std::endl;
-                            //worldBuffer.consume(worldVehicle.ByteSize());
-                            worldVehicles.push_back(worldVehicle);
-                        }
-
-                        //std::cout << worldVehicles.size() << " vehicles" << endl;
-
-                        worldBuffer.consume(count * 361);
-
-                        for (ChronoMessages::VehicleMessage worldVehicle : worldVehicles) {
-                            if (otherVehicles.find(worldVehicle.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
-
+                    //if(count > 1) {
+                        for (std::pair<int, ChronoMessages::VehicleMessage> worldPair : worldVehicles) {
+                            if (otherVehicles.find(worldPair.second.vehicleid()) == otherVehicles.end()) { // If the vehicle isn't found
+                                // Add a vehicle to the world
                                 auto chassis = std::make_shared<ChBody>();
-                            chassis->SetPos(ChVector<>(0, 0, 0));
-                                //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
-                            chassis->SetBodyFixed(true);
-                            my_hmmwv.GetVehicle().GetSystem()->Add(chassis);
-                            geometry::ChTriangleMeshConnected mmeshbox;
-                            mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
+                                chassis->SetPos(ChVector<>(0, 0, 0));
+                                    //chassis->SetRot(Q_from_AngAxis(90, {0,0,1}));
+                                chassis->SetBodyFixed(true);
+                                my_hmmwv.GetVehicle().GetSystem()->Add(chassis);
+                                geometry::ChTriangleMeshConnected mmeshbox;
+                                mmeshbox.LoadWavefrontMesh(GetChronoDataFile("vehicle/hmmwv/hmmwv_chassis_simple.obj"),false,false);
 
-                            chassis->GetCollisionModel()->ClearModel();
-                            chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
-                            chassis->GetCollisionModel()->BuildModel();
-                            chassis->SetCollide(false);
+                                chassis->GetCollisionModel()->ClearModel();
+                                chassis->GetCollisionModel()->AddTriangleMesh(mmeshbox,false, false, VNULL, ChMatrix33<>(1), 0.005);
+                                chassis->GetCollisionModel()->BuildModel();
+                                chassis->SetCollide(false);
 
-                            //auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
-                            //masset_meshbox->SetMesh(mmeshbox);
-                            //chassis->AddAsset(masset_meshbox);
+                                //auto masset_meshbox = std::make_shared<ChTriangleMeshShape>();
+                                //masset_meshbox->SetMesh(mmeshbox);
+                                //chassis->AddAsset(masset_meshbox);
 
-                            auto sphere = std::make_shared<ChSphereShape>();
-                            sphere->GetSphereGeometry().rad = 0.1;
-                            //sphere->Pos = m_chassisCOM;
-                            chassis->AddAsset(sphere);
+                                auto sphere = std::make_shared<ChSphereShape>();
+                                sphere->GetSphereGeometry().rad = 0.1;
+                                //sphere->Pos = m_chassisCOM;
+                                chassis->AddAsset(sphere);
 
 
-                            auto color = std::make_shared<ChColorAsset>();
-                            color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
-                            chassis->AddAsset(color);
+                                auto color = std::make_shared<ChColorAsset>();
+                                color->SetColor(ChColor(0.0f, 1.0f, 0.0f));
+                                chassis->AddAsset(color);
 
-                            otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldVehicle.vehicleid(), chassis));
+                                otherVehicles.insert(std::pair<int, std::shared_ptr<ChBody>>(worldPair.second.vehicleid(), chassis));
 
                                 // Screwy, less efficient version
                                 /*WheeledVehicle otherVehicle(vehicle.GetSystem(), vehicle::GetDataFile(vehicle_file));
@@ -372,9 +361,9 @@ int main(int argc, char* argv[]) {
                                 app.AssetBindAll();
                                 app.AssetUpdateAll();
                             }
-                            generateChassisFromMessage(otherVehicles.at(worldVehicle.vehicleid()), worldVehicle);
+                            generateChassisFromMessage(otherVehicles.at(worldPair.second.vehicleid()), worldPair.second);
                         }
-                    }
+                    //}
                 }
 
         // Advance simulation for one timestep for all modules
@@ -391,6 +380,8 @@ int main(int argc, char* argv[]) {
     if (driver_mode == RECORD) {
         driver_csv.write_to_file(driver_file);
     }
+    
+    listener.join();
 
     return 0;
 }
@@ -445,4 +436,24 @@ void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages:
 
     vehicle->SetPos(ChVector<>(message.chassiscom().x(), message.chassiscom().y(), message.chassiscom().z()));
     vehicle->SetRot(ChQuaternion<>(message.chassisrot().e0(), message.chassisrot().e1(), message.chassisrot().e2(), message.chassisrot().e3()));
+}
+
+void listenToServer(std::map<int, ChronoMessages::VehicleMessage>& worldVehicles, tcp::socket& socket) {
+    while(socket.is_open()) {
+        boost::asio::streambuf worldBuffer;
+        std::istream inStream(&worldBuffer);
+        socket.receive(worldBuffer.prepare(361));
+
+        worldBuffer.commit(361);
+        ChronoMessages::VehicleMessage worldVehicle;
+        worldVehicle.ParseFromIstream(&inStream);
+        //std::cout << worldVehicle.ByteSize() << std::endl;
+        //std::cout << worldVehicle.DebugString() << std::endl;
+        //worldBuffer.consume(worldVehicle.ByteSize());
+        worldVehicles[worldVehicle.vehicleid()] = worldVehicle;
+
+        //std::cout << worldVehicles.size() << " vehicles" << endl;
+
+        //worldBuffer.consume(count * 361);
+    }
 }

@@ -121,19 +121,19 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
     
     while(true) {
         // Responds to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.
-        int count = world.numVehicles();
-        char* countBuff = (char *)&count;
-        boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
+        //int count = world.numVehicles();
+        //char* countBuff = (char *)&count;
+        //boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
         //std::cout << "Count sent: " << count << std::endl;
-        boost::asio::streambuf worldBuffer;
-        std::ostream outStream(&worldBuffer);
         
-        for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0))
-            if(worldPair.second.vehicleid() != connectionNumber)
+        for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0)){
+            if(worldPair.second.vehicleid() != connectionNumber){
+                boost::asio::streambuf worldBuffer;
+                std::ostream outStream(&worldBuffer);
                 worldPair.second.SerializeToOstream(&outStream);
-        
-        if(count > 1)
-            boost::asio::write(*socket, worldBuffer);
+                boost::asio::write(*socket, worldBuffer);
+            }
+        }
         
         std::istream inStream(&buffer);
         
