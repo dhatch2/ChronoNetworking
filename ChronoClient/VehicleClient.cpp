@@ -304,9 +304,9 @@ int main(int argc, char* argv[]) {
                 if (step_number % send_steps == 0) {
                     ChronoMessages::VehicleMessage message = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), connectionNumber);
                     message.SerializeToOstream(&outStream);
-                    std::cout << "About to send" << std::endl;
+                    //std::cout << "About to send" << std::endl;
                     boost::asio::write(socket, buff);
-                    std::cout << "sent" << std::endl;
+                    //std::cout << "sent" << std::endl;
                     buff.consume(message.ByteSize());
 
                     //char* countBuff = (char *)malloc(sizeof(int));
@@ -381,10 +381,11 @@ int main(int argc, char* argv[]) {
         driver_csv.write_to_file(driver_file);
     }
     
+    socket.close();
     listener.join();
-
     return 0;
 }
+
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber) {
     ChronoMessages::VehicleMessage message;
 

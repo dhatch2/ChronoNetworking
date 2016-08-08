@@ -18,7 +18,7 @@ public:
     void updateVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message);
     
     // Removes the vehicle with the id from the world.
-    void removeVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message);
+    void removeVehicle(int sectionX, int sectionY, int id);
     
     // The number of vehicles in the world.
     int numVehicles();

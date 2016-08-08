@@ -38,8 +38,8 @@ void World::updateVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMes
     //std::cout << "Section size: " << sectionGrid[sectionX][sectionY].size() << std::endl;
 }
 
-void World::removeVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message) {
-    sectionGrid[sectionX][sectionY].erase(message.vehicleid());
+void World::removeVehicle(int sectionX, int sectionY, int id) {
+    sectionGrid[sectionX][sectionY].erase(id);
     numVehicles_--;
 }
 

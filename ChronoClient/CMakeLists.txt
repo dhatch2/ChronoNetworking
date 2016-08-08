@@ -21,6 +21,8 @@ project(ChronoClient)
 SET(MODEL_FILES    
     ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
     ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+    WorldVehicle.cpp
+    WorldVehicle.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
