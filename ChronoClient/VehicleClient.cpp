@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
     // Setup socket and connect to network
     boost::asio::io_service ioService;
     tcp::resolver resolver(ioService);
-    tcp::resolver::query query("gore", "8082"); // Change to the correct port and ip address
+    tcp::resolver::query query(argv[1], "8082"); // Change to the correct port and ip address
     tcp::resolver::iterator endpointIterator = resolver.resolve(query);
 
     tcp::socket socket(ioService);
@@ -441,10 +441,14 @@ void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle, ChronoMessages:
 
 void listenToServer(std::map<int, ChronoMessages::VehicleMessage>& worldVehicles, tcp::socket& socket) {
     while(socket.is_open()) {
+        uint8_t messageCode;
+        socket.receive(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+        //std::cout << (int)messageCode << std::endl;
+        
         boost::asio::streambuf worldBuffer;
         std::istream inStream(&worldBuffer);
         socket.receive(worldBuffer.prepare(361));
-
+        std::cout << "Received" << std::endl;
         worldBuffer.commit(361);
         ChronoMessages::VehicleMessage worldVehicle;
         worldVehicle.ParseFromIstream(&inStream);
