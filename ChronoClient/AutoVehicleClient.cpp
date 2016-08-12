@@ -32,6 +32,7 @@
 #include "ChronoMessages.pb.h"
 #include "ServerVehicle.h"
 
+#include <memory>
 #include <vector>
 
 #include "chrono/core/ChFileutils.h"
@@ -40,6 +41,7 @@
 #include "chrono/physics/ChSystem.h"
 #include "chrono/utils/ChUtilsInputOutput.h"
 
+#include "ChBodyFollowerDriver.h"
 #include "chrono_vehicle/ChConfigVehicle.h"
 #include "chrono_vehicle/ChVehicleModelData.h"
 #include "chrono_vehicle/driver/ChDataDriver.h"
@@ -47,6 +49,8 @@
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 #include "models/vehicle/hmmwv/HMMWV.h"
+
+#include "ChRaySensor.h"
 using namespace chrono;
 using namespace chrono::vehicle;
 using namespace chrono::vehicle::hmmwv;
@@ -115,6 +119,8 @@ void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
                        ChVector<> vector);
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
                            ChQuaternion<> quaternion);
+void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle,
+                                ChronoMessages::VehicleMessage& message);
 
 // Listening thread function
 void listenToServer(
@@ -139,6 +145,16 @@ int main(int argc, char* argv[]) {
   my_hmmwv.SetTireType(tire_model);
   my_hmmwv.SetTireStepSize(tire_step_size);
   my_hmmwv.Initialize();
+
+  // create the lidar
+  std::shared_ptr<ChRaySensor> lidar =
+      std::make_shared<ChRaySensor>(my_hmmwv.GetChassis(), 30, true);
+  lidar->Initialize(chrono::ChCoordsys<double>(
+                        chrono::ChVector<double>({2.3, 0, 0}),  // offset x,y,z
+                        chrono::ChQuaternion<double>(Q_from_NasaAngles(
+                            {0, 0, 0}))),  // offset yaw,roll,pitch
+                    1,
+                    100, 0, 0, -1.5, 1.5, .2, 25);
 
   // Create the terrain
   RigidTerrain terrain(my_hmmwv.GetSystem());
@@ -209,23 +225,26 @@ int main(int argc, char* argv[]) {
   // ------------------------
   // Create the driver system
   // ------------------------
+  std::cout << "making driver target" << std::endl;
+  auto target = std::make_shared<ChBody>();
+  std::cout << "done" << std::endl;
 
   // Create the interactive driver system
-  ChIrrGuiDriver driver(app);
+  ChBodyFollowerDriver driver(my_hmmwv.GetVehicle(), *target, 80, 3, 10, 3);
   // Set the time response for steering and throttle keyboard inputs.
   double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
   double throttle_time = 1.0;  // time to go from 0 to +1
   double braking_time = 0.3;   // time to go from 0 to +1
-  driver.SetSteeringDelta(render_step_size / steering_time);
-  driver.SetThrottleDelta(render_step_size / throttle_time);
-  driver.SetBrakingDelta(render_step_size / braking_time);
+  //  driver.SetSteeringDelta(render_step_size / steering_time);
+  //  driver.SetThrottleDelta(render_step_size / throttle_time);
+  //  driver.SetBrakingDelta(render_step_size / braking_time);
 
   // If in playback mode, attach the data file to the driver system and
   // force it to playback the driver inputs.
-  if (driver_mode == PLAYBACK) {
-    driver.SetInputDataFile(driver_file);
-    driver.SetInputMode(ChIrrGuiDriver::DATAFILE);
-  }
+  //  if (driver_mode == PLAYBACK) {
+  //    driver.SetInputDataFile(driver_file);
+  //    driver.SetInputMode(ChIrrGuiDriver::DATAFILE);
+  //  }
 
   driver.Initialize();
 
@@ -320,8 +339,8 @@ int main(int argc, char* argv[]) {
     terrain.Synchronize(time);
     my_hmmwv.Synchronize(time, steering_input, braking_input, throttle_input,
                          terrain);
-    app.Synchronize(driver.GetInputModeAsString(), steering_input,
-                    throttle_input, braking_input);
+    app.Synchronize("AUTONOMOUS", steering_input, throttle_input,
+                    braking_input);
 
     // Send vehicle message TODO: Make vehicles that are actually updated by
     // received messages.
@@ -338,7 +357,7 @@ int main(int argc, char* argv[]) {
       // if(count > 1) {
       for (std::pair<int, ChronoMessages::VehicleMessage> worldPair :
            worldVehicles) {
-        if (otherVehicles.find(worldPair.first) ==
+        if (otherVehicles.find(worldPair.second.vehicleid()) ==
             otherVehicles.end()) {  // If the vehicle isn't found
           // Add a vehicle to the world
           auto newVehicle = std::make_shared<ServerVehicle>(
@@ -346,16 +365,24 @@ int main(int argc, char* argv[]) {
 
           otherVehicles.insert(std::pair<int, std::shared_ptr<ServerVehicle>>(
               worldPair.second.vehicleid(), newVehicle));
+          if (connectionNumber != 0 &&
+              connectionNumber == worldPair.second.vehicleid() + 1) {
+            std::cout << "Setting Target" << std::endl;
+
+            driver.SetTarget(*newVehicle->m_chassis);
+          }
 
           app.AssetBindAll();
           app.AssetUpdateAll();
-          newVehicle->update(worldPair.second);
         }
-        otherVehicles[worldPair.first]->update(worldPair.second);
+        otherVehicles.at(worldPair.second.vehicleid())
+            ->update(worldPair.second);
       }
     }
 
     // Advance simulation for one timestep for all modules
+    lidar->Update();
+    driver.SetCurrentDistance(lidar->GetMinRange());
     double step = realtime_timer.SuggestSimulationStep(step_size);
     driver.Advance(step);
     terrain.Advance(step);
@@ -442,5 +469,3 @@ void listenToServer(
     worldVehicles[worldVehicle.vehicleid()] = worldVehicle;
   }
 }
-
-// std::cout << worldVehicles.size() << " vehicles" << endl;

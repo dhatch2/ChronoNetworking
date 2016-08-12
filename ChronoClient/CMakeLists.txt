@@ -7,7 +7,15 @@
 # user project.  Modify sections 1, 2, and 3 below as appropriate.
 # 
 #--------------------------------------------------------------
- 
+
+#-----------------------------------------------------------------------------
+# Enable C++11 support
+#-----------------------------------------------------------------------------
+
+#find_package(ModernCXX)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
+
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -19,10 +27,14 @@ cmake_minimum_required(VERSION 2.8)
 project(ChronoClient)
 
 SET(MODEL_FILES    
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
-    WorldVehicle.cpp
-    WorldVehicle.h
+../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
+../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+ServerVehicle.cpp
+ChRaySensor.cpp
+ChRayShape.cpp
+ChSensor.cpp
+ChBodyFollowerDriver.cpp
+ChBodyFollowerSteeringController.cpp
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -68,16 +80,16 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 #--------------------------------------------------------------
 
 find_package(Chrono
-             COMPONENTS Irrlicht Vehicle
-             CONFIG)
+COMPONENTS Irrlicht Vehicle
+CONFIG)
 
 #--------------------------------------------------------------
 # Return now if Chrono or a required component was not found.
 #--------------------------------------------------------------
 
 if (NOT Chrono_FOUND)
-  message("Could not find Chrono or one of its required modules")
-  return()
+message("Could not find Chrono or one of its required modules")
+return()
 endif()
 
 
@@ -96,11 +108,11 @@ include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Mess
 # Tweaks to disable some warnings with MSVC
 #--------------------------------------------------------------
 if(MSVC)
-    add_definitions("-D_CRT_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    add_definitions("-D_SCL_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    set(EXTRA_COMPILE_FLAGS "/wd4275")             # disable warnings triggered by Irrlicht
+add_definitions("-D_CRT_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
+add_definitions("-D_SCL_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
+set(EXTRA_COMPILE_FLAGS "/wd4275")             # disable warnings triggered by Irrlicht
 else()
-    set(EXTRA_COMPILE_FLAGS "")
+set(EXTRA_COMPILE_FLAGS "")
 endif()
 
 #--------------------------------------------------------------
@@ -110,6 +122,7 @@ endif()
 #--------------------------------------------------------------
 
 add_executable(ChronoClient VehicleClient.cpp ${MODEL_FILES})
+add_executable(AutoClient AutoVehicleClient.cpp ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -121,15 +134,20 @@ add_executable(ChronoClient VehicleClient.cpp ${MODEL_FILES})
 #--------------------------------------------------------------
 
 set_target_properties(ChronoClient PROPERTIES 
-	    COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-	    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-	    LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+set_target_properties(AutoClient PROPERTIES 
+COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 
 #--------------------------------------------------------------
 # Link to Chrono libraries and dependency libraries   ----  Added boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
 
 target_link_libraries(ChronoClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
+target_link_libraries(AutoClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===
