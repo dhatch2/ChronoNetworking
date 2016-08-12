@@ -127,9 +127,13 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             //boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
             //std::cout << "Count sent: " << count << std::endl;
             
+            uint8_t messageCode = 1;
+            
             for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0)){
                 if(worldPair.second.vehicleid() != connectionNumber){
                     if(worldPair.second.IsInitialized()){
+                        socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+                        
                         boost::asio::streambuf worldBuffer;
                         std::ostream outStream(&worldBuffer);
                         worldPair.second.SerializeToOstream(&outStream);
