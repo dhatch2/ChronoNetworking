@@ -19,10 +19,10 @@ void raiseInt(int& i, int n) {
 }
 
 // Start of the listener thread
-void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex);
+void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex);
 
 // Start of the client connection handling thread
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex, boost::asio::ip::tcp::socket* socket, int connectionNumber);
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber);
 
 int main(int argc, char **argv)
 {
@@ -39,11 +39,11 @@ int main(int argc, char **argv)
     std::queue<std::function<void()>> worldQueue;
     worldQueue.push(std::bind(raiseInt, std::ref(i), 2));
     worldQueue.push(std::bind(printNum, std::ref(i)));
-    std::mutex* queueMutex = new std::mutex();
+    std::shared_ptr<std::mutex> queueMutex = std::make_shared<std::mutex>();
     
     World world(1, 1);
     
-    std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*)> listenerFunc = listenForConnection;
+    std::function<void(World&, std::queue<std::function<void()>>&, std::shared_ptr<std::mutex>)> listenerFunc = listenForConnection;
     std::thread listener(listenerFunc, std::ref(world), std::ref(worldQueue), queueMutex);
     
     std::cout << "World queue processing is about to start." << std::endl;
@@ -64,7 +64,7 @@ void printNum(int num) {
     std::cout << num << std::endl;
 }
 
-void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex) {
+void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex) {
     std::cout << "Listener thread started" << std::endl;
     
     // Used to give vehicles unique id numbers
@@ -76,10 +76,10 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
     
     // Making function for listener threads
-    std::function<void(World&, std::queue<std::function<void()>>&, std::mutex*, boost::asio::ip::tcp::socket*, int)> connectionFunc = processConnection;
+    std::function<void(World&, std::queue<std::function<void()>>&, std::shared_ptr<std::mutex>, std::shared_ptr<boost::asio::ip::tcp::socket>, int)> connectionFunc = processConnection;
     while(true) {
         // Deletion of this socket is done in the client connection thread
-        boost::asio::ip::tcp::socket* socket = new boost::asio::ip::tcp::socket(ioService);
+        std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioService);
         std::cout << "About to listen" << std::endl;
         acceptor.accept(*socket);
         std::cout << "Accepted Connection" << std::endl;
@@ -93,7 +93,7 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
         clientConnections[i].join();
 }
 
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::mutex* queueMutex, boost::asio::ip::tcp::socket* socket, int connectionNumber) {
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber) {
     std::cout << "Processing connection" << std::endl;
     
     try {
@@ -106,7 +106,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         
         // Receives Initial state of the vehicle
         //std::cout << "Parsing vehicle..." << std::endl;
-        ChronoMessages::VehicleMessage* vehicle = new ChronoMessages::VehicleMessage();
+        std::shared_ptr<ChronoMessages::VehicleMessage> vehicle = std::make_shared<ChronoMessages::VehicleMessage>();
         socket->receive(buffer.prepare(512));
         buffer.commit(512);
         vehicle->ParseFromIstream(&startStream);
@@ -115,7 +115,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         
         // Pushes addVehicle to queue so that the vehicle may be added to the world
         std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-        queue.push([&world, vehicle] { world.addVehicle(0, 0, vehicle); });
+        queue.push([&world, vehicle] { world.addVehicle(0, 0, vehicle.get()); });
         delete guard;
         
         while(world.getSection(0, 0).find(connectionNumber) == world.getSection(0, 0).end());
