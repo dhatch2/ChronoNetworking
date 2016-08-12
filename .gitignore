@@ -17,6 +17,8 @@
 *.a
 BoostNetworking.workspace
 *.codelite
+*.project 
+*.cproject
 template_project-build/
 *-build/
 */Debug
