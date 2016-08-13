@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
   boost::asio::io_service ioService;
   tcp::resolver resolver(ioService);
   tcp::resolver::query query(
-      "argv[1]",
+      argv[1],
       "8082");  // Change to the correct port and ip address
   tcp::resolver::iterator endpointIterator = resolver.resolve(query);
 
