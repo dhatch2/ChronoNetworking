@@ -27,14 +27,15 @@ cmake_minimum_required(VERSION 2.8)
 project(ChronoClient)
 
 SET(MODEL_FILES    
-../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
-ServerVehicle.cpp
-ChRaySensor.cpp
-ChRayShape.cpp
-ChSensor.cpp
-ChBodyFollowerDriver.cpp
-ChBodyFollowerSteeringController.cpp
+	../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
+	../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+	../Vehicle_Protobuf_Messages/MessageCodes.h
+	ServerVehicle.cpp
+	ChRaySensor.cpp
+	ChRayShape.cpp
+	ChSensor.cpp
+	ChBodyFollowerDriver.cpp
+	ChBodyFollowerSteeringController.cpp
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})

@@ -20,7 +20,8 @@ project(ChronoServer)
 
 SET(MODEL_FILES    
     ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc	
+    ../Vehicle_Protobuf_Messages/MessageCodes.h
     main.cpp
     World.cpp
     World.h

@@ -11,6 +11,7 @@
 
 #include "World.h"
 #include "ChronoMessages.pb.h"
+#include "MessageCodes.h"
 
 void printNum(int num);
 

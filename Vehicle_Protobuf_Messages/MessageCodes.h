@@ -1,0 +1,9 @@
+#ifndef MESSAGECODES_H
+#define MESSAGECODES_H
+
+#define NULL_MESSAGE 0
+#define VEHICLE_MESSAGE 1
+#define VEHICLE_MESSAGE_END 2
+#define VEHICLE_ID 3
+
+#endif
