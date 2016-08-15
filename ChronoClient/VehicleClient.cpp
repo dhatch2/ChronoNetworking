@@ -337,13 +337,12 @@ int main(int argc, char* argv[]) {
             buff.consume(message.ByteSize());
 
             // if(count > 1) {
-            for (std::pair<int, ChronoMessages::VehicleMessage> worldPair :
-                    worldVehicles) {
+            for (std::pair<int, ChronoMessages::VehicleMessage> worldPair : worldVehicles) {
                 if (otherVehicles.find(worldPair.first) ==
                         otherVehicles.end()) {  // If the vehicle isn't found
                     // Add a vehicle to the world
                     auto newVehicle = std::make_shared<ServerVehicle>(
-                                          *my_hmmwv.GetVehicle().GetSystem());
+                                          my_hmmwv.GetVehicle().GetSystem());
 
                     otherVehicles.insert(std::pair<int, std::shared_ptr<ServerVehicle>>(
                                              worldPair.second.vehicleid(), newVehicle));
@@ -353,6 +352,14 @@ int main(int argc, char* argv[]) {
                     newVehicle->update(worldPair.second);
                 }
                 otherVehicles[worldPair.first]->update(worldPair.second);
+            }
+            
+            // Removing vehicles that have not received an update
+            for(std::map<int, std::shared_ptr<ServerVehicle>>::iterator it = otherVehicles.begin(); it != otherVehicles.end();) {
+                if(worldVehicles.find(it->first) == worldVehicles.end()){
+                    it = otherVehicles.erase(it);
+                    std::cout << "Vehicle removed" << std::endl;
+                } else ++it;
             }
         }
 
@@ -424,21 +431,44 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
 }
 
 void listenToServer(std::map<int, ChronoMessages::VehicleMessage>& worldVehicles, tcp::socket& socket) {
+    std::set<uint32_t> vehicleIds;
     while (socket.is_open()) {
         uint8_t messageCode;
         socket.receive(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
         // std::cout << (int)messageCode << std::endl;
-
-        boost::asio::streambuf worldBuffer;
-        std::istream inStream(&worldBuffer);
-        socket.receive(worldBuffer.prepare(361));
-        worldBuffer.commit(361);
-        ChronoMessages::VehicleMessage worldVehicle;
-        worldVehicle.ParseFromIstream(&inStream);
-        // std::cout << worldVehicle.ByteSize() << std::endl;
-        // std::cout << worldVehicle.DebugString() << std::endl;
-        // worldBuffer.consume(worldVehicle.ByteSize());
-        worldVehicles[worldVehicle.vehicleid()] = worldVehicle;
+        
+        switch(messageCode) {
+            // Normal vehicle message receiving
+            case VEHICLE_MESSAGE: {
+                boost::asio::streambuf worldBuffer;
+                std::istream inStream(&worldBuffer);
+                socket.receive(worldBuffer.prepare(361));
+                worldBuffer.commit(361);
+                ChronoMessages::VehicleMessage worldVehicle;
+                worldVehicle.ParseFromIstream(&inStream);
+                worldVehicles[worldVehicle.vehicleid()] = worldVehicle;
+                vehicleIds.insert(worldVehicle.vehicleid());
+                break;
+            }
+            // For the last vehicle in a group. Removes all vehicles that didn't receive updates.
+            case VEHICLE_MESSAGE_END: {
+                for(std::map<int, ChronoMessages::VehicleMessage>::iterator it = worldVehicles.begin(); it != worldVehicles.end();) {
+                    if(vehicleIds.find(it->first) == vehicleIds.end()){
+                        it = worldVehicles.erase(it);
+                        std::cout << "Vehicle removed" << std::endl;
+                    } else ++it;
+                }
+                vehicleIds.erase(vehicleIds.begin(), vehicleIds.end());
+                break;
+            }
+            // If the whole message cannot be sent, the server just sends the id so that the client knows to keep the vehicle.
+            case VEHICLE_ID: {
+                uint32_t id;
+                socket.receive(boost::asio::buffer(&id, sizeof(uint32_t)));
+                vehicleIds.insert(id);
+                break;
+            }
+        }
     }
 }
 

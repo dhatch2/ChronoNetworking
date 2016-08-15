@@ -7,7 +7,7 @@
 
 using namespace chrono;
 
-ServerVehicle::ServerVehicle(ChSystem& system) {
+ServerVehicle::ServerVehicle(ChSystem* system) {
   std::cout << "Creating new ServerVehicle" << std::endl;
   m_chassis = std::make_shared<ChBody>();
   m_chassis->SetBodyFixed(true);
@@ -29,7 +29,7 @@ ServerVehicle::ServerVehicle(ChSystem& system) {
     tex->SetTextureFilename(GetChronoDataFile("bluwhite.png"));
     wheel->AddAsset(tex);
     m_wheels.push_back(wheel);
-    system.Add(wheel);
+    system->Add(wheel);
   }
 
   auto sphere = std::make_shared<ChSphereShape>();
@@ -42,11 +42,20 @@ ServerVehicle::ServerVehicle(ChSystem& system) {
   auto tex = std::make_shared<ChTexture>();
   tex->SetTextureFilename(GetChronoDataFile("pinkwhite.png"));
   m_chassis->AddAsset(tex);
-  system.Add(m_chassis);
-  system.Add(m_hitbox);
+  system->Add(m_chassis);
+  system->Add(m_hitbox);
+  m_system = system;
 }
 ServerVehicle::~ServerVehicle() {
   std::cout << "Destroying ServerVehicle" << std::endl;
+  for(std::shared_ptr<ChBody> wheel : m_wheels)
+      m_system->RemoveBody(wheel);
+  m_system->RemoveBody(m_hitbox);
+  m_system->RemoveBody(m_chassis);
+}
+
+ChBody& ServerVehicle::GetChassis() {
+    return *m_chassis;
 }
 
 void ServerVehicle::update(ChronoMessages::VehicleMessage& message) {

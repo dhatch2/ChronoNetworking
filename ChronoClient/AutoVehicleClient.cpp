@@ -361,7 +361,7 @@ int main(int argc, char* argv[]) {
             otherVehicles.end()) {  // If the vehicle isn't found
           // Add a vehicle to the world
           auto newVehicle = std::make_shared<ServerVehicle>(
-              *my_hmmwv.GetVehicle().GetSystem());
+              my_hmmwv.GetVehicle().GetSystem());
 
           otherVehicles.insert(std::pair<int, std::shared_ptr<ServerVehicle>>(
               worldPair.second.vehicleid(), newVehicle));
@@ -369,7 +369,7 @@ int main(int argc, char* argv[]) {
               connectionNumber == worldPair.second.vehicleid() + 1) {
             std::cout << "Setting Target" << std::endl;
 
-            driver.SetTarget(*newVehicle->m_chassis);
+            driver.SetTarget(newVehicle->GetChassis());
           }
 
           app.AssetBindAll();

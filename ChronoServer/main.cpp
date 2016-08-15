@@ -128,11 +128,13 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             //boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
             //std::cout << "Count sent: " << count << std::endl;
             
-            uint8_t messageCode = 1;
-            
-            for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : world.getSection(0, 0)){
-                if(worldPair.second.vehicleid() != connectionNumber){
-                    if(worldPair.second.IsInitialized()){
+            uint8_t messageCode = VEHICLE_MESSAGE;
+            std::map<int, ChronoMessages::VehicleMessage>& section = world.getSection(0, 0);
+            for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : section) {
+                if(worldPair.second.vehicleid() != connectionNumber) {
+                    if(worldPair.second.IsInitialized()) {
+                        // If this is the last element, then the message code should reflect that.
+                        messageCode = VEHICLE_MESSAGE;
                         socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
                         
                         boost::asio::streambuf worldBuffer;
@@ -141,9 +143,16 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
                         boost::asio::write(*socket, worldBuffer);
                     } else {
                         std::cout << "Serialization Error" << std::endl;
+                        messageCode = VEHICLE_ID;
+                        socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+                        uint32_t id = vehicle->vehicleid();
+                        socket->send(boost::asio::buffer(&id, sizeof(uint32_t)));
                     }
                 }
             }
+            
+            messageCode = VEHICLE_MESSAGE_END;
+            socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
             
             std::istream inStream(&buffer);
             
