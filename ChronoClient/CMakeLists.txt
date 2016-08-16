@@ -36,6 +36,8 @@ SET(MODEL_FILES
 	ChSensor.cpp
 	ChBodyFollowerDriver.cpp
 	ChBodyFollowerSteeringController.cpp
+	ChClient.cpp
+	ChClient.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
