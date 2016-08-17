@@ -6,4 +6,6 @@
 #define VEHICLE_MESSAGE_END 2
 #define VEHICLE_ID 3
 
+#define VEHICLE_MESSAGE_TYPE "ChronoMessages.VehicleMessage"
+
 #endif

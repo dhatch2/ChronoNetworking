@@ -13,12 +13,6 @@
 #include "ChronoMessages.pb.h"
 #include "MessageCodes.h"
 
-void printNum(int num);
-
-void raiseInt(int& i, int n) {
-    i += n;
-}
-
 // Start of the listener thread
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex);
 
@@ -27,19 +21,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
 
 int main(int argc, char **argv)
 {
-	std::function<void(int)> func = std::bind(printNum, std::placeholders::_1);
-    
-    int i = 0;
-    std::thread th(func, i);
-    std::thread th1(func, i + 1);
-    std::thread th2(func, i + 2);
-    th.join();
-    th1.join();
-    th2.join();
-    
     std::queue<std::function<void()>> worldQueue;
-    worldQueue.push(std::bind(raiseInt, std::ref(i), 2));
-    worldQueue.push(std::bind(printNum, std::ref(i)));
     std::shared_ptr<std::mutex> queueMutex = std::make_shared<std::mutex>();
     
     World world(1, 1);
@@ -50,19 +32,12 @@ int main(int argc, char **argv)
     std::cout << "World queue processing is about to start." << std::endl;
     while(true) {
         if (!worldQueue.empty()){
-            //std::cout << "About to call front function" << std::endl;
             worldQueue.front()();
-            //std::cout << "About to pop" << std::endl;
             worldQueue.pop();
-            //std::cout << "Popped" << std::endl;
         }
     }
     listener.join();
 	return 0;
-}
-// zero mq or just a standard queue. Or look up an atomic queue implementation.
-void printNum(int num) {
-    std::cout << num << std::endl;
 }
 
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex) {
@@ -102,17 +77,18 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         char* connectionBuff = (char *)&connectionNumber;
         boost::asio::write(*socket, boost::asio::buffer(connectionBuff, sizeof(int)));
         
+        uint8_t receivingCode;
         boost::asio::streambuf buffer;
         std::istream startStream(&buffer);
         
         // Receives Initial state of the vehicle
-        //std::cout << "Parsing vehicle..." << std::endl;
+        socket->receive(boost::asio::buffer(&receivingCode, sizeof(uint8_t)));
+        
         std::shared_ptr<ChronoMessages::VehicleMessage> vehicle = std::make_shared<ChronoMessages::VehicleMessage>();
-        socket->receive(buffer.prepare(512));
-        buffer.commit(512);
+        socket->receive(buffer.prepare(361));
+        buffer.commit(361);
         vehicle->ParseFromIstream(&startStream);
         buffer.consume(vehicle->ByteSize());
-        //std::cout << vehicle->DebugString() << std::endl;
         
         // Pushes addVehicle to queue so that the vehicle may be added to the world
         std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
@@ -128,7 +104,6 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : section) {
                 if(worldPair.second.vehicleid() != connectionNumber) {
                     if(worldPair.second.IsInitialized()) {
-                        // If this is the last element, then the message code should reflect that.
                         messageCode = VEHICLE_MESSAGE;
                         socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
                         
@@ -151,14 +126,14 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             
             std::istream inStream(&buffer);
             
-            // Receives update on vehicle
-            //std::cout << "Parsing vehicle..." << std::endl;
-            socket->receive(buffer.prepare(512));
-            buffer.commit(512);
+            // Receives update message
+            socket->receive(boost::asio::buffer(&receivingCode, sizeof(uint8_t)));
+            
+            socket->receive(buffer.prepare(361));
+            buffer.commit(361);
             vehicle->ParseFromIstream(&inStream);
             buffer.consume(vehicle->ByteSize());
-            //std::cout << vehicle->DebugString() << std::endl;
-            //std::cout << "Debug string should have printed" << std::endl;
+            
             // Pushes updateVehicle to queue to update the vehicle state in the world
             std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
             queue.push([&world, vehicle] { world.updateVehicle(0, 0, *vehicle); });

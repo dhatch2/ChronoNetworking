@@ -69,7 +69,7 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
                 }
                 // If the whole message cannot be sent, the server just sends the id so that the client knows to keep the vehicle.
                 case VEHICLE_ID: {
-                    uint32_t id;
+                    int32_t id;
                     m_socket.receive(boost::asio::buffer(&id, sizeof(uint32_t)));
                     vehicleIds.insert(id);
                     break;
@@ -80,6 +80,11 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
 }
 
 void ChClient::sendMessage(std::shared_ptr<google::protobuf::Message> message) {
+    uint8_t messageCode;
+    if(message->GetTypeName() == VEHICLE_MESSAGE_TYPE)
+        messageCode = VEHICLE_MESSAGE;
+    m_socket.send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+    
     message->SerializeToOstream(&m_outStream);
     boost::asio::write(m_socket, m_buff);
     m_buff.consume(message->ByteSize());

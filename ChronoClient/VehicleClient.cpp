@@ -248,7 +248,7 @@ int main(int argc, char* argv[]) {
     
     // Number of steps to wait before updating the server on the vehicle's
     // location
-    int send_steps = render_steps;
+    int send_steps = 1;//render_steps / 5;
 
     while (app.GetDevice()->run()) {
         time = my_hmmwv.GetSystem()->GetChTime();
@@ -325,7 +325,7 @@ int main(int argc, char* argv[]) {
             
             // Removing vehicles that have not received an update
             for(std::map<int, std::shared_ptr<ServerVehicle>>::iterator it = otherVehicles.begin(); it != otherVehicles.end();) {
-                if(worldVehicles.find(it->first) == worldVehicles.end()){
+                if(worldVehicles.find(it->first) == worldVehicles.end()) {
                     it = otherVehicles.erase(it);
                     std::cout << "Vehicle removed" << std::endl;
                 } else ++it;

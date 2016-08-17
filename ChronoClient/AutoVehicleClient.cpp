@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
 
   // Number of steps to wait before updating the server on the vehicle's
   // location
-  int send_steps = render_steps;
+  int send_steps = 1;//render_steps / 5;
 
   while (app.GetDevice()->run()) {
     time = my_hmmwv.GetSystem()->GetChTime();
