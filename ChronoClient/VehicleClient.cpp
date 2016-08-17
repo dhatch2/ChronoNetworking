@@ -246,7 +246,6 @@ int main(int argc, char* argv[]) {
     client.connectToServer(argv[1], "8082");
     client.asyncListen(worldVehicles);
     
-
     // Number of steps to wait before updating the server on the vehicle's
     // location
     int send_steps = render_steps;
@@ -298,8 +297,7 @@ int main(int argc, char* argv[]) {
         app.Synchronize(driver.GetInputModeAsString(), steering_input,
                         throttle_input, braking_input);
 
-        // Send vehicle message TODO: Make vehicles that are actually updated by
-        // received messages.
+        // Send vehicle message
         if (step_number % send_steps == 0) {
             std::shared_ptr<google::protobuf::Message> message = std::make_shared<ChronoMessages::VehicleMessage>();
             message->MergeFrom(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(),

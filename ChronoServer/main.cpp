@@ -123,11 +123,6 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         
         while(socket->is_open()) {
             // Responds to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.
-            //int count = world.numVehicles();
-            //char* countBuff = (char *)&count;
-            //boost::asio::write(*socket, boost::asio::buffer(countBuff, sizeof(int)));
-            //std::cout << "Count sent: " << count << std::endl;
-            
             uint8_t messageCode = VEHICLE_MESSAGE;
             std::map<int, ChronoMessages::VehicleMessage>& section = world.getSection(0, 0);
             for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : section) {
@@ -171,7 +166,9 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         }
     } catch (std::exception& error) {
         std::cout << error.what() << std::endl;
-        world.removeVehicle(0, 0, connectionNumber);
-        //socket->close();
+        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+        queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
+        delete guard;
+        socket->close();
     }
 }

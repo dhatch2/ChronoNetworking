@@ -31,6 +31,7 @@
 #include <thread>
 #include "ChronoMessages.pb.h"
 #include "ServerVehicle.h"
+#include "ChClient.h"
 
 #include <memory>
 #include <vector>
@@ -122,11 +123,6 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
 void generateChassisFromMessage(std::shared_ptr<ChBody> vehicle,
                                 ChronoMessages::VehicleMessage& message);
 
-// Listening thread function
-void listenToServer(
-    std::map<int, ChronoMessages::VehicleMessage>& worldVehicles,
-    tcp::socket& socket);
-
 // =============================================================================
 
 int main(int argc, char* argv[]) {
@@ -184,7 +180,7 @@ int main(int argc, char* argv[]) {
   // std::map<int, WheeledVehicle> otherVehicles; // Creating more wheeled
   // vehicles is less efficient.
   std::map<int, std::shared_ptr<ServerVehicle>> otherVehicles;
-  std::map<int, ChronoMessages::VehicleMessage> worldVehicles;
+  std::map<int, std::shared_ptr<google::protobuf::Message>> worldVehicles;
 
   // Create the vehicle Irrlicht interface
   ChWheeledVehicleIrrApp app(&my_hmmwv.GetVehicle(), &my_hmmwv.GetPowertrain(),
@@ -262,34 +258,11 @@ int main(int argc, char* argv[]) {
   int render_frame = 0;
   double time = 0;
 
-  // Setup socket and connect to network
+  // Setup client object and connect to network
   boost::asio::io_service ioService;
-  tcp::resolver resolver(ioService);
-  tcp::resolver::query query(
-      argv[1],
-      "8082");  // Change to the correct port and ip address
-  tcp::resolver::iterator endpointIterator = resolver.resolve(query);
-
-  tcp::socket socket(ioService);
-  // socket.connect(endpoint);
-  boost::asio::connect(socket, endpointIterator);
-
-  // Receive the connection number for vehicle identification purposes
-  char* connectionBuff = (char*)malloc(sizeof(int));
-  socket.read_some(boost::asio::buffer(connectionBuff, sizeof(int)));
-  int connectionNumber = *(int*)connectionBuff;
-  std::cout << "Connection number: " << connectionNumber << std::endl;
-
-  // Create output buffer and ostream
-  boost::asio::streambuf buff;
-  std::ostream outStream(&buff);
-
-  // Creating listener thread
-  std::function<void(std::map<int, ChronoMessages::VehicleMessage>&,
-                     tcp::socket&)>
-      listenFunc = listenToServer;
-  std::thread listener(listenFunc, std::ref(worldVehicles), std::ref(socket));
-  std::cout << "New thread created" << std::endl;
+  ChClient client(&ioService);
+  client.connectToServer(argv[1], "8082");
+  client.asyncListen(worldVehicles);
 
   // Number of steps to wait before updating the server on the vehicle's
   // location
@@ -342,31 +315,25 @@ int main(int argc, char* argv[]) {
     app.Synchronize("AUTONOMOUS", steering_input, throttle_input,
                     braking_input);
 
-    // Send vehicle message TODO: Make vehicles that are actually updated by
-    // received messages.
+    // Send vehicle message
     if (step_number % send_steps == 0) {
-      ChronoMessages::VehicleMessage message =
-          generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(),
-                                                   connectionNumber);
-      message.SerializeToOstream(&outStream);
-      // std::cout << "About to send" << std::endl;
-      boost::asio::write(socket, buff);
-      // std::cout << "sent" << std::endl;
-      buff.consume(message.ByteSize());
+      std::shared_ptr<google::protobuf::Message> message = std::make_shared<ChronoMessages::VehicleMessage>();
+      message->MergeFrom(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(),
+                client.connectionNumber()));
+      client.sendMessage(message);
 
-      // if(count > 1) {
-      for (std::pair<int, ChronoMessages::VehicleMessage> worldPair :
+      for (std::pair<int, std::shared_ptr<google::protobuf::Message>> worldPair :
            worldVehicles) {
-        if (otherVehicles.find(worldPair.second.vehicleid()) ==
+        if (otherVehicles.find(worldPair.first) ==
             otherVehicles.end()) {  // If the vehicle isn't found
           // Add a vehicle to the world
           auto newVehicle = std::make_shared<ServerVehicle>(
               my_hmmwv.GetVehicle().GetSystem());
 
           otherVehicles.insert(std::pair<int, std::shared_ptr<ServerVehicle>>(
-              worldPair.second.vehicleid(), newVehicle));
-          if (connectionNumber != 0 &&
-              connectionNumber == worldPair.second.vehicleid() + 1) {
+              worldPair.first, newVehicle));
+          if (client.connectionNumber() != 0 &&
+              client.connectionNumber() == worldPair.first + 1) {
             std::cout << "Setting Target" << std::endl;
 
             driver.SetTarget(newVehicle->GetChassis());
@@ -375,8 +342,15 @@ int main(int argc, char* argv[]) {
           app.AssetBindAll();
           app.AssetUpdateAll();
         }
-        otherVehicles.at(worldPair.second.vehicleid())
-            ->update(worldPair.second);
+        otherVehicles[worldPair.first]->update((ChronoMessages::VehicleMessage&)(*worldPair.second));
+      }
+      
+      // Removing vehicles that have not received an update
+      for(std::map<int, std::shared_ptr<ServerVehicle>>::iterator it = otherVehicles.begin(); it != otherVehicles.end();) {
+        if(worldVehicles.find(it->first) == worldVehicles.end()){
+          it = otherVehicles.erase(it);
+          std::cout << "Vehicle removed" << std::endl;
+        } else ++it;
       }
     }
 
@@ -397,8 +371,6 @@ int main(int argc, char* argv[]) {
     driver_csv.write_to_file(driver_file);
   }
 
-  socket.close();
-  listener.join();
   return 0;
 }
 
@@ -447,25 +419,4 @@ void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
   message->set_e1(quaternion.e1);
   message->set_e2(quaternion.e2);
   message->set_e3(quaternion.e3);
-}
-
-void listenToServer(
-    std::map<int, ChronoMessages::VehicleMessage>& worldVehicles,
-    tcp::socket& socket) {
-  while (socket.is_open()) {
-    uint8_t messageCode;
-    socket.receive(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
-    // std::cout << (int)messageCode << std::endl;
-
-    boost::asio::streambuf worldBuffer;
-    std::istream inStream(&worldBuffer);
-    socket.receive(worldBuffer.prepare(361));
-    worldBuffer.commit(361);
-    ChronoMessages::VehicleMessage worldVehicle;
-    worldVehicle.ParseFromIstream(&inStream);
-    // std::cout << worldVehicle.ByteSize() << std::endl;
-    // std::cout << worldVehicle.DebugString() << std::endl;
-    // worldBuffer.consume(worldVehicle.ByteSize());
-    worldVehicles[worldVehicle.vehicleid()] = worldVehicle;
-  }
 }
