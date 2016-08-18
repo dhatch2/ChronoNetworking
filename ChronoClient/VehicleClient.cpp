@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
     ChClient client(&ioService);
     client.connectToServer(argv[1], "8082");
     client.asyncListen(worldVehicles);
-    
+    std::cout << "Connection Number: " << client.connectionNumber() << std::endl;
     // Number of steps to wait before updating the server on the vehicle's
     // location
     int send_steps = 1;//render_steps / 5;

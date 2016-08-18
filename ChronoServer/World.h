@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 #include "ChronoMessages.pb.h"
 
 class World
@@ -12,10 +13,10 @@ public:
     ~World();
     
     // Adds a vehicle to the specified section.
-    void addVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage* message);
+    void addVehicle(int sectionX, int sectionY, std::shared_ptr<ChronoMessages::VehicleMessage> message);
     
     // Updates the status of a vehicle.
-    void updateVehicle(int sectionX, int sectionY, ChronoMessages::VehicleMessage message);
+    void updateVehicle(int sectionX, int sectionY, std::shared_ptr<ChronoMessages::VehicleMessage> message);
     
     // Removes the vehicle with the id from the world.
     void removeVehicle(int sectionX, int sectionY, int id);
@@ -23,11 +24,10 @@ public:
     // The number of vehicles in the world.
     int numVehicles();
     
-    std::map<int, ChronoMessages::VehicleMessage>& getSection(int sectionX, int sectionY);
+    std::map<int, std::shared_ptr<ChronoMessages::VehicleMessage>>& getSection(int sectionX, int sectionY);
 private:
     // Each section of the world has a mapping of the vehicles within it.
-    std::vector<std::vector<std::map<int, ChronoMessages::VehicleMessage>>> sectionGrid;
-    std::vector<std::vector<ChronoMessages::SectionMessage>> sectionMessages;
+    std::vector<std::vector<std::map<int, std::shared_ptr<ChronoMessages::VehicleMessage>>>> sectionGrid;
     
     int numVehicles_;
     // Possibly add a map for world objects?

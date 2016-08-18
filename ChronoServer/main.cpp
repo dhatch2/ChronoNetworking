@@ -84,32 +84,37 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         // Receives Initial state of the vehicle
         socket->receive(boost::asio::buffer(&receivingCode, sizeof(uint8_t)));
         
-        std::shared_ptr<ChronoMessages::VehicleMessage> vehicle = std::make_shared<ChronoMessages::VehicleMessage>();
+        std::shared_ptr<ChronoMessages::VehicleMessage> newVehicle = std::make_shared<ChronoMessages::VehicleMessage>();
         socket->receive(buffer.prepare(361));
         buffer.commit(361);
-        vehicle->ParseFromIstream(&startStream);
-        buffer.consume(vehicle->ByteSize());
+        newVehicle->ParseFromIstream(&startStream);
+        buffer.consume(newVehicle->ByteSize());
         
         // Pushes addVehicle to queue so that the vehicle may be added to the world
-        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-        queue.push([&world, vehicle] { world.addVehicle(0, 0, vehicle.get()); });
-        delete guard;
-        
-        while(world.getSection(0, 0).find(connectionNumber) == world.getSection(0, 0).end());
+        // The client only has one chance to identify it's connection number correctly
+        if(newVehicle->vehicleid() == connectionNumber) {
+            std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+            queue.push([&world, newVehicle] { world.addVehicle(0, 0, newVehicle); });
+            delete guard;
+            
+            while(world.getSection(0, 0).find(connectionNumber) == world.getSection(0, 0).end());
+        } else socket->close();
         
         while(socket->is_open()) {
             // Responds to client with all other serialized vehicles in the world. Edit demo to add the vehicles to its system.
+            std::shared_ptr<ChronoMessages::VehicleMessage> vehicle = std::make_shared<ChronoMessages::VehicleMessage>();
+            
             uint8_t messageCode = VEHICLE_MESSAGE;
-            std::map<int, ChronoMessages::VehicleMessage>& section = world.getSection(0, 0);
-            for(std::pair<const int, ChronoMessages::VehicleMessage> worldPair : section) {
-                if(worldPair.second.vehicleid() != connectionNumber) {
-                    if(worldPair.second.IsInitialized()) {
+            std::map<int, std::shared_ptr<ChronoMessages::VehicleMessage>>& section = world.getSection(0, 0);
+            for(std::pair<const int, std::shared_ptr<ChronoMessages::VehicleMessage>> worldPair : section) {
+                if(worldPair.first != connectionNumber) {
+                    if(worldPair.second->IsInitialized()) {
                         messageCode = VEHICLE_MESSAGE;
                         socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
                         
                         boost::asio::streambuf worldBuffer;
                         std::ostream outStream(&worldBuffer);
-                        worldPair.second.SerializeToOstream(&outStream);
+                        worldPair.second->SerializeToOstream(&outStream);
                         boost::asio::write(*socket, worldBuffer);
                     } else {
                         std::cout << "Serialization Error" << std::endl;
@@ -135,9 +140,12 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             buffer.consume(vehicle->ByteSize());
             
             // Pushes updateVehicle to queue to update the vehicle state in the world
-            std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-            queue.push([&world, vehicle] { world.updateVehicle(0, 0, *vehicle); });
-            delete guard;
+            // If the id does not correspond to the connection number, it is not updated
+            if(vehicle->vehicleid() == connectionNumber) {
+                std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+                queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); });
+                delete guard;
+            } else std::cout << "Update Error" << std::endl;
         }
     } catch (std::exception& error) {
         std::cout << error.what() << std::endl;
