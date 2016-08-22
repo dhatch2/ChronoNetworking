@@ -1,8 +1,5 @@
 #include "ServerVehicle.h"
-#include <memory>
 #include "chrono/assets/ChTexture.h"
-#include "chrono/physics/ChSystem.h"
-#include "chrono/utils/ChUtilsInputOutput.h"
 #define VEH_NUM_WHEELS 4
 
 using namespace chrono;

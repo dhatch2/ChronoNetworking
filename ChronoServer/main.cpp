@@ -4,6 +4,8 @@
 #include <queue>
 #include <mutex>
 #include <typeinfo>
+#include <chrono>
+#include <time.h>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -13,11 +15,16 @@
 #include "ChronoMessages.pb.h"
 #include "MessageCodes.h"
 
+#define HEARTBEAT_LENGTH 1
+
 // Start of the listener thread
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex);
 
 // Start of the client connection handling thread
 void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber);
+
+// Sends the heartbeat to all clients, independent of their thread states
+void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>>& sockets);
 
 int main(int argc, char **argv)
 {
@@ -46,27 +53,55 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     // Used to give vehicles unique id numbers
     int connectionNumber = 0;
     
-    // Setting up socket
+    // Setting up acceptor
     std::vector<std::thread> clientConnections;
     boost::asio::io_service ioService;
     boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
     
+    // Setting up a vector for the sockets
+    std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>> sockets;
+    
     // Making function for listener threads
     std::function<void(World&, std::queue<std::function<void()>>&, std::shared_ptr<std::mutex>, std::shared_ptr<boost::asio::ip::tcp::socket>, int)> connectionFunc = processConnection;
+    
+    // Making thread for the heartbeat
+    std::function<void(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>>&)> regulate = regulateHeartbeat;
+    std::thread pacer(regulate, std::ref(sockets));
+    
     while(true) {
-        // Deletion of this socket is done in the client connection thread
+        // Deletion of this socket is done automatically
         std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioService);
         std::cout << "About to listen" << std::endl;
         acceptor.accept(*socket);
+        sockets.push_back(socket);
         std::cout << "Accepted Connection" << std::endl;
         
         // Creates new thread for the client connection here
         clientConnections.emplace_back(connectionFunc, std::ref(world), std::ref(queue), queueMutex, socket, connectionNumber);
         connectionNumber++;
     }
+    // Join heartbeat
+    pacer.join();
+    
     // Joins all the threads back to the listener thread
     for(uint i = 0; i < clientConnections.size(); i++)
         clientConnections[i].join();
+}
+
+void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>>& sockets) {
+    // Making timer for heartbeat
+    try {
+        while(true) {
+            std::this_thread::sleep_for(std::chrono::seconds(HEARTBEAT_LENGTH));
+            for(std::shared_ptr<boost::asio::ip::tcp::socket> socket : sockets) {
+                uint8_t messageCode = HEARTBEAT;
+                if(socket->is_open())
+                    socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+            }
+        }
+    } catch (std::exception& error) {
+        std::cout << error.what() << std::endl;
+    }
 }
 
 void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber) {
@@ -134,18 +169,32 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             // Receives update message
             socket->receive(boost::asio::buffer(&receivingCode, sizeof(uint8_t)));
             
-            socket->receive(buffer.prepare(361));
-            buffer.commit(361);
-            vehicle->ParseFromIstream(&inStream);
-            buffer.consume(vehicle->ByteSize());
-            
-            // Pushes updateVehicle to queue to update the vehicle state in the world
-            // If the id does not correspond to the connection number, it is not updated
-            if(vehicle->vehicleid() == connectionNumber) {
-                std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-                queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); });
-                delete guard;
-            } else std::cout << "Update Error" << std::endl;
+            switch(receivingCode) {
+                case VEHICLE_MESSAGE: {
+                    socket->receive(buffer.prepare(361));
+                    buffer.commit(361);
+                    vehicle->ParseFromIstream(&inStream);
+                    buffer.consume(vehicle->ByteSize());
+                    
+                    // Pushes updateVehicle to queue to update the vehicle state in the world
+                    // If the id does not correspond to the connection number, it is not updated
+                    if(vehicle->vehicleid() == connectionNumber) {
+                        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+                        queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); });
+                        delete guard;
+                    } else std::cout << "Update Error" << std::endl;
+                    break;
+                }
+                
+                case DISCONNECT_MESSAGE: {
+                    std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+                    queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
+                    delete guard;
+                    socket->close();
+                    std::cout << "Vehicle Removed" << std::endl;
+                    break;
+                }
+            }
         }
     } catch (std::exception& error) {
         std::cout << error.what() << std::endl;

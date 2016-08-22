@@ -242,12 +242,12 @@ int main(int argc, char* argv[]) {
 
     // Setup client object and connect to network
     boost::asio::io_service ioService;
-    ChClient client(&ioService);
+    ChClient client(&ioService, &step_size);
     client.connectToServer(argv[1], "8082");
     client.asyncListen(worldVehicles);
     std::cout << "Connection Number: " << client.connectionNumber() << std::endl;
-    // Number of steps to wait before updating the server on the vehicle's
-    // location
+    
+    // Number of steps to wait before updating the server on the vehicle's location 
     int send_steps = 1;//render_steps / 5;
 
     while (app.GetDevice()->run()) {
@@ -333,15 +333,20 @@ int main(int argc, char* argv[]) {
         }
 
         // Advance simulation for one timestep for all modules
+        app.SetTimestep(step_size); ////////////////////////////////////////// Some experimental stuff.
         double step = realtime_timer.SuggestSimulationStep(step_size);
         driver.Advance(step);
         terrain.Advance(step);
         my_hmmwv.Advance(step);
         app.Advance(step);
-
+        client.Advance(step);
+        render_steps = (int)std::ceil(render_step_size / step_size);
+        
         // Increment frame number
         step_number++;
     }
+    
+    client.disconnect();
 
     if (driver_mode == RECORD) {
         driver_csv.write_to_file(driver_file);

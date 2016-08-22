@@ -1,10 +1,15 @@
 #include "ChClient.h"
 
-ChClient::ChClient(boost::asio::io_service* ioService)
+ChClient::ChClient(boost::asio::io_service* ioService, double* stepSize)
     : m_socket(*ioService), m_outStream(&m_buff)
 {
     m_ioService = ioService;
     m_connectionNumber = -1;
+    m_heartrate = 1.0;
+    lastHeartbeat = clock();
+    m_stepSize = stepSize;
+    stepsElapsed = 0;
+    secondsElapsed = 0.0;
 }
 
 ChClient::~ChClient()
@@ -74,18 +79,45 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
                     vehicleIds.insert(id);
                     break;
                 }
+                // Calculate the heartrate from the heartbeat
+                case HEARTBEAT: {
+                    m_heartrate = (clock() - lastHeartbeat) / (double) CLOCKS_PER_SEC;
+                    lastHeartbeat = clock();
+                    
+                    /*if (secondsElapsed < m_heartrate/10 - 0.001)
+                        *m_stepSize += 0.0001;
+                    else if (secondsElapsed > m_heartrate/10 + 0.001)
+                        *m_stepSize -= 0.0001;*/
+                    
+                    //std::cout << "Steps elapsed: " << stepsElapsed << std::endl;
+                    stepsElapsed = 0;
+                    secondsElapsed = 0.0;
+                    break;
+                }
             }
         }
     });
 }
 
 void ChClient::sendMessage(std::shared_ptr<google::protobuf::Message> message) {
-    uint8_t messageCode;
-    if(message->GetTypeName() == VEHICLE_MESSAGE_TYPE)
-        messageCode = VEHICLE_MESSAGE;
+    uint8_t messageCode = VEHICLE_MESSAGE;
     m_socket.send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
     
     message->SerializeToOstream(&m_outStream);
     boost::asio::write(m_socket, m_buff);
     m_buff.consume(message->ByteSize());
+}
+
+void ChClient::disconnect() {
+    uint8_t messageCode = DISCONNECT_MESSAGE;
+    m_socket.send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+}
+
+double ChClient::heartrate() {
+    return m_heartrate;
+}
+
+void ChClient::Advance(double step) {
+    secondsElapsed += step;
+    stepsElapsed++;
 }

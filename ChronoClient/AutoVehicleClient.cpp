@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
 
   // Setup client object and connect to network
   boost::asio::io_service ioService;
-  ChClient client(&ioService);
+  ChClient client(&ioService, &step_size);
   client.connectToServer(argv[1], "8082");
   client.asyncListen(worldVehicles);
 
@@ -366,6 +366,8 @@ int main(int argc, char* argv[]) {
     // Increment frame number
     step_number++;
   }
+
+  client.disconnect();
 
   if (driver_mode == RECORD) {
     driver_csv.write_to_file(driver_file);

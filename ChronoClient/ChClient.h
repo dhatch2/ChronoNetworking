@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <thread>
+#include <time.h>
 #include <google/protobuf/message.h>
 #include <boost/asio.hpp>
 
@@ -12,7 +13,7 @@
 class ChClient
 {
 public:
-    ChClient(boost::asio::io_service* ioService);
+    ChClient(boost::asio::io_service* ioService, double* stepSize);
     ~ChClient();
     
     // Getter for the connection number
@@ -26,7 +27,14 @@ public:
     
     // Blocks until message has been serialized and sent over socket
     void sendMessage(std::shared_ptr<google::protobuf::Message> message);
-
+    
+    // Disconnect from the ChronoServer
+    void disconnect();
+    
+    // Gets the current heartrate
+    double heartrate();
+    
+    void Advance(double step);
 private:
     boost::asio::io_service* m_ioService;
     boost::asio::ip::tcp::socket m_socket;
@@ -34,6 +42,11 @@ private:
     std::shared_ptr<std::thread> listener;
     boost::asio::streambuf m_buff;
     std::ostream m_outStream;
+    double m_heartrate;
+    double* m_stepSize;
+    clock_t lastHeartbeat;
+    double secondsElapsed;
+    int stepsElapsed;
 };
 
 #endif // CHCLIENT_H
