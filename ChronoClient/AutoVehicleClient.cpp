@@ -49,7 +49,7 @@
 #include "chrono_vehicle/driver/ChIrrGuiDriver.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
-#include "models/vehicle/hmmwv/HMMWV.h"
+#include "chrono_models/vehicle/hmmwv/HMMWV.h"
 
 #include "ChRaySensor.h"
 using namespace chrono;
@@ -71,16 +71,16 @@ enum DriverMode { DEFAULT, RECORD, PLAYBACK };
 DriverMode driver_mode = DEFAULT;
 
 // Visualization type for chassis & wheels (PRIMITIVES, MESH, or NONE)
-VisualizationType vis_type = PRIMITIVES;
+VisualizationType vis_type = VisualizationType::PRIMITIVES;
 
 // Type of powertrain model (SHAFTS, SIMPLE)
-PowertrainModelType powertrain_model = SHAFTS;
+PowertrainModelType powertrain_model = PowertrainModelType::SHAFTS;
 
 // Drive type (FWD, RWD, or AWD)
-DrivelineType drive_type = AWD;
+DrivelineType drive_type = DrivelineType::AWD;
 
 // Type of tire model (RIGID, PACEJKA, LUGRE, FIALA)
-TireModelType tire_model = RIGID;
+TireModelType tire_model = TireModelType::RIGID;
 
 // Rigid terrain
 RigidTerrain::Type terrain_model = RigidTerrain::FLAT;
@@ -133,8 +133,8 @@ int main(int argc, char* argv[]) {
   // Create the HMMWV vehicle, set parameters, and initialize
   HMMWV_Full my_hmmwv;
   my_hmmwv.SetChassisFixed(false);
-  my_hmmwv.SetChassisVis(vis_type);
-  my_hmmwv.SetWheelVis(vis_type);
+  my_hmmwv.SetChassisVisualizationType(vis_type);
+  my_hmmwv.SetWheelVisualizationType(vis_type);
   my_hmmwv.SetInitPosition(ChCoordsys<>(initLoc, initRot));
   my_hmmwv.SetPowertrainType(powertrain_model);
   my_hmmwv.SetDriveType(drive_type);
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
 
   // create the lidar
   std::shared_ptr<ChRaySensor> lidar =
-      std::make_shared<ChRaySensor>(my_hmmwv.GetChassis(), 30, true);
+      std::make_shared<ChRaySensor>(my_hmmwv.GetChassis()->GetBody(), 30, true);
   lidar->Initialize(chrono::ChCoordsys<double>(
                         chrono::ChVector<double>({2.3, 0, 0}),  // offset x,y,z
                         chrono::ChQuaternion<double>(Q_from_NasaAngles(
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
 
   // Create the terrain
   RigidTerrain terrain(my_hmmwv.GetSystem());
-  terrain.SetContactMaterial(0.9f, 0.01f, 2e7f, 0.3f);
+  terrain.SetContactMaterialCoefficients(0.9f, 0.01f, 2e7f, 0.3f);
   terrain.SetColor(ChColor(0.8f, 0.8f, 0.5f));
   switch (terrain_model) {
     case RigidTerrain::FLAT:
@@ -385,7 +385,7 @@ ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
   message.set_chtime(vehicle->GetChTime());
   message.set_speed(vehicle->GetVehicleSpeed());
 
-  messageFromVector(message.mutable_chassiscom(), vehicle->GetChassisPos());
+  messageFromVector(message.mutable_chassiscom(), vehicle->GetChassis()->GetPos());
   messageFromVector(message.mutable_backleftwheelcom(),
                     vehicle->GetWheelPos(WheelID(1, LEFT)));
   messageFromVector(message.mutable_backrightwheelcom(),
@@ -395,7 +395,7 @@ ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
   messageFromVector(message.mutable_frontrightwheelcom(),
                     vehicle->GetWheelPos(WheelID(0, RIGHT)));
 
-  messageFromQuaternion(message.mutable_chassisrot(), vehicle->GetChassisRot());
+  messageFromQuaternion(message.mutable_chassisrot(), vehicle->GetChassis()->GetRot());
   messageFromQuaternion(message.mutable_backleftwheelrot(),
                         vehicle->GetWheelRot(WheelID(1, LEFT)));
   messageFromQuaternion(message.mutable_backrightwheelrot(),
