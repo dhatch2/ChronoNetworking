@@ -192,7 +192,6 @@ const int VehicleMessage_MVector::kZFieldNumber;
 VehicleMessage_MVector::VehicleMessage_MVector()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage.MVector)
 }
 
 void VehicleMessage_MVector::InitAsDefaultInstance() {
@@ -202,7 +201,6 @@ VehicleMessage_MVector::VehicleMessage_MVector(const VehicleMessage_MVector& fro
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage.MVector)
 }
 
 void VehicleMessage_MVector::SharedCtor() {
@@ -214,7 +212,6 @@ void VehicleMessage_MVector::SharedCtor() {
 }
 
 VehicleMessage_MVector::~VehicleMessage_MVector() {
-  // @@protoc_insertion_point(destructor:ChronoMessages.VehicleMessage.MVector)
   SharedDtor();
 }
 
@@ -245,44 +242,31 @@ VehicleMessage_MVector* VehicleMessage_MVector::New() const {
 }
 
 void VehicleMessage_MVector::Clear() {
-#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<VehicleMessage_MVector*>(16)->f) - \
-   reinterpret_cast<char*>(16))
-
-#define ZR_(first, last) do {                              \
-    size_t f = OFFSET_OF_FIELD_(first);                    \
-    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
-    ::memset(&first, 0, n);                                \
-  } while (0)
-
-  ZR_(x_, z_);
-
-#undef OFFSET_OF_FIELD_
-#undef ZR_
-
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    x_ = 0;
+    y_ = 0;
+    z_ = 0;
+  }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
 bool VehicleMessage_MVector::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage.MVector)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
+  while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required double x = 1;
       case 1: {
-        if (tag == 9) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &x_)));
           set_has_x();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(17)) goto parse_y;
         break;
@@ -290,14 +274,15 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
 
       // required double y = 2;
       case 2: {
-        if (tag == 17) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_y:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &y_)));
           set_has_y();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(25)) goto parse_z;
         break;
@@ -305,25 +290,25 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
 
       // required double z = 3;
       case 3: {
-        if (tag == 25) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_z:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &z_)));
           set_has_z();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
-        if (input->ExpectAtEnd()) goto success;
+        if (input->ExpectAtEnd()) return true;
         break;
       }
 
       default: {
-      handle_unusual:
-        if (tag == 0 ||
-            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          goto success;
+          return true;
         }
         DO_(::google::protobuf::internal::WireFormat::SkipField(
               input, tag, mutable_unknown_fields()));
@@ -331,18 +316,12 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
       }
     }
   }
-success:
-  // @@protoc_insertion_point(parse_success:ChronoMessages.VehicleMessage.MVector)
   return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:ChronoMessages.VehicleMessage.MVector)
-  return false;
 #undef DO_
 }
 
 void VehicleMessage_MVector::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:ChronoMessages.VehicleMessage.MVector)
   // required double x = 1;
   if (has_x()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
@@ -362,12 +341,10 @@ void VehicleMessage_MVector::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:ChronoMessages.VehicleMessage.MVector)
 }
 
 ::google::protobuf::uint8* VehicleMessage_MVector::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage.MVector)
   // required double x = 1;
   if (has_x()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
@@ -387,7 +364,6 @@ void VehicleMessage_MVector::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:ChronoMessages.VehicleMessage.MVector)
   return target;
 }
 
@@ -500,7 +476,6 @@ const int VehicleMessage_MQuaternion::kE3FieldNumber;
 VehicleMessage_MQuaternion::VehicleMessage_MQuaternion()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage.MQuaternion)
 }
 
 void VehicleMessage_MQuaternion::InitAsDefaultInstance() {
@@ -510,7 +485,6 @@ VehicleMessage_MQuaternion::VehicleMessage_MQuaternion(const VehicleMessage_MQua
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage.MQuaternion)
 }
 
 void VehicleMessage_MQuaternion::SharedCtor() {
@@ -523,7 +497,6 @@ void VehicleMessage_MQuaternion::SharedCtor() {
 }
 
 VehicleMessage_MQuaternion::~VehicleMessage_MQuaternion() {
-  // @@protoc_insertion_point(destructor:ChronoMessages.VehicleMessage.MQuaternion)
   SharedDtor();
 }
 
@@ -554,44 +527,32 @@ VehicleMessage_MQuaternion* VehicleMessage_MQuaternion::New() const {
 }
 
 void VehicleMessage_MQuaternion::Clear() {
-#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<VehicleMessage_MQuaternion*>(16)->f) - \
-   reinterpret_cast<char*>(16))
-
-#define ZR_(first, last) do {                              \
-    size_t f = OFFSET_OF_FIELD_(first);                    \
-    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
-    ::memset(&first, 0, n);                                \
-  } while (0)
-
-  ZR_(e0_, e3_);
-
-#undef OFFSET_OF_FIELD_
-#undef ZR_
-
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    e0_ = 0;
+    e1_ = 0;
+    e2_ = 0;
+    e3_ = 0;
+  }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
 bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage.MQuaternion)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
+  while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required double e0 = 1;
       case 1: {
-        if (tag == 9) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &e0_)));
           set_has_e0();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(17)) goto parse_e1;
         break;
@@ -599,14 +560,15 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
 
       // required double e1 = 2;
       case 2: {
-        if (tag == 17) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_e1:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &e1_)));
           set_has_e1();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(25)) goto parse_e2;
         break;
@@ -614,14 +576,15 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
 
       // required double e2 = 3;
       case 3: {
-        if (tag == 25) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_e2:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &e2_)));
           set_has_e2();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(33)) goto parse_e3;
         break;
@@ -629,25 +592,25 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
 
       // required double e3 = 4;
       case 4: {
-        if (tag == 33) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_e3:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &e3_)));
           set_has_e3();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
-        if (input->ExpectAtEnd()) goto success;
+        if (input->ExpectAtEnd()) return true;
         break;
       }
 
       default: {
-      handle_unusual:
-        if (tag == 0 ||
-            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          goto success;
+          return true;
         }
         DO_(::google::protobuf::internal::WireFormat::SkipField(
               input, tag, mutable_unknown_fields()));
@@ -655,18 +618,12 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
       }
     }
   }
-success:
-  // @@protoc_insertion_point(parse_success:ChronoMessages.VehicleMessage.MQuaternion)
   return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:ChronoMessages.VehicleMessage.MQuaternion)
-  return false;
 #undef DO_
 }
 
 void VehicleMessage_MQuaternion::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:ChronoMessages.VehicleMessage.MQuaternion)
   // required double e0 = 1;
   if (has_e0()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->e0(), output);
@@ -691,12 +648,10 @@ void VehicleMessage_MQuaternion::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:ChronoMessages.VehicleMessage.MQuaternion)
 }
 
 ::google::protobuf::uint8* VehicleMessage_MQuaternion::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage.MQuaternion)
   // required double e0 = 1;
   if (has_e0()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->e0(), target);
@@ -721,7 +676,6 @@ void VehicleMessage_MQuaternion::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:ChronoMessages.VehicleMessage.MQuaternion)
   return target;
 }
 
@@ -853,7 +807,6 @@ const int VehicleMessage::kBackLeftWheelRotFieldNumber;
 VehicleMessage::VehicleMessage()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage)
 }
 
 void VehicleMessage::InitAsDefaultInstance() {
@@ -873,7 +826,6 @@ VehicleMessage::VehicleMessage(const VehicleMessage& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage)
 }
 
 void VehicleMessage::SharedCtor() {
@@ -896,7 +848,6 @@ void VehicleMessage::SharedCtor() {
 }
 
 VehicleMessage::~VehicleMessage() {
-  // @@protoc_insertion_point(destructor:ChronoMessages.VehicleMessage)
   SharedDtor();
 }
 
@@ -937,18 +888,11 @@ VehicleMessage* VehicleMessage::New() const {
 }
 
 void VehicleMessage::Clear() {
-#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<VehicleMessage*>(16)->f) - \
-   reinterpret_cast<char*>(16))
-
-#define ZR_(first, last) do {                              \
-    size_t f = OFFSET_OF_FIELD_(first);                    \
-    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
-    ::memset(&first, 0, n);                                \
-  } while (0)
-
-  if (_has_bits_[0 / 32] & 255) {
-    ZR_(timestamp_, speed_);
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    timestamp_ = 0;
+    vehicleid_ = 0;
+    chtime_ = 0;
+    speed_ = 0;
     if (has_chassiscom()) {
       if (chassiscom_ != NULL) chassiscom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
@@ -962,7 +906,7 @@ void VehicleMessage::Clear() {
       if (backrightwheelcom_ != NULL) backrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
   }
-  if (_has_bits_[8 / 32] & 16128) {
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (has_backleftwheelcom()) {
       if (backleftwheelcom_ != NULL) backleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
@@ -982,33 +926,26 @@ void VehicleMessage::Clear() {
       if (backleftwheelrot_ != NULL) backleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
   }
-
-#undef OFFSET_OF_FIELD_
-#undef ZR_
-
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
 bool VehicleMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
+  while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required int32 timestamp = 1;
       case 1: {
-        if (tag == 8) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &timestamp_)));
           set_has_timestamp();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(16)) goto parse_vehicleId;
         break;
@@ -1016,14 +953,15 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required int32 vehicleId = 2;
       case 2: {
-        if (tag == 16) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_vehicleId:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &vehicleid_)));
           set_has_vehicleid();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(25)) goto parse_chTime;
         break;
@@ -1031,14 +969,15 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required double chTime = 3;
       case 3: {
-        if (tag == 25) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_chTime:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &chtime_)));
           set_has_chtime();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(33)) goto parse_speed;
         break;
@@ -1046,14 +985,15 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required double speed = 4;
       case 4: {
-        if (tag == 33) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_speed:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &speed_)));
           set_has_speed();
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(42)) goto parse_ChassisCOM;
         break;
@@ -1061,12 +1001,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MVector ChassisCOM = 5;
       case 5: {
-        if (tag == 42) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_ChassisCOM:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_chassiscom()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(50)) goto parse_FrontRightWheelCOM;
         break;
@@ -1074,12 +1015,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MVector FrontRightWheelCOM = 6;
       case 6: {
-        if (tag == 50) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_FrontRightWheelCOM:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontrightwheelcom()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(58)) goto parse_FrontLeftWheelCOM;
         break;
@@ -1087,12 +1029,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MVector FrontLeftWheelCOM = 7;
       case 7: {
-        if (tag == 58) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_FrontLeftWheelCOM:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontleftwheelcom()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(66)) goto parse_BackRightWheelCOM;
         break;
@@ -1100,12 +1043,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MVector BackRightWheelCOM = 8;
       case 8: {
-        if (tag == 66) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_BackRightWheelCOM:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backrightwheelcom()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(74)) goto parse_BackLeftWheelCOM;
         break;
@@ -1113,12 +1057,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MVector BackLeftWheelCOM = 9;
       case 9: {
-        if (tag == 74) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_BackLeftWheelCOM:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backleftwheelcom()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(82)) goto parse_ChassisRot;
         break;
@@ -1126,12 +1071,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MQuaternion ChassisRot = 10;
       case 10: {
-        if (tag == 82) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_ChassisRot:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_chassisrot()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(90)) goto parse_FrontRightWheelRot;
         break;
@@ -1139,12 +1085,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MQuaternion FrontRightWheelRot = 11;
       case 11: {
-        if (tag == 90) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_FrontRightWheelRot:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontrightwheelrot()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(98)) goto parse_FrontLeftWheelRot;
         break;
@@ -1152,12 +1099,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MQuaternion FrontLeftWheelRot = 12;
       case 12: {
-        if (tag == 98) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_FrontLeftWheelRot:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontleftwheelrot()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(106)) goto parse_BackRightWheelRot;
         break;
@@ -1165,12 +1113,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MQuaternion BackRightWheelRot = 13;
       case 13: {
-        if (tag == 106) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_BackRightWheelRot:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backrightwheelrot()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
         if (input->ExpectTag(114)) goto parse_BackLeftWheelRot;
         break;
@@ -1178,23 +1127,23 @@ bool VehicleMessage::MergePartialFromCodedStream(
 
       // required .ChronoMessages.VehicleMessage.MQuaternion BackLeftWheelRot = 14;
       case 14: {
-        if (tag == 114) {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_BackLeftWheelRot:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backleftwheelrot()));
         } else {
-          goto handle_unusual;
+          goto handle_uninterpreted;
         }
-        if (input->ExpectAtEnd()) goto success;
+        if (input->ExpectAtEnd()) return true;
         break;
       }
 
       default: {
-      handle_unusual:
-        if (tag == 0 ||
-            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          goto success;
+          return true;
         }
         DO_(::google::protobuf::internal::WireFormat::SkipField(
               input, tag, mutable_unknown_fields()));
@@ -1202,18 +1151,12 @@ bool VehicleMessage::MergePartialFromCodedStream(
       }
     }
   }
-success:
-  // @@protoc_insertion_point(parse_success:ChronoMessages.VehicleMessage)
   return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:ChronoMessages.VehicleMessage)
-  return false;
 #undef DO_
 }
 
 void VehicleMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:ChronoMessages.VehicleMessage)
   // required int32 timestamp = 1;
   if (has_timestamp()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->timestamp(), output);
@@ -1298,12 +1241,10 @@ void VehicleMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:ChronoMessages.VehicleMessage)
 }
 
 ::google::protobuf::uint8* VehicleMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage)
   // required int32 timestamp = 1;
   if (has_timestamp()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->timestamp(), target);
@@ -1398,7 +1339,6 @@ void VehicleMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:ChronoMessages.VehicleMessage)
   return target;
 }
 

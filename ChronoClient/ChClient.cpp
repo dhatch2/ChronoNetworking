@@ -1,4 +1,5 @@
 #include "ChClient.h"
+#include <set>
 
 ChClient::ChClient(boost::asio::io_service* ioService, double* stepSize)
     : m_socket(*ioService), m_outStream(&m_buff)

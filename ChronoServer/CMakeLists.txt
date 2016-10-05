@@ -7,7 +7,9 @@
 # user project.  Modify sections 1, 2, and 3 below as appropriate.
 # 
 #--------------------------------------------------------------
- 
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
 
 cmake_minimum_required(VERSION 2.8)
 
