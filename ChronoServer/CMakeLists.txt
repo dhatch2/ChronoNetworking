@@ -93,7 +93,7 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 #--------------------------------------------------------------
 
 if(NOT DEFINED BOOST_DIR)
-set(BOOST_DIR "boost include directory" CACHE STRING "" FORCE)
+set(BOOST_DIR "boost include directory" CACHE PATH "" FORCE)
 endif()
 
 include_directories(${BOOST_DIR} ../Vehicle_Protobuf_Messages)

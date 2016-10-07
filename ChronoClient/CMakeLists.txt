@@ -16,6 +16,7 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
 
+# TODO This might not work on windows
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -102,7 +103,7 @@ endif()
 #--------------------------------------------------------------
 
 if(NOT DEFINED BOOST_DIR)
-set(BOOST_DIR "boost include directory" CACHE STRING "" FORCE)
+set(BOOST_DIR "boost include directory" CACHE PATH "" FORCE)
 endif()
 
 include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Messages)
