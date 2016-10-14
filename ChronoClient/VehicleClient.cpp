@@ -122,6 +122,12 @@ bool povray_output = false;
 // =============================================================================
 
 int main(int argc, char* argv[]) {
+
+    if (argc != 2) {
+        std::cout << "Usage: " << std::string(argv[0]) << " HOST_ADDRESS" << std::endl;
+        return 1;
+    }
+
     // --------------
     // Create systems
     // --------------
