@@ -277,7 +277,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Thermal - Moisture.Shingles.Asphalt Roofing.jpg
+map_Kd textures\Thermal_Moisture.Shingles.Asphalt_Roofing.jpg
 
 newmtl mat_7
 Ns 498.039216
