@@ -1,11 +1,11 @@
 #--------------------------------------------------------------
-# 
-# Example of CMake configuration file to build an external 
+#
+# Example of CMake configuration file to build an external
 # project depending on Chrono and on optionam Chrono modules.
-# 
+#
 # This minimal sample project can be used as a template for a
 # user project.  Modify sections 1, 2, and 3 below as appropriate.
-# 
+#
 #--------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
@@ -21,13 +21,13 @@ set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
 cmake_minimum_required(VERSION 2.8)
 
 #--------------------------------------------------------------
-# === 1 === 
-# Modify the project name if you want: 
+# === 1 ===
+# Modify the project name if you want:
 #--------------------------------------------------------------
 
 project(ChronoClient)
 
-SET(MODEL_FILES    
+SET(MODEL_FILES
 	../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
 	../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
 	../Vehicle_Protobuf_Messages/MessageCodes.h
@@ -39,6 +39,8 @@ SET(MODEL_FILES
 	ChBodyFollowerSteeringController.cpp
 	ChClient.cpp
 	ChClient.h
+	MessageConversions.h
+	MessageConversions.cpp
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -54,11 +56,11 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # The following Chrono modules can be requested (their names
 # are case insensitive): Cascade, Cosimulation, FEA, Irrlicht,
 # Matlab, Parallel, Postprocess, Python, Vehicle.
-# 
-# Note that you will have to set the variable Chrono_DIR to 
+#
+# Note that you will have to set the variable Chrono_DIR to
 # specify the location of the ChronoConfig.cmake script. This
 # can be either a Chrono build tree or a Chrono install tree.
-# 
+#
 # The following variables are set and can be used further down:
 # CHRONO_FOUND
 #   set to true if Chrono and all required components were found
@@ -75,11 +77,11 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 #   list of all DLL dependencies (with full path)
 # CHRONO_DATA_DIR
 #   path to the Chrono data make_directory
-# 
+#
 # In addition, for each requested component [COMPONENT], the
 # following variable is set to true (ON) or false (OFF):
 # CHRONO_[COMPONENT]_FOUND
-# 
+#
 # In this example, we only request the Irrlicht module (required)
 #--------------------------------------------------------------
 
@@ -121,8 +123,8 @@ endif()
 
 #--------------------------------------------------------------
 # === 3 ===
-# Add the executable from your project and specify all C++ 
-# files in your project. 
+# Add the executable from your project and specify all C++
+# files in your project.
 #--------------------------------------------------------------
 
 add_executable(ChronoClient VehicleClient.cpp ${MODEL_FILES})
@@ -130,18 +132,18 @@ add_executable(AutoClient AutoVehicleClient.cpp ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
-# 
+#
 # Note that here we define a macro CHRONO_DATA_DIR which will
 # contain the path to the Chrono data directory, either in its
 # source tree (if using a build version of Chrono), or in its
 # install tree (if using an installed version of Chrono).
 #--------------------------------------------------------------
 
-set_target_properties(ChronoClient PROPERTIES 
+set_target_properties(ChronoClient PROPERTIES
 COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
 COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
 LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
-set_target_properties(AutoClient PROPERTIES 
+set_target_properties(AutoClient PROPERTIES
 COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
 COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
 LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
@@ -155,11 +157,11 @@ target_link_libraries(AutoClient ${CHRONO_LIBRARIES} boost_system pthread protob
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===
-# 
+#
 # Optionally, add a custom command for copying all Chrono and
 # dependency DLLs to the appropriate binary output folder.
 # This function has effect only on Windows.
-# 
+#
 # Note that you must first set EXECUTABLE_OUTPUT_PATH
 # (this can simply be ${CMAKE_BINARY_DIR}, like in this example)
 #--------------------------------------------------------------

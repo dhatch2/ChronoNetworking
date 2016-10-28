@@ -26,6 +26,7 @@
 #include "ChronoMessages.pb.h"
 #include "ServerVehicle.h"
 #include "ChClient.h"
+#include "MessageConversions.h"
 #include <vector>
 
 #include "chrono/core/ChFileutils.h"
@@ -317,7 +318,7 @@ int main(int argc, char* argv[]) {
             message->MergeFrom(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(),
                         client.connectionNumber()));
             client.sendMessage(message);
-            
+
             for (std::pair<int, std::shared_ptr<const google::protobuf::Message>> worldPair : worldVehicles) {
                 if (otherVehicles.find(worldPair.first) ==
                         otherVehicles.end()) {  // If the vehicle isn't found
@@ -336,7 +337,7 @@ int main(int argc, char* argv[]) {
                 }
                 otherVehicles[worldPair.first]->update((ChronoMessages::VehicleMessage&)(*worldPair.second));
             }
-            
+
             // Removing vehicles that have not received an update
             for(std::map<int, std::shared_ptr<ServerVehicle>>::iterator it = otherVehicles.begin(); it != otherVehicles.end();) {
                 if(worldVehicles.find(it->first) == worldVehicles.end()) {
@@ -355,59 +356,12 @@ int main(int argc, char* argv[]) {
         app.Advance(step);
         client.Advance(step);
         render_steps = (int)std::ceil(render_step_size / step_size);
-        
+
         // Increment frame number
         step_number++;
     }
-    
+
     client.disconnect();
 
     return 0;
-}
- 
-ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
-    ChWheeledVehicle* vehicle, int connectionNumber) {
-    ChronoMessages::VehicleMessage message;
-
-    message.set_timestamp(time(0));
-    message.set_vehicleid(connectionNumber);
-    message.set_chtime(vehicle->GetChTime());
-    message.set_speed(vehicle->GetVehicleSpeed());
-
-    messageFromVector(message.mutable_chassiscom(), vehicle->GetChassis()->GetPos());
-    messageFromVector(message.mutable_backleftwheelcom(),
-                      vehicle->GetWheelPos(WheelID(1, LEFT)));
-    messageFromVector(message.mutable_backrightwheelcom(),
-                      vehicle->GetWheelPos(WheelID(1, RIGHT)));
-    messageFromVector(message.mutable_frontleftwheelcom(),
-                      vehicle->GetWheelPos(WheelID(0, LEFT)));
-    messageFromVector(message.mutable_frontrightwheelcom(),
-                      vehicle->GetWheelPos(WheelID(0, RIGHT)));
-
-    messageFromQuaternion(message.mutable_chassisrot(), vehicle->GetChassis()->GetRot());
-    messageFromQuaternion(message.mutable_backleftwheelrot(),
-                          vehicle->GetWheelRot(WheelID(1, LEFT)));
-    messageFromQuaternion(message.mutable_backrightwheelrot(),
-                          vehicle->GetWheelRot(WheelID(1, RIGHT)));
-    messageFromQuaternion(message.mutable_frontleftwheelrot(),
-                          vehicle->GetWheelRot(WheelID(0, LEFT)));
-    messageFromQuaternion(message.mutable_frontrightwheelrot(),
-                          vehicle->GetWheelRot(WheelID(0, RIGHT)));
-
-    return message;
-}
-
-void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
-                       ChVector<> vector) {
-    message->set_x(vector.x);
-    message->set_y(vector.y);
-    message->set_z(vector.z);
-}
-
-void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
-                           ChQuaternion<> quaternion) {
-    message->set_e0(quaternion.e0);
-    message->set_e1(quaternion.e1);
-    message->set_e2(quaternion.e2);
-    message->set_e3(quaternion.e3);
 }
