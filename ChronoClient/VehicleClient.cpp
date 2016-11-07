@@ -122,6 +122,12 @@ bool povray_output = false;
 // =============================================================================
 
 int main(int argc, char* argv[]) {
+
+    if (argc != 2) {
+        std::cout << "Usage: " << std::string(argv[0]) << " HOST_ADDRESS" << std::endl;
+        return 1;
+    }
+
     // --------------
     // Create systems
     // --------------
@@ -178,10 +184,11 @@ int main(int argc, char* argv[]) {
   ChWheeledVehicleIrrApp app(&my_hmmwv.GetVehicle(), &my_hmmwv.GetPowertrain(),
                              L"HMMWV Demo");
   app.SetSkyBox();
-  app.AddLightWithShadow(irr::core::vector3df(0.f, 0.f, 100.f),
-                         irr::core::vector3df(0.f, 0.f, 0.f), 1000.0, 1.0,
-                         1000.0, 90.0, 512,
+  auto lightNode = app.AddLightWithShadow(irr::core::vector3df(0.f, 0.f, 100.f),
+                         irr::core::vector3df(0.f, 0.f, 0.f), 1000.0, 50.0,
+                         150.0, 90.0, 512,
                          irr::video::SColorf(1.f, 1.f, 1.f, 1.f), true, true);
+  lightNode->getLightData().AmbientColor.set(1.f, 0.07f, 0.07f, 0.07f);
   app.SetChaseCamera(trackPoint, 6.0, 0.5);
   app.SetTimestep(step_size);
   app.AssetBindAll();

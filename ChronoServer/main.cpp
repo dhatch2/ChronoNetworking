@@ -3,6 +3,7 @@
 #include <functional>
 #include <queue>
 #include <mutex>
+#include <condition_variable>
 #include <typeinfo>
 #include <chrono>
 #include <time.h>
@@ -19,10 +20,10 @@
 #define HEARTBEAT_LENGTH 1
 
 // Start of the listener thread
-void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex);
+void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV);
 
 // Start of the client connection handling thread
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber);
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber);
 
 // Sends the heartbeat to all clients, independent of their thread states
 void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>>& sockets);
@@ -31,24 +32,24 @@ int main(int argc, char **argv)
 {
     std::queue<std::function<void()>> worldQueue;
     std::shared_ptr<std::mutex> queueMutex = std::make_shared<std::mutex>();
+    std::shared_ptr<std::condition_variable> emptyqueueCV = std::make_shared<std::condition_variable>();
 
     World world(1, 1);
 
-    std::function<void(World&, std::queue<std::function<void()>>&, std::shared_ptr<std::mutex>)> listenerFunc = listenForConnection;
-    std::thread listener(listenerFunc, std::ref(world), std::ref(worldQueue), queueMutex);
+    std::thread listener(listenForConnection, std::ref(world), std::ref(worldQueue), queueMutex, emptyqueueCV);
 
     std::cout << "World queue processing is about to start." << std::endl;
     while(true) {
-        if (!worldQueue.empty()){
-            worldQueue.front()();
-            worldQueue.pop();
-        }
+        std::unique_lock<std::mutex> lck(*queueMutex);
+        while (worldQueue.empty()) emptyqueueCV->wait(lck);
+        worldQueue.front()();
+        worldQueue.pop();
     }
     listener.join();
-	return 0;
+    return 0;
 }
 
-void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex) {
+void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV) {
     std::cout << "Listener thread started" << std::endl;
 
     // Used to give vehicles unique id numbers
@@ -63,10 +64,10 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>> sockets;
 
     // Making function for listener threads
-    std::function<void(World&, std::queue<std::function<void()>>&, std::shared_ptr<std::mutex>, std::shared_ptr<boost::asio::ip::tcp::socket>, int)> connectionFunc = processConnection;
+    auto connectionFunc = processConnection;
 
     // Making thread for the heartbeat
-    std::function<void(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>>&)> regulate = regulateHeartbeat;
+    auto regulate = regulateHeartbeat;
     std::thread pacer(regulate, std::ref(sockets));
 
     while(true) {
@@ -78,7 +79,7 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
         std::cout << "Accepted Connection" << std::endl;
 
         // Creates new thread for the client connection here
-        clientConnections.emplace_back(connectionFunc, std::ref(world), std::ref(queue), queueMutex, socket, connectionNumber);
+        clientConnections.emplace_back(connectionFunc, std::ref(world), std::ref(queue), queueMutex, emptyqueueCV, socket, connectionNumber);
         connectionNumber++;
     }
     // Join heartbeat
@@ -101,11 +102,11 @@ void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>
             }
         }
     } catch (std::exception& error) {
-        std::cout << error.what() << std::endl;
+        std::cout << "regulateHeartbeat: " << error.what() << std::endl;
     }
 }
 
-void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber) {
+void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber) {
     std::cout << "Processing connection" << std::endl;
 
     try {
@@ -129,9 +130,11 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         // Pushes addVehicle to queue so that the vehicle may be added to the world
         // The client only has one chance to identify it's connection number correctly
         if(newVehicle->vehicleid() == connectionNumber) {
-            std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-            queue.push([&world, newVehicle] { world.addVehicle(0, 0, newVehicle); });
-            delete guard;
+            {
+                std::lock_guard<std::mutex> guard(*queueMutex);
+                queue.push([&world, newVehicle] { world.addVehicle(0, 0, newVehicle); });
+                emptyqueueCV->notify_all();
+            }
 
             while(world.getSection(0, 0).find(connectionNumber) == world.getSection(0, 0).end());
         } else socket->close();
@@ -180,17 +183,19 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
                     // Pushes updateVehicle to queue to update the vehicle state in the world
                     // If the id does not correspond to the connection number, it is not updated
                     if(vehicle->vehicleid() == connectionNumber) {
-                        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
+                        std::lock_guard<std::mutex> guard(*queueMutex);
                         queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); });
-                        delete guard;
+                        emptyqueueCV->notify_all();
                     } else std::cout << "Update Error" << std::endl;
                     break;
                 }
 
                 case DISCONNECT_MESSAGE: {
-                    std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-                    queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
-                    delete guard;
+                    {
+                        std::lock_guard<std::mutex> guard(*queueMutex);
+                        queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
+                        emptyqueueCV->notify_all();
+                    }
                     socket->close();
                     std::cout << "Vehicle Removed" << std::endl;
                     break;
@@ -198,10 +203,12 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             }
         }
     } catch (std::exception& error) {
-        std::cout << error.what() << std::endl;
-        std::lock_guard<std::mutex>* guard = new std::lock_guard<std::mutex>(*queueMutex);
-        queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
-        delete guard;
+        std::cout << "processConnection: " << error.what() << std::endl;
+        {
+            std::lock_guard<std::mutex> guard(*queueMutex);
+            queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
+            emptyqueueCV->notify_all();
+        }
         socket->close();
     }
 }

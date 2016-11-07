@@ -27,7 +27,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Conan_middle.jpg
+map_Kd textures/Conan_middle.jpg
 
 newmtl mat_11
 Ns 498.039216
@@ -37,7 +37,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Bounty_middle.jpg
+map_Kd textures/Bounty_middle.jpg
 
 newmtl mat_12
 Ns 498.039216
@@ -47,7 +47,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Paulus_groundTop.jpg
+map_Kd textures/Paulus_groundTop.jpg
 
 newmtl mat_13
 Ns 498.039216
@@ -57,7 +57,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Dina_groundTop.jpg
+map_Kd textures/Dina_groundTop.jpg
 
 newmtl mat_14
 Ns 498.039216
@@ -67,7 +67,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Roofing_Shingles_Composition_Brown.jpg
+map_Kd textures/Roofing_Shingles_Composition_Brown.jpg
 
 newmtl mat_15
 Ns 498.039216
@@ -77,7 +77,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Dina_middle.jpg
+map_Kd textures/Dina_middle.jpg
 
 newmtl mat_16
 Ns 498.039216
@@ -87,7 +87,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Achilles_groundTop.jpg
+map_Kd textures/Achilles_groundTop.jpg
 
 newmtl mat_17
 Ns 498.039216
@@ -97,7 +97,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Achilles_middle.jpg
+map_Kd textures/Achilles_middle.jpg
 
 newmtl mat_18
 Ns 498.039216
@@ -107,7 +107,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Butts_groundTop.jpg
+map_Kd textures/Butts_groundTop.jpg
 
 newmtl mat_19
 Ns 498.039216
@@ -117,7 +117,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Butts_middle.jpg
+map_Kd textures/Butts_middle.jpg
 
 newmtl mat_2
 Ns 498.039216
@@ -127,7 +127,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\kiesdecke_2.jpg
+map_Kd textures/kiesdecke_2.jpg
 
 newmtl mat_20
 Ns 498.039216
@@ -137,7 +137,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Masonry.Stone.Granite.Square.Copper-Black-Blue.jpg
+map_Kd textures/Masonry.Stone.Granite.Square.Copper-Black-Blue.jpg
 
 newmtl mat_21
 Ns 498.039216
@@ -147,7 +147,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Cromwell_groundTop.jpg
+map_Kd textures/Cromwell_groundTop.jpg
 
 newmtl mat_22
 Ns 498.039216
@@ -157,7 +157,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Simson_groundTop.jpg
+map_Kd textures/Simson_groundTop.jpg
 
 newmtl mat_23
 Ns 498.039216
@@ -167,7 +167,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\p_cityBlock04a.jpg
+map_Kd textures/p_cityBlock04a.jpg
 
 newmtl mat_24
 Ns 498.039216
@@ -177,7 +177,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\asphalt2.jpg
+map_Kd textures/asphalt2.jpg
 
 newmtl mat_25
 Ns 498.039216
@@ -187,7 +187,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Conan_groundTop.jpg
+map_Kd textures/Conan_groundTop.jpg
 
 newmtl mat_26
 Ns 498.039216
@@ -197,7 +197,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Simson_middle.jpg
+map_Kd textures/Simson_middle.jpg
 
 newmtl mat_27
 Ns 498.039216
@@ -207,7 +207,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Arviragus_groundTop.jpg
+map_Kd textures/Arviragus_groundTop.jpg
 
 newmtl mat_28
 Ns 498.039216
@@ -217,7 +217,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\p_fill01.jpg
+map_Kd textures/p_fill01.jpg
 
 newmtl mat_29
 Ns 98.039216
@@ -227,7 +227,7 @@ Ks 0.078431 0.078431 0.078431
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\1_1_0.A5BB80F083401E08A42B09E716BD21E1.jpg
+map_Kd textures/1_1_0.A5BB80F083401E08A42B09E716BD21E1.jpg
 
 newmtl mat_3
 Ns 498.039216
@@ -237,7 +237,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Bounty_groundTop.jpg
+map_Kd textures/Bounty_groundTop.jpg
 
 newmtl mat_30
 Ns 98.039216
@@ -247,7 +247,7 @@ Ks 0.078431 0.078431 0.078431
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\1_0_0.AE541FFC62ACE2146C89F6500089A844.jpg
+map_Kd textures/1_0_0.AE541FFC62ACE2146C89F6500089A844.jpg
 
 newmtl mat_4
 Ns 498.039216
@@ -257,7 +257,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Cromwell_middle.jpg
+map_Kd textures/Cromwell_middle.jpg
 
 newmtl mat_5
 Ns 498.039216
@@ -267,7 +267,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Elisabeth_groundTop.jpg
+map_Kd textures/Elisabeth_groundTop.jpg
 
 newmtl mat_6
 Ns 498.039216
@@ -277,7 +277,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Thermal - Moisture.Shingles.Asphalt Roofing.jpg
+map_Kd textures/Thermal_Moisture.Shingles.Asphalt_Roofing.jpg
 
 newmtl mat_7
 Ns 498.039216
@@ -287,7 +287,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Arviragus_middle.jpg
+map_Kd textures/Arviragus_middle.jpg
 
 newmtl mat_8
 Ns 498.039216
@@ -297,7 +297,7 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Adrenazon_groundTop.jpg
+map_Kd textures/Adrenazon_groundTop.jpg
 
 newmtl mat_9
 Ns 498.039216
@@ -307,4 +307,4 @@ Ks 0.247059 0.247059 0.247059
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures\Elisabeth_middle.jpg
+map_Kd textures/Elisabeth_middle.jpg
