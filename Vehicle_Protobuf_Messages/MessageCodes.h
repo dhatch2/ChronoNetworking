@@ -9,5 +9,6 @@
 #define HEARTBEAT 5
 
 #define VEHICLE_MESSAGE_TYPE "ChronoMessages.VehicleMessage"
+#define VEHICLE_MESSAGE_SIZE 361
 
 #endif

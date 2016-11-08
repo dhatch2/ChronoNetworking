@@ -23,35 +23,43 @@ int ChClient::connectionNumber() {
     return m_connectionNumber;
 }
 
+bool ChClient::isConnected() {
+    return m_socket.is_open();
+}
+
 int ChClient::connectToServer(std::string name, std::string port) {
     // Connect to server
     boost::asio::ip::tcp::resolver resolver(*m_ioService);
     boost::asio::ip::tcp::resolver::query query(
         name,
         port);  // Change to the correct port and ip address
-    boost::asio::ip::tcp::resolver::iterator endpointIterator = resolver.resolve(query);
-    boost::asio::connect(m_socket, endpointIterator);
-    
+    try {
+        boost::asio::ip::tcp::resolver::iterator endpointIterator = resolver.resolve(query);
+        boost::asio::connect(m_socket, endpointIterator);
+    } catch(std::exception error) {
+        return -1;
+    }
+
     // Receive connection number
     m_socket.read_some(boost::asio::buffer(&m_connectionNumber, sizeof(int)));
     return m_connectionNumber;
 }
 
 void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Message>>& serverMessages) {
-    listener = std::make_shared<std::thread>([&serverMessages, this] {        
+    listener = std::make_shared<std::thread>([&serverMessages, this] {
         std::set<uint32_t> vehicleIds;
         while (m_socket.is_open()) {
             uint8_t messageCode;
             m_socket.receive(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
             // std::cout << (int)messageCode << std::endl;
-            
+
             switch(messageCode) {
                 // Normal vehicle message receiving
                 case VEHICLE_MESSAGE: {
                     boost::asio::streambuf worldBuffer;
                     std::istream inStream(&worldBuffer);
-                    m_socket.receive(worldBuffer.prepare(361));
-                    worldBuffer.commit(361);
+                    m_socket.receive(worldBuffer.prepare(VEHICLE_MESSAGE_SIZE));
+                    worldBuffer.commit(VEHICLE_MESSAGE_SIZE);
                     std::shared_ptr<ChronoMessages::VehicleMessage> worldVehicle = std::make_shared<ChronoMessages::VehicleMessage>();
                     worldVehicle->ParseFromIstream(&inStream);
                     if(serverMessages.find(worldVehicle->vehicleid()) == serverMessages.end()) {
@@ -84,12 +92,12 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
                 case HEARTBEAT: {
                     m_heartrate = (clock() - lastHeartbeat) / (double) CLOCKS_PER_SEC;
                     lastHeartbeat = clock();
-                    
+
                     /*if (secondsElapsed < m_heartrate/10 - 0.001)
                         *m_stepSize += 0.0001;
                     else if (secondsElapsed > m_heartrate/10 + 0.001)
                         *m_stepSize -= 0.0001;*/
-                    
+
                     //std::cout << "Steps elapsed: " << stepsElapsed << std::endl;
                     stepsElapsed = 0;
                     secondsElapsed = 0.0;
@@ -103,7 +111,7 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
 void ChClient::sendMessage(std::shared_ptr<google::protobuf::Message> message) {
     uint8_t messageCode = VEHICLE_MESSAGE;
     m_socket.send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
-    
+
     message->SerializeToOstream(&m_outStream);
     boost::asio::write(m_socket, m_buff);
     m_buff.consume(message->ByteSize());

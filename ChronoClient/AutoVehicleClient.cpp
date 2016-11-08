@@ -91,8 +91,8 @@ TireModelType tire_model = TireModelType::RIGID;
 RigidTerrain::Type terrain_model = RigidTerrain::FLAT;
 bool terrain_vis = true;
 double terrainHeight = 0;      // terrain height (FLAT terrain only)
-double terrainLength = 100.0;  // size in X direction
-double terrainWidth = 100.0;   // size in Y direction
+double terrainLength = 1000.0;  // size in X direction
+double terrainWidth = 1000.0;   // size in Y direction
 
 // Point on chassis tracked by the camera
 ChVector<> trackPoint(0.0, 0.0, 1.75);
@@ -278,16 +278,21 @@ int main(int argc, char* argv[]) {
 
 
     // Setup client object and connect to network
+    std::cout << "Connecting to server..." << std::endl;
     boost::asio::io_service ioService;
     ChClient client(&ioService, &step_size);
-    client.connectToServer(argv[1], "8082");
-    client.asyncListen(worldVehicles);
-    std::cout << "Connection Number: " << client.connectionNumber() << std::endl;
+    while (client.connectToServer(argv[1], "8082") < 0);
 
-    if (contact_vis) {
-        app.SetSymbolscale(1e-4);
-        app.SetContactsDrawMode(ChIrrTools::eCh_ContactsDrawMode::CONTACT_FORCES);
-    }
+    std::cout << "Connection Number: " << client.connectionNumber() << std::endl;
+    /*if (connectionNumber >= 0) {
+        std::cout << "Connection Number: " << connectionNumber << std::endl;
+    } else {
+        std::cout << "Connection to server failed." << std::endl;
+        exit(1);
+    }*/
+
+    client.asyncListen(worldVehicles);
+
 
     while (app.GetDevice()->run()) {
         time = my_hmmwv.GetSystem()->GetChTime();

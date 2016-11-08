@@ -15,25 +15,28 @@ class ChClient
 public:
     ChClient(boost::asio::io_service* ioService, double* stepSize);
     ~ChClient();
-    
+
     // Getter for the connection number
     int connectionNumber();
-    
+
+    // Returns whether or not a connection to a server currently exists
+    bool isConnected();
+
     // Returns -1 if connection is unsuccessful
     int connectToServer(std::string name, std::string port);
-    
+
     // Returns immediately and uses the socket to receive from server on another thread
     void asyncListen(std::map<int, std::shared_ptr<google::protobuf::Message>>& serverMessages);
-    
+
     // Blocks until message has been serialized and sent over socket
     void sendMessage(std::shared_ptr<google::protobuf::Message> message);
-    
+
     // Disconnect from the ChronoServer
     void disconnect();
-    
+
     // Gets the current heartrate
     double heartrate();
-    
+
     void Advance(double step);
 private:
     boost::asio::io_service* m_ioService;

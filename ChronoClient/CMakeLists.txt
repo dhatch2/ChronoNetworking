@@ -84,10 +84,17 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 #
 # In this example, we only request the Irrlicht module (required)
 #--------------------------------------------------------------
+set(USE_IRRLICHT OFF CACHE BOOL OFF)
 
+if(USE_IRRLICHT)
 find_package(Chrono
 COMPONENTS Irrlicht Vehicle
 CONFIG)
+else()
+find_package(Chrono
+COMPONENTS Vehicle
+CONFIG)
+endif()
 
 #--------------------------------------------------------------
 # Return now if Chrono or a required component was not found.
@@ -125,10 +132,14 @@ endif()
 # === 3 ===
 # Add the executable from your project and specify all C++
 # files in your project.
+# If irrlicht is not used, only the blind autonomous client is produced.
 #--------------------------------------------------------------
-
+if(USE_IRRLICHT)
 add_executable(ChronoClient VehicleClient.cpp ${MODEL_FILES})
 add_executable(AutoClient AutoVehicleClient.cpp ${MODEL_FILES})
+endif()
+
+add_executable(AutoBlindClient AutoBlindClient.cpp ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -139,6 +150,7 @@ add_executable(AutoClient AutoVehicleClient.cpp ${MODEL_FILES})
 # install tree (if using an installed version of Chrono).
 #--------------------------------------------------------------
 
+if(USE_IRRLICHT)
 set_target_properties(ChronoClient PROPERTIES
 COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
 COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
@@ -147,13 +159,21 @@ set_target_properties(AutoClient PROPERTIES
 COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
 COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
 LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+endif()
+
+set_target_properties(AutoBlindClient PROPERTIES
+COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 
 #--------------------------------------------------------------
 # Link to Chrono libraries and dependency libraries   ----  Added boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
-
+if(USE_IRRLICHT)
 target_link_libraries(ChronoClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
 target_link_libraries(AutoClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
+endif()
+target_link_libraries(AutoBlindClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===

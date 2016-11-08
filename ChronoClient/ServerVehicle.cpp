@@ -10,7 +10,7 @@ ServerVehicle::ServerVehicle(ChSystem* system) {
   m_chassis->SetBodyFixed(true);
   m_hitbox = std::make_shared<ChBodyEasyBox>(4.55, 2.2, 1.3, 3000, true, true);
   m_hitbox->SetBodyFixed(true);
-
+  m_hitbox->SetCollide(true);
   m_hitbox->SetPos(ChVector<>(0, 0, 1));
 
   for (int i = 0; i < VEH_NUM_WHEELS; i++) {
