@@ -15,10 +15,17 @@
 *.lai
 *.la
 *.a
+
+# Slurm output files
+*.out
+
+# Codlite Artifacts
 BoostNetworking.workspace
 *.codelite
 *.project 
 *.cproject
+
+# Build Directories
 template_project-build/
 *-build/
 */Debug
