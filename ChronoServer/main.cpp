@@ -97,8 +97,8 @@ void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>
             std::this_thread::sleep_for(std::chrono::seconds(HEARTBEAT_LENGTH));
             for(std::shared_ptr<boost::asio::ip::tcp::socket> socket : sockets) {
                 uint8_t messageCode = HEARTBEAT;
-                if(socket->is_open())
-                    socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+                //if(socket->is_open()) // Commenting this out for client connection debugging purposes.
+                    //socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
             }
         }
     } catch (std::exception& error) {
