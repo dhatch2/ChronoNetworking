@@ -11,11 +11,11 @@
 // =============================================================================
 // Authors: Devin Lafford
 // =============================================================================
-// 
-//	This is a driver model that follows a ChBody using 
+//
+//	This is a driver model that follows a ChBody using
 //	ChAdaptiveSpeedController and ChBodyFollowerSteeringController. The SetGains
-//	functions in the constructor body can be used to change the behaviors of the 
-//	speed PID and the steeering PID. 
+//	functions in the constructor body can be used to change the behaviors of the
+//	speed PID and the steeering PID.
 //
 // =============================================================================
 
@@ -69,7 +69,7 @@ void ChBodyFollowerDriver::Advance(double step)
 	ChClampValue(out_steering, -1.0, 1.0);
 	m_steering = out_steering;
 
-	double m_current_distance = sqrt((target_pos.x - self_pos.x)*(target_pos.x - self_pos.x) + (target_pos.y - self_pos.y)*(target_pos.y - self_pos.y) + (target_pos.z - self_pos.z)*(target_pos.z - self_pos.z));
+	double m_current_distance = sqrt((target_pos.x() - self_pos.x())*(target_pos.x() - self_pos.x()) + (target_pos.y() - self_pos.y())*(target_pos.y() - self_pos.y()) + (target_pos.z() - self_pos.z())*(target_pos.z() - self_pos.z()));
 	m_steeringPID.SetLookAheadDistance(m_current_distance);
 
 	double out_speed = m_speedPID.Advance(m_vehicle, m_target_speed, m_target_following_time, m_target_min_distance, m_current_distance, step);
@@ -91,5 +91,3 @@ void ChBodyFollowerDriver::Advance(double step)
 		m_throttle = 0;
 	}
 }
-
-

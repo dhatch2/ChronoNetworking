@@ -1,3 +1,21 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Helper functions used to convert between ChVehicle and VehicleMessages.
+//
+// =============================================================================
+
 #include "MessageConversions.h"
 
 using namespace chrono;
@@ -37,15 +55,15 @@ ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
 
 void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
                        ChVector<> vector) {
-    message->set_x(vector.x);
-    message->set_y(vector.y);
-    message->set_z(vector.z);
+    message->set_x(vector.x());
+    message->set_y(vector.y());
+    message->set_z(vector.z());
 }
 
 void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
                            ChQuaternion<> quaternion) {
-    message->set_e0(quaternion.e0);
-    message->set_e1(quaternion.e1);
-    message->set_e2(quaternion.e2);
-    message->set_e3(quaternion.e3);
+    message->set_e0(quaternion.e0());
+    message->set_e1(quaternion.e1());
+    message->set_e2(quaternion.e2());
+    message->set_e3(quaternion.e3());
 }

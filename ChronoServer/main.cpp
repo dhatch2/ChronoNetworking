@@ -1,3 +1,21 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Main file for the TCP-based Chrono Server
+//
+// =============================================================================
+
 #include <iostream>
 #include <thread>
 #include <functional>
@@ -19,6 +37,8 @@
 #define PORT_NUMBER 8082
 #define HEARTBEAT_LENGTH 1
 
+int messagesRecieved = 0;
+
 // Start of the listener thread
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV);
 
@@ -38,7 +58,7 @@ int main(int argc, char **argv)
 
     std::thread listener(listenForConnection, std::ref(world), std::ref(worldQueue), queueMutex, emptyqueueCV);
 
-    std::cout << "World queue processing is about to start." << std::endl;
+    //std::cout << "World queue processing is about to start." << std::endl;
     while(true) {
         std::unique_lock<std::mutex> lck(*queueMutex);
         while (worldQueue.empty()) emptyqueueCV->wait(lck);
@@ -50,7 +70,7 @@ int main(int argc, char **argv)
 }
 
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV) {
-    std::cout << "Listener thread started" << std::endl;
+    //std::cout << "Listener thread started" << std::endl;
 
     // Used to give vehicles unique id numbers
     int connectionNumber = 0;
@@ -73,10 +93,10 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     while(true) {
         // Deletion of this socket is done automatically
         std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioService);
-        std::cout << "About to listen" << std::endl;
+        //std::cout << "About to listen" << std::endl;
         acceptor.accept(*socket);
         sockets.push_back(socket);
-        std::cout << "Accepted Connection" << std::endl;
+        //std::cout << "Accepted Connection" << std::endl;
 
         // Creates new thread for the client connection here
         clientConnections.emplace_back(connectionFunc, std::ref(world), std::ref(queue), queueMutex, emptyqueueCV, socket, connectionNumber);
@@ -102,12 +122,12 @@ void regulateHeartbeat(std::vector<std::shared_ptr<boost::asio::ip::tcp::socket>
             }
         }
     } catch (std::exception& error) {
-        std::cout << "regulateHeartbeat: " << error.what() << std::endl;
+        //std::cout << "regulateHeartbeat: " << error.what() << std::endl;
     }
 }
 
 void processConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV, std::shared_ptr<boost::asio::ip::tcp::socket> socket, int connectionNumber) {
-    std::cout << "Processing connection" << std::endl;
+    //std::cout << "Processing connection" << std::endl;
 
     try {
         // Send its identification number
@@ -117,6 +137,9 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
         uint8_t receivingCode;
         boost::asio::streambuf buffer;
         std::istream startStream(&buffer);
+
+        // Get start time
+        auto startTime = std::chrono::steady_clock::now();
 
         // Receives Initial state of the vehicle
         socket->receive(boost::asio::buffer(&receivingCode, sizeof(uint8_t)));
@@ -167,6 +190,15 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
 
             messageCode = VEHICLE_MESSAGE_END;
             socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+            // Get end time
+            //static std::mutex mtx;
+            //auto endTime = std::chrono::steady_clock::now();
+            //auto diff = endTime - startTime;
+            //{std::unique_lock<std::mutex> l{mtx};
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(diff).count() << '\n';}
+
+            // Get start time
+            //startTime = std::chrono::steady_clock::now();
 
             std::istream inStream(&buffer);
 
@@ -175,8 +207,8 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
 
             switch(receivingCode) {
                 case VEHICLE_MESSAGE: {
-                    socket->receive(buffer.prepare(361));
-                    buffer.commit(361);
+                    socket->receive(buffer.prepare(VEHICLE_MESSAGE_SIZE));
+                    buffer.commit(VEHICLE_MESSAGE_SIZE);
                     vehicle->ParseFromIstream(&inStream);
                     buffer.consume(vehicle->ByteSize());
 
@@ -184,7 +216,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
                     // If the id does not correspond to the connection number, it is not updated
                     if(vehicle->vehicleid() == connectionNumber) {
                         std::lock_guard<std::mutex> guard(*queueMutex);
-                        queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); });
+                        queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); messagesRecieved++; });
                         emptyqueueCV->notify_all();
                     } else std::cout << "Update Error" << std::endl;
                     break;

@@ -277,6 +277,9 @@ int main(int argc, char* argv[]) {
     int render_frame = 0;
     double time = 0;
 
+    // Setup position output file
+    std::ofstream positionFile;
+    positionFile.open(argv[2]);
 
     // Setup client object and connect to network
     std::cout << "Connecting to server..." << std::endl;
@@ -354,6 +357,10 @@ int main(int argc, char* argv[]) {
                         client.connectionNumber()));
             client.sendMessage(message);
 
+            //std::shared_ptr<ChronoMessages::VehicleMessage> vehicleProfile;
+            //ehicleProfile.reset((ChronoMessages::VehicleMessage&)(*message));
+            positionFile << ((ChronoMessages::VehicleMessage&)(*message)).chassiscom().x() << ", " << ((ChronoMessages::VehicleMessage&)(*message)).chassiscom().y() << ", " << ((ChronoMessages::VehicleMessage&)(*message)).chtime() << std::endl;
+
             for (std::pair<int, std::shared_ptr<const google::protobuf::Message>> worldPair :
            worldVehicles) {
 		if (otherVehicles.find(worldPair.first) ==
@@ -399,6 +406,7 @@ int main(int argc, char* argv[]) {
         step_number++;
     }
 
+    positionFile.close();
     client.disconnect();
 
     return 0;

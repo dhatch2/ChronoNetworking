@@ -1,5 +1,29 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Client-side interface for communication with the TCP-based Chrono Server
+//
+// =============================================================================
+
 #include "ChClient.h"
+#include <iostream>
+#include <fstream>
 #include <set>
+#include <chrono>
+
+std::chrono::time_point<std::chrono::steady_clock> startTime;
+std::chrono::time_point<std::chrono::steady_clock> endTime;
 
 ChClient::ChClient(boost::asio::io_service* ioService, double* stepSize)
     : m_socket(*ioService), m_outStream(&m_buff)
@@ -48,9 +72,14 @@ int ChClient::connectToServer(std::string name, std::string port) {
 void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Message>>& serverMessages) {
     listener = std::make_shared<std::thread>([&serverMessages, this] {
         std::set<uint32_t> vehicleIds;
+        //std::ofstream outputFile;
+        //outputFile.open("scaling-client-output.csv");
         while (m_socket.is_open()) {
             uint8_t messageCode;
             m_socket.receive(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
+            //endTime = std::chrono::steady_clock::now();
+            //auto diff = endTime - startTime;
+            //outputFile << std::chrono::duration_cast<std::chrono::nanoseconds>(diff).count() << '\n';
             // std::cout << (int)messageCode << std::endl;
 
             switch(messageCode) {
@@ -105,11 +134,13 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
                 }
             }
         }
+        //outputFile.close();
     });
 }
 
 void ChClient::sendMessage(std::shared_ptr<google::protobuf::Message> message) {
     uint8_t messageCode = VEHICLE_MESSAGE;
+    startTime = std::chrono::steady_clock::now();
     m_socket.send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
 
     message->SerializeToOstream(&m_outStream);

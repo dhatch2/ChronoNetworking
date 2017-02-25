@@ -260,7 +260,6 @@ int main(int argc, char* argv[]) {
     int render_frame = 0;
     double time = 0;
 
-
     // Setup client object and connect to network
     std::cout << "Connecting to server..." << std::endl;
     boost::asio::io_service ioService;
