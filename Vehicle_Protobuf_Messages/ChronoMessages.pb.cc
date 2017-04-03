@@ -18,190 +18,202 @@
 // @@protoc_insertion_point(includes)
 
 namespace ChronoMessages {
+class VehicleMessage_MVectorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage_MVector> {
+} _VehicleMessage_MVector_default_instance_;
+class VehicleMessage_MQuaternionDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage_MQuaternion> {
+} _VehicleMessage_MQuaternion_default_instance_;
+class VehicleMessageDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage> {
+} _VehicleMessage_default_instance_;
+
+namespace protobuf_ChronoMessages_2eproto {
+
 
 namespace {
 
-const ::google::protobuf::Descriptor* VehicleMessage_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  VehicleMessage_reflection_ = NULL;
-const ::google::protobuf::Descriptor* VehicleMessage_MVector_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  VehicleMessage_MVector_reflection_ = NULL;
-const ::google::protobuf::Descriptor* VehicleMessage_MQuaternion_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  VehicleMessage_MQuaternion_reflection_ = NULL;
+::google::protobuf::Metadata file_level_metadata[3];
 
 }  // namespace
 
+const ::google::protobuf::uint32 TableStruct::offsets[] = {
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, x_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, y_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, z_),
+  0,
+  1,
+  2,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e0_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e1_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e2_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e3_),
+  0,
+  1,
+  2,
+  3,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, timestamp_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, vehicleid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chtime_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, speed_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chassiscom_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontrightwheelcom_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontleftwheelcom_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backrightwheelcom_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backleftwheelcom_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chassisrot_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontrightwheelrot_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontleftwheelrot_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backrightwheelrot_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backleftwheelrot_),
+  10,
+  11,
+  12,
+  13,
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+};
 
-void protobuf_AssignDesc_ChronoMessages_2eproto() GOOGLE_ATTRIBUTE_COLD;
-void protobuf_AssignDesc_ChronoMessages_2eproto() {
-  protobuf_AddDesc_ChronoMessages_2eproto();
-  const ::google::protobuf::FileDescriptor* file =
-    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "ChronoMessages.proto");
-  GOOGLE_CHECK(file != NULL);
-  VehicleMessage_descriptor_ = file->message_type(0);
-  static const int VehicleMessage_offsets_[14] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, timestamp_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, vehicleid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chtime_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, speed_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chassiscom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontrightwheelcom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontleftwheelcom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backrightwheelcom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backleftwheelcom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, chassisrot_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontrightwheelrot_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, frontleftwheelrot_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backrightwheelrot_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, backleftwheelrot_),
-  };
-  VehicleMessage_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      VehicleMessage_descriptor_,
-      VehicleMessage::internal_default_instance(),
-      VehicleMessage_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, _has_bits_),
-      -1,
-      -1,
-      sizeof(VehicleMessage),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage, _internal_metadata_));
-  VehicleMessage_MVector_descriptor_ = VehicleMessage_descriptor_->nested_type(0);
-  static const int VehicleMessage_MVector_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, x_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, y_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, z_),
-  };
-  VehicleMessage_MVector_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      VehicleMessage_MVector_descriptor_,
-      VehicleMessage_MVector::internal_default_instance(),
-      VehicleMessage_MVector_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, _has_bits_),
-      -1,
-      -1,
-      sizeof(VehicleMessage_MVector),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MVector, _internal_metadata_));
-  VehicleMessage_MQuaternion_descriptor_ = VehicleMessage_descriptor_->nested_type(1);
-  static const int VehicleMessage_MQuaternion_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e0_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e1_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e2_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, e3_),
-  };
-  VehicleMessage_MQuaternion_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      VehicleMessage_MQuaternion_descriptor_,
-      VehicleMessage_MQuaternion::internal_default_instance(),
-      VehicleMessage_MQuaternion_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, _has_bits_),
-      -1,
-      -1,
-      sizeof(VehicleMessage_MQuaternion),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleMessage_MQuaternion, _internal_metadata_));
-}
+static const ::google::protobuf::internal::MigrationSchema schemas[] = {
+  { 0, 7, sizeof(VehicleMessage_MVector)},
+  { 10, 18, sizeof(VehicleMessage_MQuaternion)},
+  { 22, 40, sizeof(VehicleMessage)},
+};
+
+static ::google::protobuf::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::google::protobuf::Message*>(&_VehicleMessage_MVector_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_VehicleMessage_MQuaternion_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_VehicleMessage_default_instance_),
+};
 
 namespace {
 
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
+void protobuf_AssignDescriptors() {
+  AddDescriptors();
+  ::google::protobuf::MessageFactory* factory = NULL;
+  AssignDescriptors(
+      "ChronoMessages.proto", schemas, file_default_instances, TableStruct::offsets, factory,
+      file_level_metadata, NULL, NULL);
+}
+
 void protobuf_AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_ChronoMessages_2eproto);
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &protobuf_AssignDescriptors);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      VehicleMessage_descriptor_, VehicleMessage::internal_default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      VehicleMessage_MVector_descriptor_, VehicleMessage_MVector::internal_default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      VehicleMessage_MQuaternion_descriptor_, VehicleMessage_MQuaternion::internal_default_instance());
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 3);
 }
 
 }  // namespace
 
-void protobuf_ShutdownFile_ChronoMessages_2eproto() {
-  VehicleMessage_default_instance_.Shutdown();
-  delete VehicleMessage_reflection_;
-  VehicleMessage_MVector_default_instance_.Shutdown();
-  delete VehicleMessage_MVector_reflection_;
-  VehicleMessage_MQuaternion_default_instance_.Shutdown();
-  delete VehicleMessage_MQuaternion_reflection_;
+void TableStruct::Shutdown() {
+  _VehicleMessage_MVector_default_instance_.Shutdown();
+  delete file_level_metadata[0].reflection;
+  _VehicleMessage_MQuaternion_default_instance_.Shutdown();
+  delete file_level_metadata[1].reflection;
+  _VehicleMessage_default_instance_.Shutdown();
+  delete file_level_metadata[2].reflection;
 }
 
-void protobuf_InitDefaults_ChronoMessages_2eproto_impl() {
+void TableStruct::InitDefaultsImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  VehicleMessage_default_instance_.DefaultConstruct();
-  VehicleMessage_MVector_default_instance_.DefaultConstruct();
-  VehicleMessage_MQuaternion_default_instance_.DefaultConstruct();
-  VehicleMessage_default_instance_.get_mutable()->InitAsDefaultInstance();
-  VehicleMessage_MVector_default_instance_.get_mutable()->InitAsDefaultInstance();
-  VehicleMessage_MQuaternion_default_instance_.get_mutable()->InitAsDefaultInstance();
+  ::google::protobuf::internal::InitProtobufDefaults();
+  _VehicleMessage_MVector_default_instance_.DefaultConstruct();
+  _VehicleMessage_MQuaternion_default_instance_.DefaultConstruct();
+  _VehicleMessage_default_instance_.DefaultConstruct();
+  _VehicleMessage_default_instance_.get_mutable()->chassiscom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
+      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->frontrightwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
+      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->frontleftwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
+      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->backrightwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
+      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->backleftwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
+      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->chassisrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
+      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->frontrightwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
+      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->frontleftwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
+      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->backrightwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
+      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
+  _VehicleMessage_default_instance_.get_mutable()->backleftwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
+      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
 }
 
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_InitDefaults_ChronoMessages_2eproto_once_);
-void protobuf_InitDefaults_ChronoMessages_2eproto() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_InitDefaults_ChronoMessages_2eproto_once_,
-                 &protobuf_InitDefaults_ChronoMessages_2eproto_impl);
+void InitDefaults() {
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &TableStruct::InitDefaultsImpl);
 }
-void protobuf_AddDesc_ChronoMessages_2eproto_impl() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  protobuf_InitDefaults_ChronoMessages_2eproto();
+void AddDescriptorsImpl() {
+  InitDefaults();
+  static const char descriptor[] = {
+      "\n\024ChronoMessages.proto\022\016ChronoMessages\"\344"
+      "\006\n\016VehicleMessage\022\021\n\ttimestamp\030\001 \002(\005\022\021\n\t"
+      "vehicleId\030\002 \002(\005\022\016\n\006chTime\030\003 \002(\001\022\r\n\005speed"
+      "\030\004 \002(\001\022:\n\nChassisCOM\030\005 \002(\0132&.ChronoMessa"
+      "ges.VehicleMessage.MVector\022B\n\022FrontRight"
+      "WheelCOM\030\006 \002(\0132&.ChronoMessages.VehicleM"
+      "essage.MVector\022A\n\021FrontLeftWheelCOM\030\007 \002("
+      "\0132&.ChronoMessages.VehicleMessage.MVecto"
+      "r\022A\n\021BackRightWheelCOM\030\010 \002(\0132&.ChronoMes"
+      "sages.VehicleMessage.MVector\022@\n\020BackLeft"
+      "WheelCOM\030\t \002(\0132&.ChronoMessages.VehicleM"
+      "essage.MVector\022>\n\nChassisRot\030\n \002(\0132*.Chr"
+      "onoMessages.VehicleMessage.MQuaternion\022F"
+      "\n\022FrontRightWheelRot\030\013 \002(\0132*.ChronoMessa"
+      "ges.VehicleMessage.MQuaternion\022E\n\021FrontL"
+      "eftWheelRot\030\014 \002(\0132*.ChronoMessages.Vehic"
+      "leMessage.MQuaternion\022E\n\021BackRightWheelR"
+      "ot\030\r \002(\0132*.ChronoMessages.VehicleMessage"
+      ".MQuaternion\022D\n\020BackLeftWheelRot\030\016 \002(\0132*"
+      ".ChronoMessages.VehicleMessage.MQuaterni"
+      "on\032*\n\007MVector\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z"
+      "\030\003 \002(\001\032=\n\013MQuaternion\022\n\n\002e0\030\001 \002(\001\022\n\n\002e1\030"
+      "\002 \002(\001\022\n\n\002e2\030\003 \002(\001\022\n\n\002e3\030\004 \002(\001"
+  };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\024ChronoMessages.proto\022\016ChronoMessages\"\344"
-    "\006\n\016VehicleMessage\022\021\n\ttimestamp\030\001 \002(\005\022\021\n\t"
-    "vehicleId\030\002 \002(\005\022\016\n\006chTime\030\003 \002(\001\022\r\n\005speed"
-    "\030\004 \002(\001\022:\n\nChassisCOM\030\005 \002(\0132&.ChronoMessa"
-    "ges.VehicleMessage.MVector\022B\n\022FrontRight"
-    "WheelCOM\030\006 \002(\0132&.ChronoMessages.VehicleM"
-    "essage.MVector\022A\n\021FrontLeftWheelCOM\030\007 \002("
-    "\0132&.ChronoMessages.VehicleMessage.MVecto"
-    "r\022A\n\021BackRightWheelCOM\030\010 \002(\0132&.ChronoMes"
-    "sages.VehicleMessage.MVector\022@\n\020BackLeft"
-    "WheelCOM\030\t \002(\0132&.ChronoMessages.VehicleM"
-    "essage.MVector\022>\n\nChassisRot\030\n \002(\0132*.Chr"
-    "onoMessages.VehicleMessage.MQuaternion\022F"
-    "\n\022FrontRightWheelRot\030\013 \002(\0132*.ChronoMessa"
-    "ges.VehicleMessage.MQuaternion\022E\n\021FrontL"
-    "eftWheelRot\030\014 \002(\0132*.ChronoMessages.Vehic"
-    "leMessage.MQuaternion\022E\n\021BackRightWheelR"
-    "ot\030\r \002(\0132*.ChronoMessages.VehicleMessage"
-    ".MQuaternion\022D\n\020BackLeftWheelRot\030\016 \002(\0132*"
-    ".ChronoMessages.VehicleMessage.MQuaterni"
-    "on\032*\n\007MVector\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z"
-    "\030\003 \002(\001\032=\n\013MQuaternion\022\n\n\002e0\030\001 \002(\001\022\n\n\002e1\030"
-    "\002 \002(\001\022\n\n\002e2\030\003 \002(\001\022\n\n\002e3\030\004 \002(\001", 909);
+      descriptor, 909);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ChronoMessages.proto", &protobuf_RegisterTypes);
-  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_ChronoMessages_2eproto);
+  ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
 }
 
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AddDesc_ChronoMessages_2eproto_once_);
-void protobuf_AddDesc_ChronoMessages_2eproto() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AddDesc_ChronoMessages_2eproto_once_,
-                 &protobuf_AddDesc_ChronoMessages_2eproto_impl);
+void AddDescriptors() {
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &AddDescriptorsImpl);
 }
 // Force AddDescriptors() to be called at static initialization time.
-struct StaticDescriptorInitializer_ChronoMessages_2eproto {
-  StaticDescriptorInitializer_ChronoMessages_2eproto() {
-    protobuf_AddDesc_ChronoMessages_2eproto();
+struct StaticDescriptorInitializer {
+  StaticDescriptorInitializer() {
+    AddDescriptors();
   }
-} static_descriptor_initializer_ChronoMessages_2eproto_;
+} static_descriptor_initializer;
 
-namespace {
-
-static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD GOOGLE_ATTRIBUTE_NORETURN;
-static void MergeFromFail(int line) {
-  ::google::protobuf::internal::MergeFromFail(__FILE__, line);
-}
-
-}  // namespace
+}  // namespace protobuf_ChronoMessages_2eproto
 
 
 // ===================================================================
@@ -214,19 +226,21 @@ const int VehicleMessage_MVector::kZFieldNumber;
 
 VehicleMessage_MVector::VehicleMessage_MVector()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (this != internal_default_instance()) protobuf_InitDefaults_ChronoMessages_2eproto();
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ChronoMessages_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage.MVector)
 }
-
-void VehicleMessage_MVector::InitAsDefaultInstance() {
-}
-
 VehicleMessage_MVector::VehicleMessage_MVector(const VehicleMessage_MVector& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  UnsafeMergeFrom(from);
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&x_, &from.x_,
+    reinterpret_cast<char*>(&z_) -
+    reinterpret_cast<char*>(&x_) + sizeof(z_));
   // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage.MVector)
 }
 
@@ -250,16 +264,14 @@ void VehicleMessage_MVector::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* VehicleMessage_MVector::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return VehicleMessage_MVector_descriptor_;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[0].descriptor;
 }
 
 const VehicleMessage_MVector& VehicleMessage_MVector::default_instance() {
-  protobuf_InitDefaults_ChronoMessages_2eproto();
+  protobuf_ChronoMessages_2eproto::InitDefaults();
   return *internal_default_instance();
 }
-
-::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage_MVector> VehicleMessage_MVector_default_instance_;
 
 VehicleMessage_MVector* VehicleMessage_MVector::New(::google::protobuf::Arena* arena) const {
   VehicleMessage_MVector* n = new VehicleMessage_MVector;
@@ -271,31 +283,12 @@ VehicleMessage_MVector* VehicleMessage_MVector::New(::google::protobuf::Arena* a
 
 void VehicleMessage_MVector::Clear() {
 // @@protoc_insertion_point(message_clear_start:ChronoMessages.VehicleMessage.MVector)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(VehicleMessage_MVector, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<VehicleMessage_MVector*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&(first), 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
-  ZR_(x_, z_);
-
-#undef ZR_HELPER_
-#undef ZR_
-
-  _has_bits_.Clear();
-  if (_internal_metadata_.have_unknown_fields()) {
-    mutable_unknown_fields()->Clear();
+  if (_has_bits_[0 / 32] & 7u) {
+    ::memset(&x_, 0, reinterpret_cast<char*>(&z_) -
+      reinterpret_cast<char*>(&x_) + sizeof(z_));
   }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
 }
 
 bool VehicleMessage_MVector::MergePartialFromCodedStream(
@@ -304,13 +297,13 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage.MVector)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required double x = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 9u) {
           set_has_x();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -318,14 +311,12 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_y;
         break;
       }
 
       // required double y = 2;
       case 2: {
-        if (tag == 17) {
-         parse_y:
+        if (tag == 17u) {
           set_has_y();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -333,14 +324,12 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_z;
         break;
       }
 
       // required double z = 3;
       case 3: {
-        if (tag == 25) {
-         parse_z:
+        if (tag == 25u) {
           set_has_z();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -348,7 +337,6 @@ bool VehicleMessage_MVector::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -401,7 +389,7 @@ void VehicleMessage_MVector::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleMessage_MVector::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage.MVector)
   // required double x = 1;
   if (has_x()) {
@@ -451,6 +439,11 @@ size_t VehicleMessage_MVector::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ChronoMessages.VehicleMessage.MVector)
   size_t total_size = 0;
 
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
   if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
     // required double x = 1;
     total_size += 1 + 8;
@@ -464,11 +457,6 @@ size_t VehicleMessage_MVector::ByteSizeLong() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -478,7 +466,7 @@ size_t VehicleMessage_MVector::ByteSizeLong() const {
 
 void VehicleMessage_MVector::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ChronoMessages.VehicleMessage.MVector)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  GOOGLE_DCHECK_NE(&from, this);
   const VehicleMessage_MVector* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const VehicleMessage_MVector>(
           &from);
@@ -487,22 +475,15 @@ void VehicleMessage_MVector::MergeFrom(const ::google::protobuf::Message& from) 
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ChronoMessages.VehicleMessage.MVector)
-    UnsafeMergeFrom(*source);
+    MergeFrom(*source);
   }
 }
 
 void VehicleMessage_MVector::MergeFrom(const VehicleMessage_MVector& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ChronoMessages.VehicleMessage.MVector)
-  if (GOOGLE_PREDICT_TRUE(&from != this)) {
-    UnsafeMergeFrom(from);
-  } else {
-    MergeFromFail(__LINE__);
-  }
-}
-
-void VehicleMessage_MVector::UnsafeMergeFrom(const VehicleMessage_MVector& from) {
-  GOOGLE_DCHECK(&from != this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from._has_bits_[0 / 32] & 7u) {
     if (from.has_x()) {
       set_x(from.x());
     }
@@ -512,10 +493,6 @@ void VehicleMessage_MVector::UnsafeMergeFrom(const VehicleMessage_MVector& from)
     if (from.has_z()) {
       set_z(from.z());
     }
-  }
-  if (from._internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
-      from.unknown_fields(), &_internal_metadata_);
   }
 }
 
@@ -530,12 +507,11 @@ void VehicleMessage_MVector::CopyFrom(const VehicleMessage_MVector& from) {
 // @@protoc_insertion_point(class_specific_copy_from_start:ChronoMessages.VehicleMessage.MVector)
   if (&from == this) return;
   Clear();
-  UnsafeMergeFrom(from);
+  MergeFrom(from);
 }
 
 bool VehicleMessage_MVector::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
-
   return true;
 }
 
@@ -553,15 +529,88 @@ void VehicleMessage_MVector::InternalSwap(VehicleMessage_MVector* other) {
 }
 
 ::google::protobuf::Metadata VehicleMessage_MVector::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = VehicleMessage_MVector_descriptor_;
-  metadata.reflection = VehicleMessage_MVector_reflection_;
-  return metadata;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[0];
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// VehicleMessage_MVector
 
-// -------------------------------------------------------------------
+// required double x = 1;
+bool VehicleMessage_MVector::has_x() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void VehicleMessage_MVector::set_has_x() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void VehicleMessage_MVector::clear_has_x() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void VehicleMessage_MVector::clear_x() {
+  x_ = 0;
+  clear_has_x();
+}
+double VehicleMessage_MVector::x() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.x)
+  return x_;
+}
+void VehicleMessage_MVector::set_x(double value) {
+  set_has_x();
+  x_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.x)
+}
+
+// required double y = 2;
+bool VehicleMessage_MVector::has_y() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void VehicleMessage_MVector::set_has_y() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void VehicleMessage_MVector::clear_has_y() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void VehicleMessage_MVector::clear_y() {
+  y_ = 0;
+  clear_has_y();
+}
+double VehicleMessage_MVector::y() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.y)
+  return y_;
+}
+void VehicleMessage_MVector::set_y(double value) {
+  set_has_y();
+  y_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.y)
+}
+
+// required double z = 3;
+bool VehicleMessage_MVector::has_z() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void VehicleMessage_MVector::set_has_z() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void VehicleMessage_MVector::clear_has_z() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void VehicleMessage_MVector::clear_z() {
+  z_ = 0;
+  clear_has_z();
+}
+double VehicleMessage_MVector::z() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.z)
+  return z_;
+}
+void VehicleMessage_MVector::set_z(double value) {
+  set_has_z();
+  z_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.z)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int VehicleMessage_MQuaternion::kE0FieldNumber;
@@ -572,19 +621,21 @@ const int VehicleMessage_MQuaternion::kE3FieldNumber;
 
 VehicleMessage_MQuaternion::VehicleMessage_MQuaternion()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (this != internal_default_instance()) protobuf_InitDefaults_ChronoMessages_2eproto();
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ChronoMessages_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage.MQuaternion)
 }
-
-void VehicleMessage_MQuaternion::InitAsDefaultInstance() {
-}
-
 VehicleMessage_MQuaternion::VehicleMessage_MQuaternion(const VehicleMessage_MQuaternion& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  UnsafeMergeFrom(from);
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&e0_, &from.e0_,
+    reinterpret_cast<char*>(&e3_) -
+    reinterpret_cast<char*>(&e0_) + sizeof(e3_));
   // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage.MQuaternion)
 }
 
@@ -608,16 +659,14 @@ void VehicleMessage_MQuaternion::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* VehicleMessage_MQuaternion::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return VehicleMessage_MQuaternion_descriptor_;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[1].descriptor;
 }
 
 const VehicleMessage_MQuaternion& VehicleMessage_MQuaternion::default_instance() {
-  protobuf_InitDefaults_ChronoMessages_2eproto();
+  protobuf_ChronoMessages_2eproto::InitDefaults();
   return *internal_default_instance();
 }
-
-::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage_MQuaternion> VehicleMessage_MQuaternion_default_instance_;
 
 VehicleMessage_MQuaternion* VehicleMessage_MQuaternion::New(::google::protobuf::Arena* arena) const {
   VehicleMessage_MQuaternion* n = new VehicleMessage_MQuaternion;
@@ -629,31 +678,12 @@ VehicleMessage_MQuaternion* VehicleMessage_MQuaternion::New(::google::protobuf::
 
 void VehicleMessage_MQuaternion::Clear() {
 // @@protoc_insertion_point(message_clear_start:ChronoMessages.VehicleMessage.MQuaternion)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(VehicleMessage_MQuaternion, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<VehicleMessage_MQuaternion*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&(first), 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
-  ZR_(e0_, e3_);
-
-#undef ZR_HELPER_
-#undef ZR_
-
-  _has_bits_.Clear();
-  if (_internal_metadata_.have_unknown_fields()) {
-    mutable_unknown_fields()->Clear();
+  if (_has_bits_[0 / 32] & 15u) {
+    ::memset(&e0_, 0, reinterpret_cast<char*>(&e3_) -
+      reinterpret_cast<char*>(&e0_) + sizeof(e3_));
   }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
 }
 
 bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
@@ -662,13 +692,13 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage.MQuaternion)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required double e0 = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 9u) {
           set_has_e0();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -676,14 +706,12 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_e1;
         break;
       }
 
       // required double e1 = 2;
       case 2: {
-        if (tag == 17) {
-         parse_e1:
+        if (tag == 17u) {
           set_has_e1();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -691,14 +719,12 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_e2;
         break;
       }
 
       // required double e2 = 3;
       case 3: {
-        if (tag == 25) {
-         parse_e2:
+        if (tag == 25u) {
           set_has_e2();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -706,14 +732,12 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(33)) goto parse_e3;
         break;
       }
 
       // required double e3 = 4;
       case 4: {
-        if (tag == 33) {
-         parse_e3:
+        if (tag == 33u) {
           set_has_e3();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -721,7 +745,6 @@ bool VehicleMessage_MQuaternion::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -779,7 +802,7 @@ void VehicleMessage_MQuaternion::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleMessage_MQuaternion::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage.MQuaternion)
   // required double e0 = 1;
   if (has_e0()) {
@@ -839,6 +862,11 @@ size_t VehicleMessage_MQuaternion::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ChronoMessages.VehicleMessage.MQuaternion)
   size_t total_size = 0;
 
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
   if (((_has_bits_[0] & 0x0000000f) ^ 0x0000000f) == 0) {  // All required fields are present.
     // required double e0 = 1;
     total_size += 1 + 8;
@@ -855,11 +883,6 @@ size_t VehicleMessage_MQuaternion::ByteSizeLong() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -869,7 +892,7 @@ size_t VehicleMessage_MQuaternion::ByteSizeLong() const {
 
 void VehicleMessage_MQuaternion::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ChronoMessages.VehicleMessage.MQuaternion)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  GOOGLE_DCHECK_NE(&from, this);
   const VehicleMessage_MQuaternion* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const VehicleMessage_MQuaternion>(
           &from);
@@ -878,22 +901,15 @@ void VehicleMessage_MQuaternion::MergeFrom(const ::google::protobuf::Message& fr
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ChronoMessages.VehicleMessage.MQuaternion)
-    UnsafeMergeFrom(*source);
+    MergeFrom(*source);
   }
 }
 
 void VehicleMessage_MQuaternion::MergeFrom(const VehicleMessage_MQuaternion& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ChronoMessages.VehicleMessage.MQuaternion)
-  if (GOOGLE_PREDICT_TRUE(&from != this)) {
-    UnsafeMergeFrom(from);
-  } else {
-    MergeFromFail(__LINE__);
-  }
-}
-
-void VehicleMessage_MQuaternion::UnsafeMergeFrom(const VehicleMessage_MQuaternion& from) {
-  GOOGLE_DCHECK(&from != this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from._has_bits_[0 / 32] & 15u) {
     if (from.has_e0()) {
       set_e0(from.e0());
     }
@@ -906,10 +922,6 @@ void VehicleMessage_MQuaternion::UnsafeMergeFrom(const VehicleMessage_MQuaternio
     if (from.has_e3()) {
       set_e3(from.e3());
     }
-  }
-  if (from._internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
-      from.unknown_fields(), &_internal_metadata_);
   }
 }
 
@@ -924,12 +936,11 @@ void VehicleMessage_MQuaternion::CopyFrom(const VehicleMessage_MQuaternion& from
 // @@protoc_insertion_point(class_specific_copy_from_start:ChronoMessages.VehicleMessage.MQuaternion)
   if (&from == this) return;
   Clear();
-  UnsafeMergeFrom(from);
+  MergeFrom(from);
 }
 
 bool VehicleMessage_MQuaternion::IsInitialized() const {
   if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
-
   return true;
 }
 
@@ -948,15 +959,112 @@ void VehicleMessage_MQuaternion::InternalSwap(VehicleMessage_MQuaternion* other)
 }
 
 ::google::protobuf::Metadata VehicleMessage_MQuaternion::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = VehicleMessage_MQuaternion_descriptor_;
-  metadata.reflection = VehicleMessage_MQuaternion_reflection_;
-  return metadata;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[1];
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// VehicleMessage_MQuaternion
 
-// -------------------------------------------------------------------
+// required double e0 = 1;
+bool VehicleMessage_MQuaternion::has_e0() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void VehicleMessage_MQuaternion::set_has_e0() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void VehicleMessage_MQuaternion::clear_has_e0() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void VehicleMessage_MQuaternion::clear_e0() {
+  e0_ = 0;
+  clear_has_e0();
+}
+double VehicleMessage_MQuaternion::e0() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e0)
+  return e0_;
+}
+void VehicleMessage_MQuaternion::set_e0(double value) {
+  set_has_e0();
+  e0_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e0)
+}
+
+// required double e1 = 2;
+bool VehicleMessage_MQuaternion::has_e1() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void VehicleMessage_MQuaternion::set_has_e1() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void VehicleMessage_MQuaternion::clear_has_e1() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void VehicleMessage_MQuaternion::clear_e1() {
+  e1_ = 0;
+  clear_has_e1();
+}
+double VehicleMessage_MQuaternion::e1() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e1)
+  return e1_;
+}
+void VehicleMessage_MQuaternion::set_e1(double value) {
+  set_has_e1();
+  e1_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e1)
+}
+
+// required double e2 = 3;
+bool VehicleMessage_MQuaternion::has_e2() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void VehicleMessage_MQuaternion::set_has_e2() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void VehicleMessage_MQuaternion::clear_has_e2() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void VehicleMessage_MQuaternion::clear_e2() {
+  e2_ = 0;
+  clear_has_e2();
+}
+double VehicleMessage_MQuaternion::e2() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e2)
+  return e2_;
+}
+void VehicleMessage_MQuaternion::set_e2(double value) {
+  set_has_e2();
+  e2_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e2)
+}
+
+// required double e3 = 4;
+bool VehicleMessage_MQuaternion::has_e3() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void VehicleMessage_MQuaternion::set_has_e3() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void VehicleMessage_MQuaternion::clear_has_e3() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+void VehicleMessage_MQuaternion::clear_e3() {
+  e3_ = 0;
+  clear_has_e3();
+}
+double VehicleMessage_MQuaternion::e3() const {
+  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e3)
+  return e3_;
+}
+void VehicleMessage_MQuaternion::set_e3(double value) {
+  set_has_e3();
+  e3_ = value;
+  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e3)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int VehicleMessage::kTimestampFieldNumber;
@@ -977,56 +1085,78 @@ const int VehicleMessage::kBackLeftWheelRotFieldNumber;
 
 VehicleMessage::VehicleMessage()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (this != internal_default_instance()) protobuf_InitDefaults_ChronoMessages_2eproto();
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ChronoMessages_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ChronoMessages.VehicleMessage)
 }
-
-void VehicleMessage::InitAsDefaultInstance() {
-  chassiscom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
-      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
-  frontrightwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
-      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
-  frontleftwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
-      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
-  backrightwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
-      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
-  backleftwheelcom_ = const_cast< ::ChronoMessages::VehicleMessage_MVector*>(
-      ::ChronoMessages::VehicleMessage_MVector::internal_default_instance());
-  chassisrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
-      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
-  frontrightwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
-      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
-  frontleftwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
-      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
-  backrightwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
-      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
-  backleftwheelrot_ = const_cast< ::ChronoMessages::VehicleMessage_MQuaternion*>(
-      ::ChronoMessages::VehicleMessage_MQuaternion::internal_default_instance());
-}
-
 VehicleMessage::VehicleMessage(const VehicleMessage& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  UnsafeMergeFrom(from);
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_chassiscom()) {
+    chassiscom_ = new ::ChronoMessages::VehicleMessage_MVector(*from.chassiscom_);
+  } else {
+    chassiscom_ = NULL;
+  }
+  if (from.has_frontrightwheelcom()) {
+    frontrightwheelcom_ = new ::ChronoMessages::VehicleMessage_MVector(*from.frontrightwheelcom_);
+  } else {
+    frontrightwheelcom_ = NULL;
+  }
+  if (from.has_frontleftwheelcom()) {
+    frontleftwheelcom_ = new ::ChronoMessages::VehicleMessage_MVector(*from.frontleftwheelcom_);
+  } else {
+    frontleftwheelcom_ = NULL;
+  }
+  if (from.has_backrightwheelcom()) {
+    backrightwheelcom_ = new ::ChronoMessages::VehicleMessage_MVector(*from.backrightwheelcom_);
+  } else {
+    backrightwheelcom_ = NULL;
+  }
+  if (from.has_backleftwheelcom()) {
+    backleftwheelcom_ = new ::ChronoMessages::VehicleMessage_MVector(*from.backleftwheelcom_);
+  } else {
+    backleftwheelcom_ = NULL;
+  }
+  if (from.has_chassisrot()) {
+    chassisrot_ = new ::ChronoMessages::VehicleMessage_MQuaternion(*from.chassisrot_);
+  } else {
+    chassisrot_ = NULL;
+  }
+  if (from.has_frontrightwheelrot()) {
+    frontrightwheelrot_ = new ::ChronoMessages::VehicleMessage_MQuaternion(*from.frontrightwheelrot_);
+  } else {
+    frontrightwheelrot_ = NULL;
+  }
+  if (from.has_frontleftwheelrot()) {
+    frontleftwheelrot_ = new ::ChronoMessages::VehicleMessage_MQuaternion(*from.frontleftwheelrot_);
+  } else {
+    frontleftwheelrot_ = NULL;
+  }
+  if (from.has_backrightwheelrot()) {
+    backrightwheelrot_ = new ::ChronoMessages::VehicleMessage_MQuaternion(*from.backrightwheelrot_);
+  } else {
+    backrightwheelrot_ = NULL;
+  }
+  if (from.has_backleftwheelrot()) {
+    backleftwheelrot_ = new ::ChronoMessages::VehicleMessage_MQuaternion(*from.backleftwheelrot_);
+  } else {
+    backleftwheelrot_ = NULL;
+  }
+  ::memcpy(&timestamp_, &from.timestamp_,
+    reinterpret_cast<char*>(&speed_) -
+    reinterpret_cast<char*>(&timestamp_) + sizeof(speed_));
   // @@protoc_insertion_point(copy_constructor:ChronoMessages.VehicleMessage)
 }
 
 void VehicleMessage::SharedCtor() {
   _cached_size_ = 0;
-  chassiscom_ = NULL;
-  frontrightwheelcom_ = NULL;
-  frontleftwheelcom_ = NULL;
-  backrightwheelcom_ = NULL;
-  backleftwheelcom_ = NULL;
-  chassisrot_ = NULL;
-  frontrightwheelrot_ = NULL;
-  frontleftwheelrot_ = NULL;
-  backrightwheelrot_ = NULL;
-  backleftwheelrot_ = NULL;
-  ::memset(&timestamp_, 0, reinterpret_cast<char*>(&speed_) -
-    reinterpret_cast<char*>(&timestamp_) + sizeof(speed_));
+  ::memset(&chassiscom_, 0, reinterpret_cast<char*>(&speed_) -
+    reinterpret_cast<char*>(&chassiscom_) + sizeof(speed_));
 }
 
 VehicleMessage::~VehicleMessage() {
@@ -1035,16 +1165,34 @@ VehicleMessage::~VehicleMessage() {
 }
 
 void VehicleMessage::SharedDtor() {
-  if (this != &VehicleMessage_default_instance_.get()) {
+  if (this != internal_default_instance()) {
     delete chassiscom_;
+  }
+  if (this != internal_default_instance()) {
     delete frontrightwheelcom_;
+  }
+  if (this != internal_default_instance()) {
     delete frontleftwheelcom_;
+  }
+  if (this != internal_default_instance()) {
     delete backrightwheelcom_;
+  }
+  if (this != internal_default_instance()) {
     delete backleftwheelcom_;
+  }
+  if (this != internal_default_instance()) {
     delete chassisrot_;
+  }
+  if (this != internal_default_instance()) {
     delete frontrightwheelrot_;
+  }
+  if (this != internal_default_instance()) {
     delete frontleftwheelrot_;
+  }
+  if (this != internal_default_instance()) {
     delete backrightwheelrot_;
+  }
+  if (this != internal_default_instance()) {
     delete backleftwheelrot_;
   }
 }
@@ -1055,16 +1203,14 @@ void VehicleMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* VehicleMessage::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return VehicleMessage_descriptor_;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[2].descriptor;
 }
 
 const VehicleMessage& VehicleMessage::default_instance() {
-  protobuf_InitDefaults_ChronoMessages_2eproto();
+  protobuf_ChronoMessages_2eproto::InitDefaults();
   return *internal_default_instance();
 }
-
-::google::protobuf::internal::ExplicitlyConstructed<VehicleMessage> VehicleMessage_default_instance_;
 
 VehicleMessage* VehicleMessage::New(::google::protobuf::Arena* arena) const {
   VehicleMessage* n = new VehicleMessage;
@@ -1076,65 +1222,56 @@ VehicleMessage* VehicleMessage::New(::google::protobuf::Arena* arena) const {
 
 void VehicleMessage::Clear() {
 // @@protoc_insertion_point(message_clear_start:ChronoMessages.VehicleMessage)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(VehicleMessage, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<VehicleMessage*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&(first), 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
   if (_has_bits_[0 / 32] & 255u) {
-    ZR_(timestamp_, speed_);
     if (has_chassiscom()) {
-      if (chassiscom_ != NULL) chassiscom_->::ChronoMessages::VehicleMessage_MVector::Clear();
+      GOOGLE_DCHECK(chassiscom_ != NULL);
+      chassiscom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
     if (has_frontrightwheelcom()) {
-      if (frontrightwheelcom_ != NULL) frontrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
+      GOOGLE_DCHECK(frontrightwheelcom_ != NULL);
+      frontrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
     if (has_frontleftwheelcom()) {
-      if (frontleftwheelcom_ != NULL) frontleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
+      GOOGLE_DCHECK(frontleftwheelcom_ != NULL);
+      frontleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
     if (has_backrightwheelcom()) {
-      if (backrightwheelcom_ != NULL) backrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
+      GOOGLE_DCHECK(backrightwheelcom_ != NULL);
+      backrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
-  }
-  if (_has_bits_[8 / 32] & 16128u) {
     if (has_backleftwheelcom()) {
-      if (backleftwheelcom_ != NULL) backleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
+      GOOGLE_DCHECK(backleftwheelcom_ != NULL);
+      backleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
     }
     if (has_chassisrot()) {
-      if (chassisrot_ != NULL) chassisrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
+      GOOGLE_DCHECK(chassisrot_ != NULL);
+      chassisrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
     if (has_frontrightwheelrot()) {
-      if (frontrightwheelrot_ != NULL) frontrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
+      GOOGLE_DCHECK(frontrightwheelrot_ != NULL);
+      frontrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
     if (has_frontleftwheelrot()) {
-      if (frontleftwheelrot_ != NULL) frontleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
+      GOOGLE_DCHECK(frontleftwheelrot_ != NULL);
+      frontleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
+  }
+  if (_has_bits_[8 / 32] & 768u) {
     if (has_backrightwheelrot()) {
-      if (backrightwheelrot_ != NULL) backrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
+      GOOGLE_DCHECK(backrightwheelrot_ != NULL);
+      backrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
     if (has_backleftwheelrot()) {
-      if (backleftwheelrot_ != NULL) backleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
+      GOOGLE_DCHECK(backleftwheelrot_ != NULL);
+      backleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
     }
   }
-
-#undef ZR_HELPER_
-#undef ZR_
-
-  _has_bits_.Clear();
-  if (_internal_metadata_.have_unknown_fields()) {
-    mutable_unknown_fields()->Clear();
+  if (_has_bits_[8 / 32] & 15360u) {
+    ::memset(&timestamp_, 0, reinterpret_cast<char*>(&speed_) -
+      reinterpret_cast<char*>(&timestamp_) + sizeof(speed_));
   }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
 }
 
 bool VehicleMessage::MergePartialFromCodedStream(
@@ -1143,13 +1280,13 @@ bool VehicleMessage::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ChronoMessages.VehicleMessage)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required int32 timestamp = 1;
       case 1: {
-        if (tag == 8) {
+        if (tag == 8u) {
           set_has_timestamp();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
@@ -1157,14 +1294,12 @@ bool VehicleMessage::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_vehicleId;
         break;
       }
 
       // required int32 vehicleId = 2;
       case 2: {
-        if (tag == 16) {
-         parse_vehicleId:
+        if (tag == 16u) {
           set_has_vehicleid();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
@@ -1172,14 +1307,12 @@ bool VehicleMessage::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_chTime;
         break;
       }
 
       // required double chTime = 3;
       case 3: {
-        if (tag == 25) {
-         parse_chTime:
+        if (tag == 25u) {
           set_has_chtime();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -1187,14 +1320,12 @@ bool VehicleMessage::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(33)) goto parse_speed;
         break;
       }
 
       // required double speed = 4;
       case 4: {
-        if (tag == 33) {
-         parse_speed:
+        if (tag == 33u) {
           set_has_speed();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
@@ -1202,137 +1333,116 @@ bool VehicleMessage::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(42)) goto parse_ChassisCOM;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MVector ChassisCOM = 5;
       case 5: {
-        if (tag == 42) {
-         parse_ChassisCOM:
+        if (tag == 42u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_chassiscom()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(50)) goto parse_FrontRightWheelCOM;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MVector FrontRightWheelCOM = 6;
       case 6: {
-        if (tag == 50) {
-         parse_FrontRightWheelCOM:
+        if (tag == 50u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontrightwheelcom()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(58)) goto parse_FrontLeftWheelCOM;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MVector FrontLeftWheelCOM = 7;
       case 7: {
-        if (tag == 58) {
-         parse_FrontLeftWheelCOM:
+        if (tag == 58u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontleftwheelcom()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(66)) goto parse_BackRightWheelCOM;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MVector BackRightWheelCOM = 8;
       case 8: {
-        if (tag == 66) {
-         parse_BackRightWheelCOM:
+        if (tag == 66u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backrightwheelcom()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(74)) goto parse_BackLeftWheelCOM;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MVector BackLeftWheelCOM = 9;
       case 9: {
-        if (tag == 74) {
-         parse_BackLeftWheelCOM:
+        if (tag == 74u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backleftwheelcom()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(82)) goto parse_ChassisRot;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MQuaternion ChassisRot = 10;
       case 10: {
-        if (tag == 82) {
-         parse_ChassisRot:
+        if (tag == 82u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_chassisrot()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(90)) goto parse_FrontRightWheelRot;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MQuaternion FrontRightWheelRot = 11;
       case 11: {
-        if (tag == 90) {
-         parse_FrontRightWheelRot:
+        if (tag == 90u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontrightwheelrot()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(98)) goto parse_FrontLeftWheelRot;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MQuaternion FrontLeftWheelRot = 12;
       case 12: {
-        if (tag == 98) {
-         parse_FrontLeftWheelRot:
+        if (tag == 98u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frontleftwheelrot()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(106)) goto parse_BackRightWheelRot;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MQuaternion BackRightWheelRot = 13;
       case 13: {
-        if (tag == 106) {
-         parse_BackRightWheelRot:
+        if (tag == 106u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backrightwheelrot()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(114)) goto parse_BackLeftWheelRot;
         break;
       }
 
       // required .ChronoMessages.VehicleMessage.MQuaternion BackLeftWheelRot = 14;
       case 14: {
-        if (tag == 114) {
-         parse_BackLeftWheelRot:
+        if (tag == 114u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_backleftwheelrot()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -1450,7 +1560,7 @@ void VehicleMessage::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleMessage::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ChronoMessages.VehicleMessage)
   // required int32 timestamp = 1;
   if (has_timestamp()) {
@@ -1554,30 +1664,6 @@ size_t VehicleMessage::RequiredFieldsByteSizeFallback() const {
 // @@protoc_insertion_point(required_fields_byte_size_fallback_start:ChronoMessages.VehicleMessage)
   size_t total_size = 0;
 
-  if (has_timestamp()) {
-    // required int32 timestamp = 1;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->timestamp());
-  }
-
-  if (has_vehicleid()) {
-    // required int32 vehicleId = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->vehicleid());
-  }
-
-  if (has_chtime()) {
-    // required double chTime = 3;
-    total_size += 1 + 8;
-  }
-
-  if (has_speed()) {
-    // required double speed = 4;
-    total_size += 1 + 8;
-  }
-
   if (has_chassiscom()) {
     // required .ChronoMessages.VehicleMessage.MVector ChassisCOM = 5;
     total_size += 1 +
@@ -1648,29 +1734,42 @@ size_t VehicleMessage::RequiredFieldsByteSizeFallback() const {
         *this->backleftwheelrot_);
   }
 
+  if (has_timestamp()) {
+    // required int32 timestamp = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->timestamp());
+  }
+
+  if (has_vehicleid()) {
+    // required int32 vehicleId = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->vehicleid());
+  }
+
+  if (has_chtime()) {
+    // required double chTime = 3;
+    total_size += 1 + 8;
+  }
+
+  if (has_speed()) {
+    // required double speed = 4;
+    total_size += 1 + 8;
+  }
+
   return total_size;
 }
 size_t VehicleMessage::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ChronoMessages.VehicleMessage)
   size_t total_size = 0;
 
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
   if (((_has_bits_[0] & 0x00003fff) ^ 0x00003fff) == 0) {  // All required fields are present.
-    // required int32 timestamp = 1;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->timestamp());
-
-    // required int32 vehicleId = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->vehicleid());
-
-    // required double chTime = 3;
-    total_size += 1 + 8;
-
-    // required double speed = 4;
-    total_size += 1 + 8;
-
     // required .ChronoMessages.VehicleMessage.MVector ChassisCOM = 5;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -1721,13 +1820,24 @@ size_t VehicleMessage::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
         *this->backleftwheelrot_);
 
+    // required int32 timestamp = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->timestamp());
+
+    // required int32 vehicleId = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->vehicleid());
+
+    // required double chTime = 3;
+    total_size += 1 + 8;
+
+    // required double speed = 4;
+    total_size += 1 + 8;
+
   } else {
     total_size += RequiredFieldsByteSizeFallback();
-  }
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
   }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
@@ -1738,7 +1848,7 @@ size_t VehicleMessage::ByteSizeLong() const {
 
 void VehicleMessage::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ChronoMessages.VehicleMessage)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  GOOGLE_DCHECK_NE(&from, this);
   const VehicleMessage* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const VehicleMessage>(
           &from);
@@ -1747,34 +1857,15 @@ void VehicleMessage::MergeFrom(const ::google::protobuf::Message& from) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ChronoMessages.VehicleMessage)
-    UnsafeMergeFrom(*source);
+    MergeFrom(*source);
   }
 }
 
 void VehicleMessage::MergeFrom(const VehicleMessage& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ChronoMessages.VehicleMessage)
-  if (GOOGLE_PREDICT_TRUE(&from != this)) {
-    UnsafeMergeFrom(from);
-  } else {
-    MergeFromFail(__LINE__);
-  }
-}
-
-void VehicleMessage::UnsafeMergeFrom(const VehicleMessage& from) {
-  GOOGLE_DCHECK(&from != this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_timestamp()) {
-      set_timestamp(from.timestamp());
-    }
-    if (from.has_vehicleid()) {
-      set_vehicleid(from.vehicleid());
-    }
-    if (from.has_chtime()) {
-      set_chtime(from.chtime());
-    }
-    if (from.has_speed()) {
-      set_speed(from.speed());
-    }
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from._has_bits_[0 / 32] & 255u) {
     if (from.has_chassiscom()) {
       mutable_chassiscom()->::ChronoMessages::VehicleMessage_MVector::MergeFrom(from.chassiscom());
     }
@@ -1787,8 +1878,6 @@ void VehicleMessage::UnsafeMergeFrom(const VehicleMessage& from) {
     if (from.has_backrightwheelcom()) {
       mutable_backrightwheelcom()->::ChronoMessages::VehicleMessage_MVector::MergeFrom(from.backrightwheelcom());
     }
-  }
-  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_backleftwheelcom()) {
       mutable_backleftwheelcom()->::ChronoMessages::VehicleMessage_MVector::MergeFrom(from.backleftwheelcom());
     }
@@ -1801,16 +1890,26 @@ void VehicleMessage::UnsafeMergeFrom(const VehicleMessage& from) {
     if (from.has_frontleftwheelrot()) {
       mutable_frontleftwheelrot()->::ChronoMessages::VehicleMessage_MQuaternion::MergeFrom(from.frontleftwheelrot());
     }
+  }
+  if (from._has_bits_[8 / 32] & 16128u) {
     if (from.has_backrightwheelrot()) {
       mutable_backrightwheelrot()->::ChronoMessages::VehicleMessage_MQuaternion::MergeFrom(from.backrightwheelrot());
     }
     if (from.has_backleftwheelrot()) {
       mutable_backleftwheelrot()->::ChronoMessages::VehicleMessage_MQuaternion::MergeFrom(from.backleftwheelrot());
     }
-  }
-  if (from._internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
-      from.unknown_fields(), &_internal_metadata_);
+    if (from.has_timestamp()) {
+      set_timestamp(from.timestamp());
+    }
+    if (from.has_vehicleid()) {
+      set_vehicleid(from.vehicleid());
+    }
+    if (from.has_chtime()) {
+      set_chtime(from.chtime());
+    }
+    if (from.has_speed()) {
+      set_speed(from.speed());
+    }
   }
 }
 
@@ -1825,12 +1924,11 @@ void VehicleMessage::CopyFrom(const VehicleMessage& from) {
 // @@protoc_insertion_point(class_specific_copy_from_start:ChronoMessages.VehicleMessage)
   if (&from == this) return;
   Clear();
-  UnsafeMergeFrom(from);
+  MergeFrom(from);
 }
 
 bool VehicleMessage::IsInitialized() const {
   if ((_has_bits_[0] & 0x00003fff) != 0x00003fff) return false;
-
   if (has_chassiscom()) {
     if (!this->chassiscom_->IsInitialized()) return false;
   }
@@ -1869,10 +1967,6 @@ void VehicleMessage::Swap(VehicleMessage* other) {
   InternalSwap(other);
 }
 void VehicleMessage::InternalSwap(VehicleMessage* other) {
-  std::swap(timestamp_, other->timestamp_);
-  std::swap(vehicleid_, other->vehicleid_);
-  std::swap(chtime_, other->chtime_);
-  std::swap(speed_, other->speed_);
   std::swap(chassiscom_, other->chassiscom_);
   std::swap(frontrightwheelcom_, other->frontrightwheelcom_);
   std::swap(frontleftwheelcom_, other->frontleftwheelcom_);
@@ -1883,213 +1977,32 @@ void VehicleMessage::InternalSwap(VehicleMessage* other) {
   std::swap(frontleftwheelrot_, other->frontleftwheelrot_);
   std::swap(backrightwheelrot_, other->backrightwheelrot_);
   std::swap(backleftwheelrot_, other->backleftwheelrot_);
+  std::swap(timestamp_, other->timestamp_);
+  std::swap(vehicleid_, other->vehicleid_);
+  std::swap(chtime_, other->chtime_);
+  std::swap(speed_, other->speed_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata VehicleMessage::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = VehicleMessage_descriptor_;
-  metadata.reflection = VehicleMessage_reflection_;
-  return metadata;
+  protobuf_ChronoMessages_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ChronoMessages_2eproto::file_level_metadata[2];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
-// VehicleMessage_MVector
-
-// required double x = 1;
-bool VehicleMessage_MVector::has_x() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-void VehicleMessage_MVector::set_has_x() {
-  _has_bits_[0] |= 0x00000001u;
-}
-void VehicleMessage_MVector::clear_has_x() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-void VehicleMessage_MVector::clear_x() {
-  x_ = 0;
-  clear_has_x();
-}
-double VehicleMessage_MVector::x() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.x)
-  return x_;
-}
-void VehicleMessage_MVector::set_x(double value) {
-  set_has_x();
-  x_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.x)
-}
-
-// required double y = 2;
-bool VehicleMessage_MVector::has_y() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-void VehicleMessage_MVector::set_has_y() {
-  _has_bits_[0] |= 0x00000002u;
-}
-void VehicleMessage_MVector::clear_has_y() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-void VehicleMessage_MVector::clear_y() {
-  y_ = 0;
-  clear_has_y();
-}
-double VehicleMessage_MVector::y() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.y)
-  return y_;
-}
-void VehicleMessage_MVector::set_y(double value) {
-  set_has_y();
-  y_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.y)
-}
-
-// required double z = 3;
-bool VehicleMessage_MVector::has_z() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-void VehicleMessage_MVector::set_has_z() {
-  _has_bits_[0] |= 0x00000004u;
-}
-void VehicleMessage_MVector::clear_has_z() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-void VehicleMessage_MVector::clear_z() {
-  z_ = 0;
-  clear_has_z();
-}
-double VehicleMessage_MVector::z() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MVector.z)
-  return z_;
-}
-void VehicleMessage_MVector::set_z(double value) {
-  set_has_z();
-  z_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MVector.z)
-}
-
-inline const VehicleMessage_MVector* VehicleMessage_MVector::internal_default_instance() {
-  return &VehicleMessage_MVector_default_instance_.get();
-}
-// -------------------------------------------------------------------
-
-// VehicleMessage_MQuaternion
-
-// required double e0 = 1;
-bool VehicleMessage_MQuaternion::has_e0() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-void VehicleMessage_MQuaternion::set_has_e0() {
-  _has_bits_[0] |= 0x00000001u;
-}
-void VehicleMessage_MQuaternion::clear_has_e0() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-void VehicleMessage_MQuaternion::clear_e0() {
-  e0_ = 0;
-  clear_has_e0();
-}
-double VehicleMessage_MQuaternion::e0() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e0)
-  return e0_;
-}
-void VehicleMessage_MQuaternion::set_e0(double value) {
-  set_has_e0();
-  e0_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e0)
-}
-
-// required double e1 = 2;
-bool VehicleMessage_MQuaternion::has_e1() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-void VehicleMessage_MQuaternion::set_has_e1() {
-  _has_bits_[0] |= 0x00000002u;
-}
-void VehicleMessage_MQuaternion::clear_has_e1() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-void VehicleMessage_MQuaternion::clear_e1() {
-  e1_ = 0;
-  clear_has_e1();
-}
-double VehicleMessage_MQuaternion::e1() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e1)
-  return e1_;
-}
-void VehicleMessage_MQuaternion::set_e1(double value) {
-  set_has_e1();
-  e1_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e1)
-}
-
-// required double e2 = 3;
-bool VehicleMessage_MQuaternion::has_e2() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-void VehicleMessage_MQuaternion::set_has_e2() {
-  _has_bits_[0] |= 0x00000004u;
-}
-void VehicleMessage_MQuaternion::clear_has_e2() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-void VehicleMessage_MQuaternion::clear_e2() {
-  e2_ = 0;
-  clear_has_e2();
-}
-double VehicleMessage_MQuaternion::e2() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e2)
-  return e2_;
-}
-void VehicleMessage_MQuaternion::set_e2(double value) {
-  set_has_e2();
-  e2_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e2)
-}
-
-// required double e3 = 4;
-bool VehicleMessage_MQuaternion::has_e3() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-void VehicleMessage_MQuaternion::set_has_e3() {
-  _has_bits_[0] |= 0x00000008u;
-}
-void VehicleMessage_MQuaternion::clear_has_e3() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-void VehicleMessage_MQuaternion::clear_e3() {
-  e3_ = 0;
-  clear_has_e3();
-}
-double VehicleMessage_MQuaternion::e3() const {
-  // @@protoc_insertion_point(field_get:ChronoMessages.VehicleMessage.MQuaternion.e3)
-  return e3_;
-}
-void VehicleMessage_MQuaternion::set_e3(double value) {
-  set_has_e3();
-  e3_ = value;
-  // @@protoc_insertion_point(field_set:ChronoMessages.VehicleMessage.MQuaternion.e3)
-}
-
-inline const VehicleMessage_MQuaternion* VehicleMessage_MQuaternion::internal_default_instance() {
-  return &VehicleMessage_MQuaternion_default_instance_.get();
-}
-// -------------------------------------------------------------------
-
 // VehicleMessage
 
 // required int32 timestamp = 1;
 bool VehicleMessage::has_timestamp() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 void VehicleMessage::set_has_timestamp() {
-  _has_bits_[0] |= 0x00000001u;
+  _has_bits_[0] |= 0x00000400u;
 }
 void VehicleMessage::clear_has_timestamp() {
-  _has_bits_[0] &= ~0x00000001u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 void VehicleMessage::clear_timestamp() {
   timestamp_ = 0;
@@ -2107,13 +2020,13 @@ void VehicleMessage::set_timestamp(::google::protobuf::int32 value) {
 
 // required int32 vehicleId = 2;
 bool VehicleMessage::has_vehicleid() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 void VehicleMessage::set_has_vehicleid() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000800u;
 }
 void VehicleMessage::clear_has_vehicleid() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 void VehicleMessage::clear_vehicleid() {
   vehicleid_ = 0;
@@ -2131,13 +2044,13 @@ void VehicleMessage::set_vehicleid(::google::protobuf::int32 value) {
 
 // required double chTime = 3;
 bool VehicleMessage::has_chtime() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00001000u) != 0;
 }
 void VehicleMessage::set_has_chtime() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00001000u;
 }
 void VehicleMessage::clear_has_chtime() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00001000u;
 }
 void VehicleMessage::clear_chtime() {
   chtime_ = 0;
@@ -2155,13 +2068,13 @@ void VehicleMessage::set_chtime(double value) {
 
 // required double speed = 4;
 bool VehicleMessage::has_speed() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 void VehicleMessage::set_has_speed() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00002000u;
 }
 void VehicleMessage::clear_has_speed() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 void VehicleMessage::clear_speed() {
   speed_ = 0;
@@ -2179,13 +2092,13 @@ void VehicleMessage::set_speed(double value) {
 
 // required .ChronoMessages.VehicleMessage.MVector ChassisCOM = 5;
 bool VehicleMessage::has_chassiscom() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000001u) != 0;
 }
 void VehicleMessage::set_has_chassiscom() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000001u;
 }
 void VehicleMessage::clear_has_chassiscom() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000001u;
 }
 void VehicleMessage::clear_chassiscom() {
   if (chassiscom_ != NULL) chassiscom_->::ChronoMessages::VehicleMessage_MVector::Clear();
@@ -2224,13 +2137,13 @@ void VehicleMessage::set_allocated_chassiscom(::ChronoMessages::VehicleMessage_M
 
 // required .ChronoMessages.VehicleMessage.MVector FrontRightWheelCOM = 6;
 bool VehicleMessage::has_frontrightwheelcom() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
 void VehicleMessage::set_has_frontrightwheelcom() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000002u;
 }
 void VehicleMessage::clear_has_frontrightwheelcom() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 void VehicleMessage::clear_frontrightwheelcom() {
   if (frontrightwheelcom_ != NULL) frontrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
@@ -2269,13 +2182,13 @@ void VehicleMessage::set_allocated_frontrightwheelcom(::ChronoMessages::VehicleM
 
 // required .ChronoMessages.VehicleMessage.MVector FrontLeftWheelCOM = 7;
 bool VehicleMessage::has_frontleftwheelcom() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 void VehicleMessage::set_has_frontleftwheelcom() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000004u;
 }
 void VehicleMessage::clear_has_frontleftwheelcom() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 void VehicleMessage::clear_frontleftwheelcom() {
   if (frontleftwheelcom_ != NULL) frontleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
@@ -2314,13 +2227,13 @@ void VehicleMessage::set_allocated_frontleftwheelcom(::ChronoMessages::VehicleMe
 
 // required .ChronoMessages.VehicleMessage.MVector BackRightWheelCOM = 8;
 bool VehicleMessage::has_backrightwheelcom() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 void VehicleMessage::set_has_backrightwheelcom() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000008u;
 }
 void VehicleMessage::clear_has_backrightwheelcom() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 void VehicleMessage::clear_backrightwheelcom() {
   if (backrightwheelcom_ != NULL) backrightwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
@@ -2359,13 +2272,13 @@ void VehicleMessage::set_allocated_backrightwheelcom(::ChronoMessages::VehicleMe
 
 // required .ChronoMessages.VehicleMessage.MVector BackLeftWheelCOM = 9;
 bool VehicleMessage::has_backleftwheelcom() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 void VehicleMessage::set_has_backleftwheelcom() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000010u;
 }
 void VehicleMessage::clear_has_backleftwheelcom() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 void VehicleMessage::clear_backleftwheelcom() {
   if (backleftwheelcom_ != NULL) backleftwheelcom_->::ChronoMessages::VehicleMessage_MVector::Clear();
@@ -2404,13 +2317,13 @@ void VehicleMessage::set_allocated_backleftwheelcom(::ChronoMessages::VehicleMes
 
 // required .ChronoMessages.VehicleMessage.MQuaternion ChassisRot = 10;
 bool VehicleMessage::has_chassisrot() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 void VehicleMessage::set_has_chassisrot() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000020u;
 }
 void VehicleMessage::clear_has_chassisrot() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 void VehicleMessage::clear_chassisrot() {
   if (chassisrot_ != NULL) chassisrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
@@ -2449,13 +2362,13 @@ void VehicleMessage::set_allocated_chassisrot(::ChronoMessages::VehicleMessage_M
 
 // required .ChronoMessages.VehicleMessage.MQuaternion FrontRightWheelRot = 11;
 bool VehicleMessage::has_frontrightwheelrot() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 void VehicleMessage::set_has_frontrightwheelrot() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000040u;
 }
 void VehicleMessage::clear_has_frontrightwheelrot() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 void VehicleMessage::clear_frontrightwheelrot() {
   if (frontrightwheelrot_ != NULL) frontrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
@@ -2494,13 +2407,13 @@ void VehicleMessage::set_allocated_frontrightwheelrot(::ChronoMessages::VehicleM
 
 // required .ChronoMessages.VehicleMessage.MQuaternion FrontLeftWheelRot = 12;
 bool VehicleMessage::has_frontleftwheelrot() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 void VehicleMessage::set_has_frontleftwheelrot() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00000080u;
 }
 void VehicleMessage::clear_has_frontleftwheelrot() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 void VehicleMessage::clear_frontleftwheelrot() {
   if (frontleftwheelrot_ != NULL) frontleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
@@ -2539,13 +2452,13 @@ void VehicleMessage::set_allocated_frontleftwheelrot(::ChronoMessages::VehicleMe
 
 // required .ChronoMessages.VehicleMessage.MQuaternion BackRightWheelRot = 13;
 bool VehicleMessage::has_backrightwheelrot() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 void VehicleMessage::set_has_backrightwheelrot() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00000100u;
 }
 void VehicleMessage::clear_has_backrightwheelrot() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 void VehicleMessage::clear_backrightwheelrot() {
   if (backrightwheelrot_ != NULL) backrightwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
@@ -2584,13 +2497,13 @@ void VehicleMessage::set_allocated_backrightwheelrot(::ChronoMessages::VehicleMe
 
 // required .ChronoMessages.VehicleMessage.MQuaternion BackLeftWheelRot = 14;
 bool VehicleMessage::has_backleftwheelrot() const {
-  return (_has_bits_[0] & 0x00002000u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 void VehicleMessage::set_has_backleftwheelrot() {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00000200u;
 }
 void VehicleMessage::clear_has_backleftwheelrot() {
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 void VehicleMessage::clear_backleftwheelrot() {
   if (backleftwheelrot_ != NULL) backleftwheelrot_->::ChronoMessages::VehicleMessage_MQuaternion::Clear();
@@ -2627,9 +2540,6 @@ void VehicleMessage::set_allocated_backleftwheelrot(::ChronoMessages::VehicleMes
   // @@protoc_insertion_point(field_set_allocated:ChronoMessages.VehicleMessage.BackLeftWheelRot)
 }
 
-inline const VehicleMessage* VehicleMessage::internal_default_instance() {
-  return &VehicleMessage_default_instance_.get();
-}
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)

@@ -39,6 +39,8 @@
 
 int messagesRecieved = 0;
 
+static bool isListening = true;
+
 // Start of the listener thread
 void listenForConnection(World& world, std::queue<std::function<void()>>& queue, std::shared_ptr<std::mutex> queueMutex, std::shared_ptr<std::condition_variable> emptyqueueCV);
 
@@ -59,7 +61,7 @@ int main(int argc, char **argv)
     std::thread listener(listenForConnection, std::ref(world), std::ref(worldQueue), queueMutex, emptyqueueCV);
 
     std::cout << "Processing world queue" << std::endl;
-    while(true) {
+    while(isListening) {
         std::unique_lock<std::mutex> lck(*queueMutex);
         while (worldQueue.empty()) emptyqueueCV->wait(lck);
         worldQueue.front()();
@@ -90,7 +92,7 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
     auto regulate = regulateHeartbeat;
     std::thread pacer(regulate, std::ref(sockets));
 
-    while(true) {
+    while(isListening) {
         // Deletion of this socket is done automatically
         std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioService);
         std::cout << "Listening..." << std::endl;
@@ -102,6 +104,9 @@ void listenForConnection(World& world, std::queue<std::function<void()>>& queue,
         clientConnections.emplace_back(connectionFunc, std::ref(world), std::ref(queue), queueMutex, emptyqueueCV, socket, connectionNumber);
         connectionNumber++;
     }
+
+    isListening = false;
+
     // Join heartbeat
     pacer.join();
 
@@ -230,6 +235,11 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
                     }
                     socket->close();
                     std::cout << "Vehicle Removed" << std::endl;
+                    if (world.numVehicles() == 0) {
+                        isListening = false;
+                        std::cout << "No more vehicles. Exiting." << '\n';
+                        exit(0);
+                    }
                     break;
                 }
             }
@@ -240,6 +250,11 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
             std::lock_guard<std::mutex> guard(*queueMutex);
             queue.push([&world, connectionNumber] { world.removeVehicle(0, 0, connectionNumber); });
             emptyqueueCV->notify_all();
+            if (world.numVehicles() == 0) {
+                isListening = false;
+                std::cout << "No more vehicles. Exiting." << '\n';
+                exit(0);
+            }
         }
         socket->close();
     }

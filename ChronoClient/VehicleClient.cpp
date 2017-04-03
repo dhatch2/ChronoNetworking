@@ -191,10 +191,10 @@ int main(int argc, char* argv[]) {
   app.SetChaseCamera(trackPoint, 6.0, 0.5);
   app.SetTimestep(step_size);
   app.AssetBindAll();
-  scene::IMeshSceneNode* node = app.GetSceneManager()->addMeshSceneNode(
+  /*scene::IMeshSceneNode* node = app.GetSceneManager()->addMeshSceneNode(
       app.GetSceneManager()->getMesh("../data/madison_flat_mod.obj"), 0, -1,
       core::vector3df(150, 250, 0.01), core::vector3df(0, 0, 0),
-      core::vector3df(1.0, 1.0, 1.0));
+      core::vector3df(1.0, 1.0, 1.0));*/
   app.AssetUpdateAll();
 
     // -----------------
