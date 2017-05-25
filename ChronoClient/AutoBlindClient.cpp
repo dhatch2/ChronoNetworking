@@ -100,7 +100,7 @@ double terrainWidth = 100.0;   // size in Y direction
 ChVector<> trackPoint(0.0, 0.0, 1.75);
 
 // Contact method
-ChMaterialSurfaceBase::ContactMethod contact_method = ChMaterialSurfaceBase::DEM;
+ChMaterialSurface::ContactMethod contact_method = ChMaterialSurface::SMC;
 bool contact_vis = false;
 
 // Simulation step sizes

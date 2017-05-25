@@ -1,23 +1,9 @@
-# Set model files for the ChronoClient
+# Model files for the DSRC Agent
 
 SET(MODEL_FILES
-	../Vehicle_Protobuf_Messages/${PROTO_SRCS}
-	../Vehicle_Protobuf_Messages/${PROTO_HDRS}
-	../Vehicle_Protobuf_Messages/MessageCodes.h
-	ServerVehicle.cpp
-	ChRaySensor.cpp
-	ChRayShape.cpp
-	ChSensor.cpp
-	ChBodyFollowerDriver.cpp
-	ChBodyFollowerSteeringController.cpp
-	ChClient.cpp
-	ChClient.h
-	MessageConversions.h
-	MessageConversions.cpp
+    ChDSRCAgent.cpp
+    ChDSRCAgent.h
 )
-
-# set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES
-        #                    GENERATED TRUE)
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 
@@ -61,8 +47,13 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # In this example, we only request the Irrlicht module (required)
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Messages)
 
+#--------------------------------------------------------------
+# Add path to Chrono headers and to headers of all dependencies
+# of the requested modules.
+#--------------------------------------------------------------
+
+include_directories(${CHRONO_INCLUDE_DIRS})
 
 #--------------------------------------------------------------
 # === 3 ===
@@ -70,12 +61,8 @@ include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Mess
 # files in your project.
 # If irrlicht is not used, only the blind autonomous client is produced.
 #--------------------------------------------------------------
-if(USE_IRRLICHT)
-add_executable(ChClient VehicleClient.cpp ${MODEL_FILES})
-add_executable(ChAutoClient AutoVehicleClient.cpp ${MODEL_FILES})
-endif()
 
-add_executable(ChBlindClient AutoBlindClient.cpp ${MODEL_FILES})
+add_executable(DSRC-test dsrc-tests.cpp ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -86,18 +73,7 @@ add_executable(ChBlindClient AutoBlindClient.cpp ${MODEL_FILES})
 # install tree (if using an installed version of Chrono).
 #--------------------------------------------------------------
 
-if(USE_IRRLICHT)
-set_target_properties(ChClient PROPERTIES
-COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
-set_target_properties(ChAutoClient PROPERTIES
-COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
-endif()
-
-set_target_properties(ChBlindClient PROPERTIES
+set_target_properties(DSRC-test PROPERTIES
 COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
 COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
 LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
@@ -105,11 +81,8 @@ LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 #--------------------------------------------------------------
 # Link to Chrono libraries and dependency libraries   ----  Added boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
-if(USE_IRRLICHT)
-target_link_libraries(ChClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
-target_link_libraries(ChAutoClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
-endif()
-target_link_libraries(ChBlindClient ${CHRONO_LIBRARIES} boost_system pthread protobuf)
+
+target_link_libraries(DSRC-test ${CHRONO_LIBRARIES})
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===

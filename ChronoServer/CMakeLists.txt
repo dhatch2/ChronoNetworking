@@ -1,150 +1,44 @@
-#--------------------------------------------------------------
-# 
-# Example of CMake configuration file to build an external 
-# project depending on Chrono and on optionam Chrono modules.
-# 
-# This minimal sample project can be used as a template for a
-# user project.  Modify sections 1, 2, and 3 below as appropriate.
-# 
-#--------------------------------------------------------------
+# Set model files for the ChronoServer
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
-
-cmake_minimum_required(VERSION 2.8)
-
-#--------------------------------------------------------------
-# === 1 === 
-# Modify the project name if you want: 
-#--------------------------------------------------------------
-
-project(ChronoServer)
-
-SET(MODEL_FILES    
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc	
+SET(MODEL_FILES
+    ../Vehicle_Protobuf_Messages/${PROTO_SRCS}
+    ../Vehicle_Protobuf_Messages/${PROTO_HDRS}
     ../Vehicle_Protobuf_Messages/MessageCodes.h
     main.cpp
     World.cpp
     World.h
 )
 
+set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES
+                            GENERATED TRUE)
+
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
-
-#--------------------------------------------------------------
-# === 2 ===
-# Find the Chrono package and any REQUIRED or OPTIONAL modules
-# by invoking the find_package function in CONFIG mode:
-#    find_package(Chrono
-#	              COMPONENTS req_module1 req_module1 ...
-#	              OPTIONAL opt_module1 opt_module2 ...
-#                 CONFIG)
-# The following Chrono modules can be requested (their names
-# are case insensitive): Cascade, Cosimulation, FEA, Irrlicht,
-# Matlab, Parallel, Postprocess, Python, Vehicle.
-# 
-# Note that you will have to set the variable Chrono_DIR to 
-# specify the location of the ChronoConfig.cmake script. This
-# can be either a Chrono build tree or a Chrono install tree.
-# 
-# The following variables are set and can be used further down:
-# CHRONO_FOUND
-#   set to true if Chrono and all required components were found
-# CHRONO_C_FLAGS
-# CHRONO_CXX_FLAGS
-#   C and C++ compilation flags
-# CHRONO_INCLUDE_DIRS
-#   additional paths for included headers
-# CHRONO_LIBRARIES
-#   list of required libraries (with full path)
-# CHRONO_LINKER_FLAGS
-#   additional linker flags
-# CHRONO_DLLS
-#   list of all DLL dependencies (with full path)
-# CHRONO_DATA_DIR
-#   path to the Chrono data make_directory
-# 
-# In addition, for each requested component [COMPONENT], the
-# following variable is set to true (ON) or false (OFF):
-# CHRONO_[COMPONENT]_FOUND
-# 
-# In this example, we only request the Irrlicht module (required)
-#--------------------------------------------------------------
-
-#find_package(Chrono
-#            COMPONENTS Irrlicht Vehicle
-#           CONFIG)
-
-#find_package(boost)
-
-#--------------------------------------------------------------
-# Return now if Chrono or a required component was not found.
-#--------------------------------------------------------------
-
-#if (NOT Chrono_FOUND)
-#  message("Could not find Chrono or one of its required modules")
-#  return()
-#endif()
-
 
 #--------------------------------------------------------------
 # Add path to Chrono headers and to headers of all dependencies
 # of the requested modules. -- Added protobuf messages and boost include path
 #--------------------------------------------------------------
 
-if(NOT DEFINED BOOST_DIR)
-set(BOOST_DIR "boost include directory" CACHE PATH "" FORCE)
-endif()
-
-include_directories(${BOOST_DIR} ../Vehicle_Protobuf_Messages)
-
-#--------------------------------------------------------------
-# Tweaks to disable some warnings with MSVC
-#--------------------------------------------------------------
-if(MSVC)
-    add_definitions("-D_CRT_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    add_definitions("-D_SCL_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    set(EXTRA_COMPILE_FLAGS "/wd4275")             # disable warnings triggered by Irrlicht
-else()
-    set(EXTRA_COMPILE_FLAGS "")
-endif()
+include_directories(${BOOST_DIR} ${PROTOBUF_INCLUDE_DIRS} ../Vehicle_Protobuf_Messages)
 
 #--------------------------------------------------------------
 # === 3 ===
-# Add the executable from your project and specify all C++ 
-# files in your project. 
+# Add the executable from your project and specify all C++
+# files in your project.
 #--------------------------------------------------------------
 
-add_executable(ChronoServer ${MODEL_FILES})
+add_executable(ChServer ${MODEL_FILES})
 
-#--------------------------------------------------------------
-# Set properties for your executable target
-# 
-# Note that here we define a macro CHRONO_DATA_DIR which will
-# contain the path to the Chrono data directory, either in its
-# source tree (if using a build version of Chrono), or in its
-# install tree (if using an installed version of Chrono).
-#--------------------------------------------------------------
-
-#set_target_properties(ChronoServer PROPERTIES 
-#	    COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-#	    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-#	    LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
-
-#--------------------------------------------------------------
-# Link to Chrono libraries and dependency libraries   ----  Added 
-# boost_system, pthread, and protobuf to allow network message passing.
-#--------------------------------------------------------------
-
-target_link_libraries(ChronoServer boost_system pthread protobuf)
+target_link_libraries(ChServer boost_system pthread protobuf)
+link_directories(${MyProj_BINARY_DIR}/Vehicle_Protobuf_Messages)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===
-# 
+#
 # Optionally, add a custom command for copying all Chrono and
 # dependency DLLs to the appropriate binary output folder.
 # This function has effect only on Windows.
-# 
+#
 # Note that you must first set EXECUTABLE_OUTPUT_PATH
 # (this can simply be ${CMAKE_BINARY_DIR}, like in this example)
 #--------------------------------------------------------------

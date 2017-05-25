@@ -1,113 +1,25 @@
-#--------------------------------------------------------------
-#
-# Example of CMake configuration file to build an external
-# project depending on Chrono and on optionam Chrono modules.
-#
-# This minimal sample project can be used as a template for a
-# user project.  Modify sections 1, 2, and 3 below as appropriate.
-#
-#--------------------------------------------------------------
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CH_CXX_FLAGS "${CH_CXX_FLAGS} -std=c++11")
-
-cmake_minimum_required(VERSION 2.8)
-
-#--------------------------------------------------------------
-# === 1 ===
-# Modify the project name if you want:
-#--------------------------------------------------------------
-
-project(ChronoServer)
+# UPD server model files
 
 SET(MODEL_FILES
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.h
-    ../Vehicle_Protobuf_Messages/ChronoMessages.pb.cc
+    ../Vehicle_Protobuf_Messages/${PROTO_SRCS}
+    ../Vehicle_Protobuf_Messages/${PROTO_HDRS}
     ../Vehicle_Protobuf_Messages/MessageCodes.h
     main.cpp
     ../ChronoServer/World.cpp
     ../ChronoServer/World.h
 )
 
+set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES
+                            GENERATED TRUE)
+
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
-
-#--------------------------------------------------------------
-# === 2 ===
-# Find the Chrono package and any REQUIRED or OPTIONAL modules
-# by invoking the find_package function in CONFIG mode:
-#    find_package(Chrono
-#	              COMPONENTS req_module1 req_module1 ...
-#	              OPTIONAL opt_module1 opt_module2 ...
-#                 CONFIG)
-# The following Chrono modules can be requested (their names
-# are case insensitive): Cascade, Cosimulation, FEA, Irrlicht,
-# Matlab, Parallel, Postprocess, Python, Vehicle.
-#
-# Note that you will have to set the variable Chrono_DIR to
-# specify the location of the ChronoConfig.cmake script. This
-# can be either a Chrono build tree or a Chrono install tree.
-#
-# The following variables are set and can be used further down:
-# CHRONO_FOUND
-#   set to true if Chrono and all required components were found
-# CHRONO_C_FLAGS
-# CHRONO_CXX_FLAGS
-#   C and C++ compilation flags
-# CHRONO_INCLUDE_DIRS
-#   additional paths for included headers
-# CHRONO_LIBRARIES
-#   list of required libraries (with full path)
-# CHRONO_LINKER_FLAGS
-#   additional linker flags
-# CHRONO_DLLS
-#   list of all DLL dependencies (with full path)
-# CHRONO_DATA_DIR
-#   path to the Chrono data make_directory
-#
-# In addition, for each requested component [COMPONENT], the
-# following variable is set to true (ON) or false (OFF):
-# CHRONO_[COMPONENT]_FOUND
-#
-# In this example, we only request the Irrlicht module (required)
-#--------------------------------------------------------------
-
-#find_package(Chrono
-#            COMPONENTS Irrlicht Vehicle
-#           CONFIG)
-
-#find_package(boost)
-
-#--------------------------------------------------------------
-# Return now if Chrono or a required component was not found.
-#--------------------------------------------------------------
-
-#if (NOT Chrono_FOUND)
-#  message("Could not find Chrono or one of its required modules")
-#  return()
-#endif()
-
 
 #--------------------------------------------------------------
 # Add path to Chrono headers and to headers of all dependencies
 # of the requested modules. -- Added protobuf messages and boost include path
 #--------------------------------------------------------------
 
-if(NOT DEFINED BOOST_DIR)
-set(BOOST_DIR "boost include directory" CACHE PATH "" FORCE)
-endif()
-
 include_directories(${BOOST_DIR} ../ChronoServer ../Vehicle_Protobuf_Messages)
-
-#--------------------------------------------------------------
-# Tweaks to disable some warnings with MSVC
-#--------------------------------------------------------------
-if(MSVC)
-    add_definitions("-D_CRT_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    add_definitions("-D_SCL_SECURE_NO_DEPRECATE")  # avoids deprecation warnings
-    set(EXTRA_COMPILE_FLAGS "/wd4275")             # disable warnings triggered by Irrlicht
-else()
-    set(EXTRA_COMPILE_FLAGS "")
-endif()
 
 #--------------------------------------------------------------
 # === 3 ===
@@ -115,7 +27,7 @@ endif()
 # files in your project.
 #--------------------------------------------------------------
 
-add_executable(ChronoUDPServer ${MODEL_FILES})
+add_executable(ChUDPServer ${MODEL_FILES})
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -136,7 +48,7 @@ add_executable(ChronoUDPServer ${MODEL_FILES})
 # boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
 
-target_link_libraries(ChronoUDPServer boost_system pthread protobuf)
+target_link_libraries(ChUDPServer boost_system pthread protobuf)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===

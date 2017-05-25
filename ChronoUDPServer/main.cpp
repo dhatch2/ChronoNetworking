@@ -30,7 +30,7 @@ void sendOnSocket(std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::end
 
 // Performs all parsing, serialization, and processing of message packets before handing instructions off to the world thread to modify the world object
 void processMessages(std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> incomingBufferQueue, std::shared_ptr<std::mutex> incomingMutex,
-            std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> outgoingBufferQueue, std::shared_ptr<std::mutex> outgoingMutex
+            std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> outgoingBufferQueue, std::shared_ptr<std::mutex> outgoingMutex,
             std::shared_ptr<std::queue<std::function<void()>>>, std::shared_ptr<std::mutex> worldMutex);
 
 int main(int argc, char **argv) {
@@ -65,19 +65,19 @@ int main(int argc, char **argv) {
     std::cout << "Thread count: " << threadCount << std::endl;
 
     // Starts listener thread
-    std::thread socketListener(listenOnSocket, incomingBufferQueue, socketMutex, socket);
-    std::thread socketSender(sendOnSocket, outgoingBufferQueue, socketMutex, socket);
+    //std::thread socketListener(listenOnSocket, incomingBufferQueue, socketMutex, socket);
+    //std::thread socketSender(sendOnSocket, outgoingBufferQueue, socketMutex, socket);
 
     threadCount -= 2;
 
     // Starts worker threads
     // TODO: add mutexes and stuff for worker threads
     std::vector<std::thread> workers;
-    for (int i = 0; i < threadCount - 1; i++)
-        workers.emplace_back(processMessages);
+    //for (int i = 0; i < threadCount - 1; i++)
+        //workers.emplace_back(processMessages);
 
-    socketListener.join();
-    socketSender.join();
+    //socketListener.join();
+    //socketSender.join();
 }
 
 void listenOnSocket(std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> incomingBufferQueue,
@@ -138,7 +138,7 @@ void sendOnSocket(std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::end
 }
 
 void processMessages(std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> incomingBufferQueue, std::shared_ptr<std::mutex> incomingMutex,
-            std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> outgoingBufferQueue, std::shared_ptr<std::mutex> outgoingMutex
+            std::shared_ptr<std::queue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>>> outgoingBufferQueue, std::shared_ptr<std::mutex> outgoingMutex,
             std::shared_ptr<std::queue<std::function<void()>>>, std::shared_ptr<std::mutex> worldMutex) {
-    std::cout << "Yo biatch" << std::endl;
+    std::cout << "Yeeeeah boiiiiiiiiiiiiiiii" << std::endl;
 }
