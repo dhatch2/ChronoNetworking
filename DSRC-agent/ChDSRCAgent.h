@@ -23,9 +23,12 @@ using namespace chrono::vehicle::hmmwv;
 
 class ChDSRCAgent {
 public:
-    ChDSRCAgent(std::shared_ptr<HMMWV_Full> veh);
+    ChDSRCAgent(ChWheeledVehicle* veh);
+    bool canReach(int vehicle);
+    int vehicleNumber();
 private:
-    std::shared_ptr<HMMWV_Full> vehicle;
+    ChWheeledVehicle* vehicle;
+    int m_vehicleNumber;
 };
 
 #endif
