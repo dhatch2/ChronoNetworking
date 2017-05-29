@@ -55,11 +55,6 @@ using boost::asio::ip::tcp;
 using namespace irr;
 // =============================================================================
 
-ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
-void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
-                       ChVector<> vector);
-void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
-                           ChQuaternion<> quaternion);
 
 // Initial vehicle location and orientation
 ChVector<> initLoc(0, 0, 1.6);

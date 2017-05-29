@@ -1,6 +1,11 @@
 # Model files for the DSRC Agent
 
 SET(MODEL_FILES
+    ../Vehicle_Protobuf_Messages/${PROTO_SRCS}
+    ../Vehicle_Protobuf_Messages/${PROTO_HDRS}
+    ../Vehicle_Protobuf_Messages/MessageCodes.h
+    ../ChronoClient/MessageConversions.h
+    ../ChronoClient/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
 )
@@ -53,7 +58,7 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # of the requested modules.
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS})
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Messages ../ChronoClient)
 
 #--------------------------------------------------------------
 # === 3 ===
@@ -82,7 +87,7 @@ LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 # Link to Chrono libraries and dependency libraries   ----  Added boost_system, pthread, and protobuf to allow network message passing.
 #--------------------------------------------------------------
 
-target_link_libraries(DSRC-test ${CHRONO_LIBRARIES})
+target_link_libraries(DSRC-test ${CHRONO_LIBRARIES} boost_system pthread protobuf)
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===

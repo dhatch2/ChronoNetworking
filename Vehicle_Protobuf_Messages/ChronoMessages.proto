@@ -2,17 +2,24 @@ syntax = "proto2";
 
 package ChronoMessages;
 
+message MVector {
+	required double x = 1;
+	required double y = 2;
+	required double z = 3;
+}
+
+message MQuaternion {
+	required double e0 = 1;
+	required double e1 = 2;
+	required double e2 = 3;
+	required double e3 = 4;
+}
+
 message VehicleMessage {
 	required int32 timestamp = 1;
 	required int32 vehicleId = 2;
 	required double chTime = 3;
 	required double speed = 4;
-
-	message MVector {
-		required double x = 1;
-		required double y = 2;
-		required double z = 3;
-	}
 
 	required MVector ChassisCOM = 5;
 	required MVector FrontRightWheelCOM = 6;
@@ -20,16 +27,17 @@ message VehicleMessage {
 	required MVector BackRightWheelCOM = 8;
 	required MVector BackLeftWheelCOM = 9;
 
-	message MQuaternion {
-		required double e0 = 1;
-		required double e1 = 2;
-		required double e2 = 3;
-		required double e3 = 4;
-	}
-
 	required MQuaternion ChassisRot = 10;
 	required MQuaternion FrontRightWheelRot = 11;
 	required MQuaternion FrontLeftWheelRot = 12;
 	required MQuaternion BackRightWheelRot = 13;
 	required MQuaternion BackLeftWheelRot = 14;
+}
+
+message DSRCHeader {
+	required int32 timestamp = 1;
+	required double chTime = 2;
+	required int32 vehicleId = 3;
+	required MVector vehiclePos = 4;
+	required int32 bufferSize = 5;
 }

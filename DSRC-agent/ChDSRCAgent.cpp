@@ -2,6 +2,10 @@
 #include <utility>
 #include "core/ChVector.h"
 #include "ChDSRCAgent.h"
+#include "ChronoMessages.pb.h"
+#include "MessageConversions.h"
+#include <google/protobuf/message.h>
+#include <boost/asio.hpp>
 #define MAX_REACHABLE_DISTANCE 10.0
 
 static int vehicleCount = 0;
@@ -20,4 +24,12 @@ bool ChDSRCAgent::canReach(int vehicleNum) {
 
 int ChDSRCAgent::vehicleNumber() {
     return m_vehicleNumber;
+}
+
+void ChDSRCAgent::broadcastMessage(boost::asio::streambuf buffer) {
+    ChronoMessages::DSRCHeader header;
+    header.set_vehicleid(m_vehicleNumber);
+    header.set_timestamp(time(0));
+    header.set_chtime(vehicle->GetChTime());
+    messageFromVector(header.mutable_vehiclepos(), vehicle->GetVehiclePos());
 }

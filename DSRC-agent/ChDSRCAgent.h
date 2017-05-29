@@ -16,6 +16,7 @@
 //#include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 
 #include "chrono_models/vehicle/hmmwv/HMMWV.h"
+#include <boost/asio.hpp>
 
 using namespace chrono;
 using namespace chrono::vehicle;
@@ -26,6 +27,7 @@ public:
     ChDSRCAgent(ChWheeledVehicle* veh);
     bool canReach(int vehicle);
     int vehicleNumber();
+    void broadcastMessage(boost::asio::streambuf buffer);
 private:
     ChWheeledVehicle* vehicle;
     int m_vehicleNumber;

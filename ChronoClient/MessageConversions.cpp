@@ -53,14 +53,14 @@ ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
     return message;
 }
 
-void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
+void messageFromVector(ChronoMessages::MVector* message,
                        ChVector<> vector) {
     message->set_x(vector.x());
     message->set_y(vector.y());
     message->set_z(vector.z());
 }
 
-void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
+void messageFromQuaternion(ChronoMessages::MQuaternion* message,
                            ChQuaternion<> quaternion) {
     message->set_e0(quaternion.e0());
     message->set_e1(quaternion.e1());

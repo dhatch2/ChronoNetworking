@@ -27,9 +27,9 @@ using namespace chrono;
 using namespace chrono::vehicle;
 
 ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(ChWheeledVehicle* vehicle, int connectionNumber);
-void messageFromVector(ChronoMessages::VehicleMessage_MVector* message,
+void messageFromVector(ChronoMessages::MVector* message,
                        ChVector<> vector);
-void messageFromQuaternion(ChronoMessages::VehicleMessage_MQuaternion* message,
+void messageFromQuaternion(ChronoMessages::MQuaternion* message,
                            ChQuaternion<> quaternion);
 
 #endif
