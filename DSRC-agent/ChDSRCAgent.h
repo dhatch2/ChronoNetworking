@@ -2,6 +2,7 @@
 #define CHDSRCAGENT_H
 
 #include <iostream>
+#include <utility>
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
 #include "chrono/core/ChRealtimeStep.h"
@@ -27,10 +28,12 @@ public:
     ChDSRCAgent(ChWheeledVehicle* veh);
     bool canReach(int vehicle);
     int vehicleNumber();
-    void broadcastMessage(boost::asio::streambuf buffer);
+    void broadcastMessage(std::vector<uint8_t> buffer);
+    std::vector<uint8_t> popMessage();
 private:
     ChWheeledVehicle* vehicle;
     int m_vehicleNumber;
+    std::queue<std::shared_ptr<boost::asio::streambuf>> incomingMessages;
 };
 
 #endif
