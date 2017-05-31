@@ -7,7 +7,7 @@
 #include <boost/asio.hpp>
 
 #define MAX_REACHABLE_DISTANCE 10.0
-#define HEADER_SIZE 352
+#define HEADER_SIZE 32
 
 static int vehicleCount = 0;
 static std::map<int, ChDSRCAgent*> vehicleMap;
@@ -28,18 +28,18 @@ int ChDSRCAgent::vehicleNumber() {
 }
 
 void ChDSRCAgent::broadcastMessage(std::vector<uint8_t> buffer) {
-    ChronoMessages::DSRCHeader header;
-    header.set_vehicleid(m_vehicleNumber);
-    header.set_timestamp(time(0));
-    header.set_chtime(vehicle->GetChTime());
-    messageFromVector(header.mutable_vehiclepos(), vehicle->GetVehiclePos());
-    header.set_buffersize(buffer.size());
+    ChronoMessages::DSRCMessage message;
+    message.set_vehicleid(m_vehicleNumber);
+    message.set_timestamp(time(0));
+    message.set_chtime(vehicle->GetChTime());
+    messageFromVector(message.mutable_vehiclepos(), vehicle->GetVehiclePos());
+    message.set_buffer((char *)buffer.data());
 
-    std::cout << buffer.data() << std::endl;
     auto sendBuf = std::make_shared<boost::asio::streambuf>();
     std::ostream stream(sendBuf.get());
-    header.SerializeToOstream(&stream);
-    stream.write((char *)buffer.data(), buffer.size());
+    uint32_t bufferSize = (uint32_t)message.ByteSize();
+    stream.write((char *)&bufferSize, HEADER_SIZE);
+    message.SerializeToOstream(&stream);
     stream.flush();
     for (std::pair<int, ChDSRCAgent*> agentPair : vehicleMap)
         if (canReach(agentPair.first) && agentPair.first != m_vehicleNumber)
@@ -50,18 +50,17 @@ std::vector<uint8_t> ChDSRCAgent::popMessage() {
     if (incomingMessages.size() != 0) {
         auto buffer = incomingMessages.front();
         incomingMessages.pop();
-        ChronoMessages::DSRCHeader header;
+        ChronoMessages::DSRCMessage message;
         std::istream stream(buffer.get());
         buffer->commit(HEADER_SIZE);
-        header.ParseFromIstream(&stream);
-        std::cout << header.buffersize() << std::endl;
-        std::cout << header.timestamp() << std::endl;
-        std::cout << buffer->size() << std::endl;
-        buffer->commit(header.buffersize());
-        std::vector<uint8_t> message(header.buffersize());
-        stream.read((char *)message.data(), header.buffersize());
-        //stream >> message.data();
-        std::cout << message.data() << std::endl;
-        return message;
+        uint32_t bufferSize = 0;
+        stream.read((char *)&bufferSize, HEADER_SIZE);
+        buffer->commit(bufferSize);
+        message.ParseFromIstream(&stream);
+        message.DebugString();
+        message.CheckInitialized();
+        std::vector<uint8_t> messageVector(message.buffer().size());
+        messageVector.assign(message.buffer().begin(), message.buffer().end());
+        return messageVector;
     } else return *(new std::vector<uint8_t>());
 }

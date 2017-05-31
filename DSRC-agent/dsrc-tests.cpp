@@ -80,6 +80,7 @@ bool povray_output = false;
 // =============================================================================
 
 int main(int argc, char* argv[]) {
+    //raise(SIGTRAP);
     // --------------
     // Create systems
     // --------------
@@ -173,10 +174,7 @@ int main(int argc, char* argv[]) {
     memcpy(messageBuffer.data(), message.c_str(), message.size());
     agent1.broadcastMessage(messageBuffer);
     auto messageBuffer2 = agent2.popMessage();
-    std::cout << messageBuffer2.size() << std::endl;
     std::string message2((char *)messageBuffer2.data(), messageBuffer2.size());
-    std::cout << message2.size() << std::endl;
-    std::cout << message2 << std::endl;
     if (message2.compare(message) == 0)
         std::cout << "PASSED -- Broadcast test 1 (" << message2 << ")" << std::endl;
     else std::cout << "FAILED -- Broadcast test 1 (" << message2 << ")" << std::endl;
