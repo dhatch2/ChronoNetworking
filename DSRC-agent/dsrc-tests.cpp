@@ -173,15 +173,50 @@ int main(int argc, char* argv[]) {
     std::vector<uint8_t> messageBuffer(message.size());
     memcpy(messageBuffer.data(), message.c_str(), message.size());
     agent1.broadcastMessage(messageBuffer);
-    auto messageBuffer2 = agent2.popMessage();
-    std::string message2((char *)messageBuffer2.data(), messageBuffer2.size());
-    if (message2.compare(message) == 0)
-        std::cout << "PASSED -- Broadcast test 1 (" << message2 << ")" << std::endl;
-    else std::cout << "FAILED -- Broadcast test 1 (" << message2 << ")" << std::endl;
+    auto messageBufferRec = agent2.popMessage();
+    std::string messageRec((char *)messageBufferRec.data(), messageBufferRec.size());
+
+    if (messageRec.compare(message) == 0)
+        std::cout << "PASSED -- Broadcast test 1 (" << messageRec << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 1 (" << messageRec << ")" << std::endl;
 
     if (agent3.popMessage().size() == 0)
         std::cout << "PASSED -- Broadcast test 2" << std::endl;
     else std::cout << "FAILED -- Broadcast test 2" << std::endl;
+
+    std::string message1 = "Yeeeeea boiiiiiiiiiiii";
+    std::string message2 = "69";
+    std::string message3 = "Yeeeeeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa boiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
+
+    std::vector<uint8_t> messageBuffer1(message1.size());
+    memcpy(messageBuffer1.data(), message1.c_str(), message1.size());
+    std::vector<uint8_t> messageBuffer2(message2.size());
+    memcpy(messageBuffer2.data(), message2.c_str(), message2.size());
+    std::vector<uint8_t> messageBuffer3(message3.size());
+    memcpy(messageBuffer3.data(), message3.c_str(), message3.size());
+
+    agent1.broadcastMessage(messageBuffer1);
+    agent2.broadcastMessage(messageBuffer2);
+    agent1.broadcastMessage(messageBuffer3);
+
+    auto messageBufferRec1 = agent2.popMessage();
+    std::string messageRec1((char *)messageBufferRec1.data(), messageBufferRec1.size());
+    auto messageBufferRec2 = agent1.popMessage();
+    std::string messageRec2((char *)messageBufferRec2.data(), messageBufferRec2.size());
+    auto messageBufferRec3 = agent2.popMessage();
+    std::string messageRec3((char *)messageBufferRec3.data(), messageBufferRec3.size());
+
+    if (messageRec1.compare(message1) == 0)
+        std::cout << "PASSED -- Broadcast test 3 (" << message1 << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 3 (" << message1 << ")" << std::endl;
+
+    if (messageRec2.compare(message2) == 0)
+        std::cout << "PASSED -- Broadcast test 4 (" << message2 << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 4 (" << messageRec2 << ")" << std::endl;
+
+    if (messageRec3.compare(message3) == 0)
+        std::cout << "PASSED -- Broadcast test 5 (" << message3 << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 5 (" << message3 << ")" << std::endl;
 
     return 0;
 }
