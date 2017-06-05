@@ -8,6 +8,8 @@ SET(MODEL_FILES
     ../ChronoClient/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
+    ChSafeADTs.cpp
+    ChSafeADTs.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})

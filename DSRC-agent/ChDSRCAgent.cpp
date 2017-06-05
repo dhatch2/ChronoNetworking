@@ -1,3 +1,21 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Implementation of ChDSRCAgent.
+//
+// =============================================================================
+
 #include <iostream>
 #include "core/ChVector.h"
 #include "ChDSRCAgent.h"
@@ -19,8 +37,12 @@ ChDSRCAgent::ChDSRCAgent(ChWheeledVehicle* veh) {
     vehicleCount++;
 }
 
+bool ChDSRCAgent::canReach(ChDSRCAgent *agent) {
+    return (agent->vehicle->GetVehiclePos() - vehicle->GetVehiclePos()).Length() <= MAX_REACHABLE_DISTANCE;
+}
+
 bool ChDSRCAgent::canReach(int vehicleNum) {
-    return (vehicleMap[vehicleNum]->vehicle->GetVehiclePos() - vehicle->GetVehiclePos()).Length() <= MAX_REACHABLE_DISTANCE;
+    return canReach(vehicleMap[vehicleNum]);
 }
 
 int ChDSRCAgent::vehicleNumber() {
@@ -41,7 +63,7 @@ void ChDSRCAgent::broadcastMessage(std::vector<uint8_t> buffer) {
     message.SerializeToOstream(&stream);
     stream.flush();
     for (std::pair<int, ChDSRCAgent*> agentPair : vehicleMap)
-        if (canReach(agentPair.first) && agentPair.first != m_vehicleNumber)
+        if (canReach(agentPair.second) && agentPair.first != m_vehicleNumber)
             agentPair.second->incomingMessages.push(sendBuf);
 }
 
