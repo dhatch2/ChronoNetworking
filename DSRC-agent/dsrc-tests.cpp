@@ -16,6 +16,8 @@
 
 #include "chrono_models/vehicle/hmmwv/HMMWV.h"
 
+#include <google/protobuf/message.h>
+
 using namespace chrono;
 using namespace chrono::vehicle;
 using namespace chrono::vehicle::hmmwv;
@@ -80,7 +82,8 @@ bool povray_output = false;
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    //raise(SIGTRAP);
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
     // --------------
     // Create systems
     // --------------
@@ -177,7 +180,7 @@ int main(int argc, char* argv[]) {
     std::string messageRec((char *)messageBufferRec.data(), messageBufferRec.size());
 
     if (messageRec.compare(message) == 0)
-        std::cout << "PASSED -- Broadcast test 1 (" << messageRec << ")" << std::endl;
+        std::cout << "PASSED -- Broadcast test 1 " << std::endl; //(" << messageRec << ")" << std::endl;
     else std::cout << "FAILED -- Broadcast test 1 (" << messageRec << ")" << std::endl;
 
     if (agent3.popMessage().size() == 0)
@@ -207,16 +210,16 @@ int main(int argc, char* argv[]) {
     std::string messageRec3((char *)messageBufferRec3.data(), messageBufferRec3.size());
 
     if (messageRec1.compare(message1) == 0)
-        std::cout << "PASSED -- Broadcast test 3 (" << message1 << ")" << std::endl;
-    else std::cout << "FAILED -- Broadcast test 3 (" << message1 << ")" << std::endl;
+        std::cout << "PASSED -- Broadcast test 3" << std::endl; // (" << message1 << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 3 (" << messageRec1 << ")" << std::endl;
 
     if (messageRec2.compare(message2) == 0)
-        std::cout << "PASSED -- Broadcast test 4 (" << message2 << ")" << std::endl;
+        std::cout << "PASSED -- Broadcast test 4" << std::endl; //(" << message2 << ")" << std::endl;
     else std::cout << "FAILED -- Broadcast test 4 (" << messageRec2 << ")" << std::endl;
 
     if (messageRec3.compare(message3) == 0)
-        std::cout << "PASSED -- Broadcast test 5 (" << message3 << ")" << std::endl;
-    else std::cout << "FAILED -- Broadcast test 5 (" << message3 << ")" << std::endl;
+        std::cout << "PASSED -- Broadcast test 5" << std::endl; // (" << message3 << ")" << std::endl;
+    else std::cout << "FAILED -- Broadcast test 5 (" << messageRec3 << ")" << std::endl;
 
     return 0;
 }
