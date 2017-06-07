@@ -23,7 +23,7 @@
 #include "MessageConversions.h"
 #include <google/protobuf/message.h>
 #include <boost/asio.hpp>
-#include "ChSafeADTs.h"
+#include "ChSafeQueue.h"
 
 #define MAX_REACHABLE_DISTANCE 10.0
 #define HEADER_SIZE 32

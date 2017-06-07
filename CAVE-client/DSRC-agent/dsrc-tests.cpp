@@ -18,7 +18,7 @@
 
 #include <iostream>
 #include "ChDSRCAgent.h"
-#include "ChSafeADTs.h"
+#include "ChSafeQueue.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"

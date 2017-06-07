@@ -36,7 +36,7 @@
 
 #include "chrono_models/vehicle/hmmwv/HMMWV.h"
 #include <boost/asio.hpp>
-#include "ChSafeADTs.h"
+#include "ChSafeQueue.h"
 
 using namespace chrono;
 using namespace chrono::vehicle;

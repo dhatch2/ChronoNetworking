@@ -1,15 +1,14 @@
 # Model files for the DSRC Agent
 
 SET(MODEL_FILES
-    ../Vehicle_Protobuf_Messages/${PROTO_SRCS}
-    ../Vehicle_Protobuf_Messages/${PROTO_HDRS}
-    ../Vehicle_Protobuf_Messages/MessageCodes.h
-    ../ChronoClient/MessageConversions.h
-    ../ChronoClient/MessageConversions.cpp
+    ../../Vehicle_Protobuf_Messages/${PROTO_SRCS}
+    ../../Vehicle_Protobuf_Messages/${PROTO_HDRS}
+    ../../Vehicle_Protobuf_Messages/MessageCodes.h
+    ../../ChronoClient/MessageConversions.h
+    ../../ChronoClient/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
-#    ChSafeADTs.cpp
-    ChSafeADTs.h
+    ../ChSafeQueue.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -60,7 +59,7 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # of the requested modules.
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../Vehicle_Protobuf_Messages ../ChronoClient)
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} .. ../../Vehicle_Protobuf_Messages ../../ChronoClient)
 
 #--------------------------------------------------------------
 # === 3 ===
