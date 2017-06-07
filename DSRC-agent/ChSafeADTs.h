@@ -20,17 +20,19 @@
 #define CHSAFEADTS_H
 
 #include <mutex>
-#include <queue>
+#include <list>
 #include <map>
 
 template<class T> class ChSafeQueue {
 public:
     void enqueue(const T& obj);
-    const T& dequeue();
+    const T dequeue();
+    int size();
 
 private:
-    std::queue<T> queue;
-    std::mutex mutex;
+    std::list<T> queue;
+    std::mutex frontMutex;
+    std::mutex endMutex;
 };
 
 template<class T, class K> class ChSafeMap {
@@ -40,5 +42,35 @@ private:
     std::map<K, T> map;
     std::mutex mutex;
 };
+
+template<class T> void ChSafeQueue<T>::enqueue(const T& obj) {
+    bool isLock = false;
+    frontMutex.lock();
+    if (queue.size() == 0) {
+        endMutex.lock();
+        isLock = true;
+    }
+    queue.push_back(obj);
+    if (isLock) endMutex.unlock();
+    frontMutex.unlock();
+}
+
+template<class T> const T ChSafeQueue<T>::dequeue() {
+    T obj = queue.front();
+    bool isLock = false;
+    endMutex.lock();
+    if (queue.size() == 1){
+        frontMutex.lock();
+        isLock = true;
+    }
+    queue.pop_front();
+    if (isLock) frontMutex.unlock();
+    endMutex.unlock();
+    return obj;
+}
+
+template<class T> int ChSafeQueue<T>::size() {
+    return queue.size();
+}
 
 #endif

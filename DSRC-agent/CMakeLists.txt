@@ -8,7 +8,7 @@ SET(MODEL_FILES
     ../ChronoClient/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
-    ChSafeADTs.cpp
+#    ChSafeADTs.cpp
     ChSafeADTs.h
 )
 

@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include "ChDSRCAgent.h"
+#include "ChSafeADTs.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
@@ -168,9 +169,11 @@ int main(int argc, char* argv[]) {
 
     utils::CSV_writer driver_csv(" ");
 
-    ChDSRCAgent agent1(&my_hmmwv1.GetVehicle());
+    // -----------------
+    // Unit Tests
+    // -----------------
 
-    std::cout << "DSRC agent created." << std::endl;
+    ChDSRCAgent agent1(&my_hmmwv1.GetVehicle());
     ChDSRCAgent agent2(&my_hmmwv2.GetVehicle());
     ChDSRCAgent agent3(&my_hmmwv3.GetVehicle());
 

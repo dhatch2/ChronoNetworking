@@ -36,6 +36,7 @@
 
 #include "chrono_models/vehicle/hmmwv/HMMWV.h"
 #include <boost/asio.hpp>
+#include "ChSafeADTs.h"
 
 using namespace chrono;
 using namespace chrono::vehicle;
@@ -47,11 +48,11 @@ public:
     bool canReach(int vehicle);
     int vehicleNumber();
     void broadcastMessage(std::vector<uint8_t> buffer);
-    std::vector<uint8_t> popMessage();
+    std::vector<uint8_t>& popMessage();
 private:
     ChWheeledVehicle* vehicle;
     int m_vehicleNumber;
-    std::queue<std::shared_ptr<boost::asio::streambuf>> incomingMessages;
+    ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> incomingMessages;
 
     bool canReach(ChDSRCAgent *vehicle);
 };

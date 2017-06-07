@@ -23,6 +23,7 @@
 #include "MessageConversions.h"
 #include <google/protobuf/message.h>
 #include <boost/asio.hpp>
+#include "ChSafeADTs.h"
 
 #define MAX_REACHABLE_DISTANCE 10.0
 #define HEADER_SIZE 32
@@ -64,22 +65,21 @@ void ChDSRCAgent::broadcastMessage(std::vector<uint8_t> buffer) {
     stream.flush();
     for (std::pair<int, ChDSRCAgent*> agentPair : vehicleMap)
         if (canReach(agentPair.second) && agentPair.first != m_vehicleNumber)
-            agentPair.second->incomingMessages.push(sendBuf);
+            agentPair.second->incomingMessages.enqueue(sendBuf);
 }
 
 // Pops message from the end of the message queue. If there are no messages, a vector of size 0 is returned.
-std::vector<uint8_t> ChDSRCAgent::popMessage() {
+std::vector<uint8_t>& ChDSRCAgent::popMessage() {
     if (incomingMessages.size() != 0) {
-        auto buffer = incomingMessages.front();
-        incomingMessages.pop();
+        auto buffer = incomingMessages.dequeue();
         ChronoMessages::DSRCMessage message;
         std::istream stream(buffer.get());
         buffer->commit(buffer->size());
         message.ParseFromIstream(&stream);
         message.CheckInitialized();
-        std::vector<uint8_t> messageVector(message.buffer().size());
-        messageVector.assign(message.buffer().begin(), message.buffer().end());
-        return messageVector;
+        std::vector<uint8_t>* messageVector = new std::vector<uint8_t>(message.buffer().size());
+        messageVector->assign(message.buffer().begin(), message.buffer().end());
+        return *messageVector;
     }
     return *(new std::vector<uint8_t>());
 }
