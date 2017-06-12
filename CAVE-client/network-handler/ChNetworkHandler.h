@@ -30,17 +30,50 @@
 
 class ChNetworkHandler {
 public:
-    ChNetworkHandler();
-    ~ChNetworkHandler();
 
-    int connectionNumber();
-    bool isConnected();
+    // Begins receiving messages.
+    virtual void beginListen();
+
+    // Begins sending messages.
+    virtual void beginSend();
+
+protected:
+    void sendMessage(boost::asio::ip::udp::endpoint& endpoint, boost::asio::streambuf& message);
+    std::pair<boost::asio::ip::udp::endpoint, boost::asio::streambuf>& receiveMessage();
+};
+
+class ChClientHandler : public ChNetworkHandler {
+public:
     bool connectToServer(std::string name, std::string port);
-    void beginListen();
-    void beginSend();
-    void setSimUpdateQueue(ChSafeQueue& queue);
-    void setDSRCUpdateQueue(ChSafeQueue& queue);
+    bool isConnected();
+    int connectionNumber();
+
+    // Pushes message to be sent.
     void pushMessage(google::protobuf::Message& message);
-}
+
+    // Returns message related to physical simulation.
+    google::protobuf::Message& popSimMessage();
+
+    // Returns simulated DSRC message.
+    ChronoMessages::DSRCMessage& popDSRCMessage();
+
+private:
+    ChSafeQueue<google::protobuf::Message> simUpdateQueue;
+    ChSafeQueue<google::protobuf::Message> DSRCUpdateQueue;
+    boost::asio::ip::udp::endpoint& serverEndpoint;
+    int m_connectionNumber;
+};
+
+class ChServerHandler : ChNetworkHandler {
+public:
+    // Returns message recieved from the network.
+    std::pair<boost::asio::ip::udp::endpoint, google::protobuf::Message>& popMessage();
+
+    // Pushes message to queue to be sent.
+    void pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message);
+private:
+    ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> receiveQueue;
+    ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;
+};
 
 #endif // CHNETWORKHANDLER_H

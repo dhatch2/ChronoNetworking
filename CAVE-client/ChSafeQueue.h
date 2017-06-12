@@ -20,53 +20,35 @@
 #define CHSAFEADTS_H
 
 #include <mutex>
-#include <list>
-#include <map>
+#include <queue>
+#include <condition_variable>
 
 template<class T> class ChSafeQueue {
 public:
     void enqueue(const T& obj);
-    const T dequeue();
+    T& dequeue();
     int size();
 
 private:
-    std::list<T> queue;
-    std::mutex frontMutex;
-    std::mutex endMutex;
-};
-
-template<class T, class K> class ChSafeMap {
-public:
-    T& operator[] (K key);
-private:
-    std::map<K, T> map;
+    std::queue<T> queue;
     std::mutex mutex;
+    std::condition_variable var;
 };
 
 template<class T> void ChSafeQueue<T>::enqueue(const T& obj) {
-    bool isLock = false;
-    frontMutex.lock();
-    if (queue.size() == 0) {
-        endMutex.lock();
-        isLock = true;
-    }
-    queue.push_back(obj);
-    if (isLock) endMutex.unlock();
-    frontMutex.unlock();
+    T* newObj = new T(obj);
+    std::unique_lock<std::mutex> lock(mutex);
+    queue.push(*newObj);
+    lock.unlock();
+    var.notify_one();
 }
 
-template<class T> const T ChSafeQueue<T>::dequeue() {
-    T obj = queue.front();
-    bool isLock = false;
-    endMutex.lock();
-    if (queue.size() == 1){
-        frontMutex.lock();
-        isLock = true;
-    }
-    queue.pop_front();
-    if (isLock) frontMutex.unlock();
-    endMutex.unlock();
-    return obj;
+template<class T> T& ChSafeQueue<T>::dequeue() {
+    std::unique_lock<std::mutex> lock(mutex);
+    var.wait(lock, [&]{ return !queue.empty(); });
+    T* obj = new T(queue.front());
+    queue.pop();
+    return *obj;
 }
 
 template<class T> int ChSafeQueue<T>::size() {

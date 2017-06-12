@@ -79,6 +79,9 @@ std::vector<uint8_t>& ChDSRCAgent::popMessage() {
         message.CheckInitialized();
         std::vector<uint8_t>* messageVector = new std::vector<uint8_t>(message.buffer().size());
         messageVector->assign(message.buffer().begin(), message.buffer().end());
+
+        // Ownership of buffer object on the heap is transfered to this function.
+        //delete &buffer;
         return *messageVector;
     }
     return *(new std::vector<uint8_t>());

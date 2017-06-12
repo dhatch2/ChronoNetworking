@@ -1,5 +1,6 @@
 SET(MODEL_FILES
     ../ChSafeQueue.h
+    ChNetworkHandler.h
     )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
