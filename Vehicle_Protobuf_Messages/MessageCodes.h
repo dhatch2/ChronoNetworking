@@ -26,6 +26,10 @@
 #define VEHICLE_ID 4
 #define HEARTBEAT 5
 
+#define CONNECTION_REQUEST 6
+#define CONNECTION_ACCEPT 7
+#define CONNECTION_DECLINE 8
+
 #define VEHICLE_MESSAGE_TYPE "ChronoMessages.VehicleMessage"
 #define VEHICLE_MESSAGE_SIZE 361
 
