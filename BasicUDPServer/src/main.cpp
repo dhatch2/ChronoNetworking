@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     cout << "Hello, world.\n";
     boost::asio::io_service ioService;
     udp::socket socket(ioService, udp::endpoint(udp::v4(), 1300));
-    
+
     while (true) {
         boost::array <char, 1> receivingBuffer;
         udp::endpoint remoteEndpoint;
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
         string message(line);
         boost::system::error_code ignoredError;
         socket.send_to(boost::asio::buffer(message), remoteEndpoint, 0, ignoredError);
-        
+
         tutorial::Person person;
         string name;
         cout << "Name: ";
@@ -42,22 +42,22 @@ int main(int argc, char **argv)
         cout << "email:";
         cin >> email;
         person.set_email(email);
-        
+
         boost::asio::streambuf* b = new boost::asio::streambuf();
         b->data();
-        
+
         boost::asio::streambuf buff;
         ostream outStream(&buff);
-        
+
         ::google::protobuf::io::OstreamOutputStream raw_output_stream(&outStream);
         ::google::protobuf::io::CodedOutputStream coded_output_stream(&raw_output_stream);
-        
+
         person.SerializeToCodedStream(&coded_output_stream);
-        
+
         //boost::asio::streambuf buff;
         //ostream outStream(&buff);
         //person.SerializeToOstream(&outStream);
-        
+
         socket.send_to(buff.data(), remoteEndpoint, 0, ignoredError);
     }
 	return 0;

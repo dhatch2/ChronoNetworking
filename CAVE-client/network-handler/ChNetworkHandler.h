@@ -24,14 +24,19 @@
 #include <google/protobuf/message.h>
 #include <boost/asio.hpp>
 #include <exception>
+#include <thread>
 
 #include "MessageCodes.h"
 #include "ChronoMessages.pb.h"
 #include "ChSafeQueue.h"
 
+#define REFUSED_CONNECTION 0
+#define UNDETERMINED_CONNECTION 1
+#define FAILED_CONNECTION 2
+
 class ChNetworkHandler {
 public:
-    ChNetworkHandler();
+    ChNetworkHandler(int portNumber);
     virtual ~ChNetworkHandler();
 
     // Begins receiving messages.
@@ -79,7 +84,7 @@ private:
 
 class ChServerHandler : public ChNetworkHandler {
 public:
-    ChServerHandler();
+    ChServerHandler(int portNumber);
     ~ChServerHandler();
 
     // Begins receiving messages.
@@ -96,13 +101,35 @@ public:
 private:
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> receiveQueue;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;
+    std::thread acceptor;
+    int connectionCount;
+    std::mutex initMutex;
+    std::condition_variable initVar;
 };
 
-class ConnectionRefusedException : public std::exception {
+class ConnectionException : public std::exception {
 public:
-    virtual const char* what() const throw() {
-        return "Connection refused by server.";
+    ConnectionException(int type) : std::exception() {
+        m_type = type;
     }
+
+    int type() { return m_type; }
+
+    virtual const char* what() const throw() {
+        switch (m_type) {
+            case REFUSED_CONNECTION:
+                return "Connection refuesed by server.";
+            case FAILED_CONNECTION:
+                return "Failed to connect to host.";
+            case UNDETERMINED_CONNECTION:
+                return "Undetermined connection made.";
+            default:
+                return "Unknown error.";
+        }
+    }
+
+private:
+    int m_type;
 };
 
 #endif // CHNETWORKHANDLER_H
