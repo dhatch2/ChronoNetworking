@@ -15,7 +15,7 @@
 //	Class declaration for the client ans server network interfaces. All
 //  communication between the client and server is done with instances of this a
 //  child of ChNetworkHandler. Instances of this class may create additional
-//  threads for network communication purposes, all of which are bound by the 
+//  threads for network communication purposes, all of which are bound by the
 //  lifetime of the ChNetworkHandler.
 //
 // =============================================================================
@@ -49,8 +49,11 @@ public:
 
 protected:
     void sendMessage(boost::asio::ip::udp::endpoint& endpoint, boost::asio::streambuf& message);
-    std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>& receiveMessage();
+    std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>> receiveMessage();
     boost::asio::ip::udp::socket socket;
+
+    std::mutex initMutex;
+    std::condition_variable initVar;
 };
 
 class ChClientHandler : public ChNetworkHandler {
@@ -105,8 +108,6 @@ private:
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;
     std::thread acceptor;
     int connectionCount;
-    std::mutex initMutex;
-    std::condition_variable initVar;
 };
 
 class ConnectionException : public std::exception {

@@ -33,15 +33,32 @@ ChNetworkHandler::~ChNetworkHandler() {
     delete &socket.get_io_service();
 }
 
+//TODO: make sure to send buffer size BEFORE the buffer so that the receiving end knows how much to receive.
 void ChNetworkHandler::sendMessage(boost::asio::ip::udp::endpoint& endpoint, boost::asio::streambuf& message) {
-
+    std::unique_lock<std::mutex> lock(initMutex);
+    initVar.wait(lock, [&]{ return socket.is_open(); });
+    boost::system::error_code error;
+    socket.send_to(boost::asio::buffer(&message, message.size()), endpoint, 0, error);
+    if (error == boost::asio::error::host_not_found) {
+        //TODO: Handle event by removing endpoint from world object or something
+    }
 }
 
-std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>& ChNetworkHandler::receiveMessage() {
+//TODO: make sure receive size first so we know how much to receive.
+std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>> ChNetworkHandler::receiveMessage() {
+    std::unique_lock<std::mutex> lock(initMutex);
+    initVar.wait(lock, [&]{ return socket.is_open(); });
+    boost::system::error_code error;
+    boost::asio::ip::udp::endpoint endpoint;
+    auto buffer = std::make_shared<boost::asio::streambuf>();
+    socket.receive_from(boost::asio::buffer(buffer.get(), buffer->size()), endpoint, 0, error);
+    //TODO: Handle error message here
 
+    return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer);
 }
 
 ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNetworkHandler() {
+    std::unique_lock<std::mutex> lock(initMutex);
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
     uint8_t requestResponse;
@@ -70,7 +87,8 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNet
 }
 
 ChClientHandler::~ChClientHandler() {
-
+    //socket.close();
+    //delete &socket.get_io_service();
 }
 
 int ChClientHandler::connectionNumber() {
@@ -110,6 +128,7 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
                     tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
                     boost::asio::ip::tcp::endpoint tcpEndpoint = tcpSocket.remote_endpoint();
                     boost::asio::ip::udp::endpoint udpEndpoint(tcpEndpoint.address(), tcpEndpoint.port());
+                    // TODO: Add udp endpoint information to world object map.
                     connectionCount++;
                 } else {
                     uint8_t declineMessage = CONNECTION_DECLINE;
@@ -122,6 +141,7 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
     std::unique_lock<std::mutex> lock(initMutex);
     socket.open(boost::asio::ip::udp::v4());
     socket.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), portNumber));
+    socket.non_blocking(true);
 }
 
 ChServerHandler::~ChServerHandler() {
