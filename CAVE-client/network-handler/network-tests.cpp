@@ -1,3 +1,11 @@
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Unit tests for ChNetworkHandler, ChClientHandler, and ChServerHandler.
+//
+// =============================================================================
+
 #include <iostream>
 #include <thread>
 #include "ChNetworkHandler.h"
@@ -14,10 +22,6 @@ int main(int argc, char **argv) {
     }
     boost::asio::io_service ioService;
 
-    boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
-
-    boost::asio::ip::tcp::socket tcpSocket1(ioService);
-
     std::thread client1([&] {
         try {
             ChClientHandler clientHandler("localhost", "8082");
@@ -29,7 +33,10 @@ int main(int argc, char **argv) {
         }
     });
 
+    boost::asio::ip::tcp::acceptor acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
+    boost::asio::ip::tcp::socket tcpSocket1(ioService);
     acceptor.accept(tcpSocket1);
+
 
     uint8_t requestMessage;
     tcpSocket1.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
@@ -61,22 +68,20 @@ int main(int argc, char **argv) {
     tcpSocket2.send(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
     client2.join();
     tcpSocket2.close();
+    acceptor.close();
 
     // Server connection tests
-    std::thread server1([&] {
-        ChServerHandler serverHandler(8082);
-    });
+    ChServerHandler serverHandler(8082);
 
     boost::asio::ip::tcp::socket tcpSocket3(ioService);
     boost::asio::ip::tcp::resolver tcpResolver(ioService);
     boost::asio::ip::tcp::resolver::query tcpQuery("localhost", "8082");
     uint8_t requestResponse;
     boost::asio::ip::tcp::resolver::iterator endpointIterator = tcpResolver.resolve(tcpQuery);
+
     boost::asio::connect(tcpSocket3, endpointIterator);
-    std::cout << "connected" << std::endl;
     uint8_t connectionRequest = CONNECTION_REQUEST;
     tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
-    std::cout << "sent" << std::endl;
     tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
     if(requestResponse == CONNECTION_ACCEPT) {
         uint32_t connectionNumber;
@@ -86,6 +91,33 @@ int main(int argc, char **argv) {
         } else std::cout << "FAILED -- Server connection test 1" << std::endl;
     } else std::cout << "FAILED -- Server connection test 1" << std::endl;
 
-    server1.join();
+    boost::asio::connect(tcpSocket3, endpointIterator);
+    tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
+    tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+    if(requestResponse == CONNECTION_ACCEPT) {
+        uint32_t connectionNumber;
+        tcpSocket3.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
+        if (connectionNumber == 1) {
+            std::cout << "PASSED -- Server connection test 2" << std::endl;
+        } else std::cout << "FAILED -- Server connection test 2" << std::endl;
+    } else std::cout << "FAILED -- Server connection test 2" << std::endl;
+
+    boost::asio::connect(tcpSocket3, endpointIterator);
+    connectionRequest = 100;
+    tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
+    tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+    if(requestResponse == CONNECTION_DECLINE) {
+        std::cout << "PASSED -- Server connection test 3" << std::endl;
+    } else std::cout << "FAILED -- Server connection test 3" << std::endl;
+
+    tcpSocket3.close();
+
+    // Server-client integration test
+    ChClientHandler clientHandler("localhost", "8082");
+
+    if (clientHandler.connectionNumber() == 2) {
+        std::cout << "PASSED -- Server-client integration test" << std::endl;
+    } else std::cout << "FAILED -- Server-client integration test" << std::endl;
+
     return 0;
 }

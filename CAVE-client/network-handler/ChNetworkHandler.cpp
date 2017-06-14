@@ -1,9 +1,30 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Class definition for the client ans server network interfaces. All
+//  communication between the client and server is done with instances of this a
+//  child of ChNetworkHandler. Instances of this class may create additional
+//  threads for network communication purposes.
+//
+// =============================================================================
+
 #include "ChNetworkHandler.h"
 #include "MessageCodes.h"
 
 #include <iostream>
 
-ChNetworkHandler::ChNetworkHandler(int portNumber) : socket(*(new boost::asio::io_service), boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), portNumber)) {
+ChNetworkHandler::ChNetworkHandler() : socket(*(new boost::asio::io_service)) {
 
 }
 
@@ -20,7 +41,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
 
 }
 
-ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNetworkHandler(std::stoi(port)) {
+ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNetworkHandler() {
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
     uint8_t requestResponse;
@@ -44,6 +65,7 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNet
         boost::asio::ip::udp::resolver udpResolver(socket.get_io_service());
         boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), hostname, port);
         serverEndpoint = *udpResolver.resolve(udpQuery);
+        socket.open(boost::asio::ip::udp::v4());
     } else throw ConnectionException(UNDETERMINED_CONNECTION);
 }
 
@@ -63,41 +85,47 @@ void ChClientHandler::beginSend() {
 
 }
 
-ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(portNumber),
+ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
     acceptor([&, this] {
         std::unique_lock<std::mutex> lock(initMutex);
         initVar.wait(lock, [&]{ return socket.is_open(); });
         connectionCount = 0;
-        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), portNumber));
+
+        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
+        acceptor.non_blocking(true);
+
         lock.unlock();
-        std::cout << "listening..." << std::endl;
+
         while (socket.is_open()) {
             boost::asio::ip::tcp::socket tcpSocket(socket.get_io_service());
-            std::cout << "accepting..." << std::endl;
-            acceptor.accept(tcpSocket);
+            boost::system::error_code acceptError;
+            acceptor.accept(tcpSocket, acceptError);
 
-            uint8_t requestMessage;
-            std::cout << "receiving..." << std::endl;
-            tcpSocket.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
-            std::cout << "received" << std::endl;
-            if (requestMessage == CONNECTION_REQUEST) {
-                uint8_t acceptMessage = CONNECTION_ACCEPT;
-                tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
-                tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
-                boost::asio::ip::tcp::endpoint tcpEndpoint = tcpSocket.remote_endpoint();
-                boost::asio::ip::udp::endpoint udpEndpoint(tcpEndpoint.address(), tcpEndpoint.port());
-                connectionCount++;
-            } else {
-                uint8_t declineMessage = CONNECTION_DECLINE;
-                tcpSocket.send(boost::asio::buffer(&declineMessage, sizeof(uint8_t)));
+            if (acceptError != boost::asio::error::would_block){
+                uint8_t requestMessage;
+                tcpSocket.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
+                if (requestMessage == CONNECTION_REQUEST) {
+                    uint8_t acceptMessage = CONNECTION_ACCEPT;
+                    tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
+                    tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
+                    boost::asio::ip::tcp::endpoint tcpEndpoint = tcpSocket.remote_endpoint();
+                    boost::asio::ip::udp::endpoint udpEndpoint(tcpEndpoint.address(), tcpEndpoint.port());
+                    connectionCount++;
+                } else {
+                    uint8_t declineMessage = CONNECTION_DECLINE;
+                    tcpSocket.send(boost::asio::buffer(&declineMessage, sizeof(uint8_t)));
+                }
             }
             tcpSocket.close();
         }
     } ) {
     std::unique_lock<std::mutex> lock(initMutex);
+    socket.open(boost::asio::ip::udp::v4());
+    socket.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), portNumber));
 }
 
 ChServerHandler::~ChServerHandler() {
+    socket.close();
     acceptor.join();
 }
 

@@ -12,9 +12,11 @@
 // Authors: Dylan Hatch
 // =============================================================================
 //
-//	Class declaration for the client network interface. All communication with
-//  the chrono server is done with instances of this class. Instances of this
-//  class may create additional threads for network communication purposes.
+//	Class declaration for the client ans server network interfaces. All
+//  communication between the client and server is done with instances of this a
+//  child of ChNetworkHandler. Instances of this class may create additional
+//  threads for network communication purposes, all of which are bound by the 
+//  lifetime of the ChNetworkHandler.
 //
 // =============================================================================
 
@@ -36,7 +38,7 @@
 
 class ChNetworkHandler {
 public:
-    ChNetworkHandler(int portNumber);
+    ChNetworkHandler();
     virtual ~ChNetworkHandler();
 
     // Begins receiving messages.
