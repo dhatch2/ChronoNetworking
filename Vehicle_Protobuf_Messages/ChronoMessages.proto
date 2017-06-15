@@ -57,6 +57,10 @@ message DSRCMessage {
 	required double chTime = 2;
 	required int32 vehicleId = 3;
 	required MVector vehiclePos = 4;
-	//required int32 bufferSize = 5;
 	required bytes buffer = 5;
+}
+
+message MessagePacket {
+	repeated VehicleMessage vehicleMessages = 1;
+	repeated DSRCMessage DSRCMessages = 2;
 }

@@ -39,7 +39,7 @@
 class ChNetworkHandler {
 public:
     ChNetworkHandler();
-    virtual ~ChNetworkHandler();
+    ~ChNetworkHandler();
 
     // Begins receiving messages.
     virtual void beginListen() = 0;
@@ -48,12 +48,17 @@ public:
     virtual void beginSend() = 0;
 
 protected:
+    // Sends message in buffer
     void sendMessage(boost::asio::ip::udp::endpoint& endpoint, boost::asio::streambuf& message);
-    std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>> receiveMessage();
-    boost::asio::ip::udp::socket socket;
 
-    std::mutex initMutex;
+    // Returns buffer with message waiting to be commited to the input sequence
+    std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>> receiveMessage();
+
+    boost::asio::ip::udp::socket socket;
+    std::mutex socketMutex;
     std::condition_variable initVar;
+    std::thread* listener;
+    std::thread* sender;
 };
 
 class ChClientHandler : public ChNetworkHandler {

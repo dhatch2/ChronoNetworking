@@ -26,11 +26,17 @@
 #define VEHICLE_ID 4
 #define HEARTBEAT 5
 
-#define CONNECTION_REQUEST 6
-#define CONNECTION_ACCEPT 7
-#define CONNECTION_DECLINE 8
+#define DSRC_MESSAGE 6
+
+#define MESSAGE_PACKET 7
+
+#define CONNECTION_REQUEST 8
+#define CONNECTION_ACCEPT 9
+#define CONNECTION_DECLINE 10
 
 #define VEHICLE_MESSAGE_TYPE "ChronoMessages.VehicleMessage"
 #define VEHICLE_MESSAGE_SIZE 361
+#define DSRC_MESSAGE_TYPE "ChronoMessages.DSRCMessage"
+#define MESSAGE_PACKET_TYPE "ChronoMessages.MessagePacket"
 
 #endif
