@@ -86,13 +86,8 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNet
         uint8_t connectionRequest = CONNECTION_REQUEST;
         tcpSocket.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
         tcpSocket.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
-    } catch (std::exception& err) {
-        //delete &socket.get_io_service();
-        throw ConnectionException(FAILED_CONNECTION);
-    }
-    if(requestResponse == CONNECTION_DECLINE) {
-        throw ConnectionException(REFUSED_CONNECTION);
-    }
+    } catch (std::exception& err) { throw ConnectionException(FAILED_CONNECTION); }
+    if(requestResponse == CONNECTION_DECLINE) throw ConnectionException(REFUSED_CONNECTION);
     if(requestResponse == CONNECTION_ACCEPT) {
         uint32_t connectionNumber;
         tcpSocket.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
@@ -103,9 +98,7 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNet
         boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), hostname, port);
         serverEndpoint = *udpResolver.resolve(udpQuery);
         socket.open(boost::asio::ip::udp::v4());
-    } else {
-        throw ConnectionException(UNDETERMINED_CONNECTION);
-    }
+    } else throw ConnectionException(UNDETERMINED_CONNECTION);
 }
 
 ChClientHandler::~ChClientHandler() {
@@ -127,24 +120,40 @@ void ChClientHandler::beginListen() {
         uint8_t messageType;
         stream >> messageType;
 
-        //switch (messageType) {
-            //case MESSAGE_PACKET:
+        switch (messageType) {
+            case MESSAGE_PACKET:
                 //TODO: This is currently broken
-                /*buffer.commit(sizeof(uint32_t));
+                buffer.commit(sizeof(uint32_t));
                 uint32_t size;
                 stream >> size;
                 buffer.commit(size);
                 ChronoMessages::MessagePacket packet;
                 packet.ParseFromIstream(&stream);
                 for (size_t i = 0; i < packet.vehiclemessages_size(); i++) {
-                    //simUpdateQueue.enqueue(packet.vehiclemessages(i));
-                }*/
-        //}
+                    auto vehicleMessage = std::make_shared<ChronoMessages::VehicleMessage>();
+                    vehicleMessage->CopyFrom(packet.vehiclemessages(i));
+                    simUpdateQueue.enqueue(vehicleMessage);
+                }
+                for (size_t i = 0; i < packet.dsrcmessages_size(); i++) {
+                    auto DMessage = std::make_shared<ChronoMessages::DSRCMessage>();
+                    DMessage->CopyFrom(packet.dsrcmessages(i));
+                    DSRCUpdateQueue.enqueue(DMessage);
+                }
+                break;
+        }
     });
 }
 
 void ChClientHandler::beginSend() {
 
+}
+
+google::protobuf::Message& ChClientHandler::popSimMessage() {
+    return *(simUpdateQueue.dequeue());
+}
+
+ChronoMessages::DSRCMessage& ChClientHandler::popDSRCMessage() {
+    return *(DSRCUpdateQueue.dequeue());
 }
 
 ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),

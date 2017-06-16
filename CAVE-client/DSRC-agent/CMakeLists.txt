@@ -8,7 +8,7 @@ SET(MODEL_FILES
     ../../ChronoClient/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
-    ../ChSafeQueue.h
+    ../../network-handler/ChSafeQueue.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
@@ -59,7 +59,7 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # of the requested modules.
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} .. ../../Vehicle_Protobuf_Messages ../../ChronoClient)
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} .. ../../Vehicle_Protobuf_Messages ../../ChronoClient ../../network-handler)
 
 #--------------------------------------------------------------
 # === 3 ===

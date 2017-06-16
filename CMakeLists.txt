@@ -73,6 +73,7 @@ set(EXTRA_COMPILE_FLAGS "")
 endif()
 
 add_subdirectory(Vehicle_Protobuf_Messages)
+add_subdirectory(network-handler)
 add_subdirectory(ChronoServer)
 add_subdirectory(ChronoClient)
 add_subdirectory(ChronoUDPServer)
