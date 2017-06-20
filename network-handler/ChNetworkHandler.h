@@ -86,6 +86,7 @@ public:
     ChronoMessages::DSRCMessage& popDSRCMessage();
 
 private:
+    ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> sendQueue;
     ChSafeQueue<std::shared_ptr<google::protobuf::Message>> simUpdateQueue;
     ChSafeQueue<std::shared_ptr<ChronoMessages::DSRCMessage>> DSRCUpdateQueue;
     boost::asio::ip::udp::endpoint serverEndpoint;
