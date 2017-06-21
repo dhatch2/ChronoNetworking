@@ -59,6 +59,7 @@ protected:
     std::condition_variable initVar;
     std::thread* listener;
     std::thread* sender;
+    bool shutdown;
 };
 
 class ChClientHandler : public ChNetworkHandler {
@@ -80,10 +81,10 @@ public:
     void pushMessage(google::protobuf::Message& message);
 
     // Returns message related to physical simulation.
-    google::protobuf::Message& popSimMessage();
+    std::shared_ptr<google::protobuf::Message> popSimMessage();
 
     // Returns simulated DSRC message.
-    ChronoMessages::DSRCMessage& popDSRCMessage();
+    std::shared_ptr<ChronoMessages::DSRCMessage> popDSRCMessage();
 
 private:
     ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> sendQueue;

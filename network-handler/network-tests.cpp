@@ -233,12 +233,19 @@ int main(int argc, char **argv) {
             clientHandler.pushMessage(packet);
 
             clientHandler.beginListen();
-            ChronoMessages::DSRCMessage newMessage = clientHandler.popDSRCMessage();
-            if (newMessage.buffer().compare(Dmessage1) == 0) {
+            auto newMessage = clientHandler.popDSRCMessage();
+            if (newMessage->buffer().compare(Dmessage1) == 0) {
                 std::cout << "PASSED -- Client communication test 2" << std::endl;
             } else std::cout << "FAILED -- Client communication test 2" << std::endl;
+
+            clientHandler.popSimMessage();
+            auto vMessage = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
+            if (vMessage->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv1.GetVehicle(), 0).DebugString()) == 0) {
+                std::cout << "PASSED -- Client communication test 3" << std::endl;
+            } else std::cout << "FAILED -- Client communication test 3" << std::endl;
         } catch (ConnectionException& exp) {
             std::cout << "FAILED -- Client communication test 2" << std::endl;
+            std::cout << "FAILED -- Client communication test 3" << std::endl;
         }
     });
 
@@ -313,6 +320,17 @@ int main(int argc, char **argv) {
     uint8_t messageType = MESSAGE_PACKET;
     stream << messageType;
     uint32_t size = packet.ByteSize();
+    stream << size;
+    packet.SerializeToOstream(&stream);
+    stream.flush();
+
+    udpSocket.send_to(buffer.data(), recEndpoint);
+
+    ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv1.GetVehicle(), 0);
+
+    messageType = VEHICLE_MESSAGE;
+    stream << messageType;
+    size = sendVehicle.ByteSize();
     stream << size;
     packet.SerializeToOstream(&stream);
     stream.flush();

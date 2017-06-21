@@ -27,10 +27,12 @@
 ChNetworkHandler::ChNetworkHandler() : socket(*(new boost::asio::io_service)) {
     listener = nullptr;
     sender = nullptr;
+    shutdown = false;
 }
 
 ChNetworkHandler::~ChNetworkHandler() {
     socket.close();
+    shutdown = true;
     delete &socket.get_io_service();
     if (listener != nullptr) {
         listener->join();
@@ -69,11 +71,13 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
         int available = socket.available(availableError);
         if (!availableError && available != 0) socket.receive_from(buffer->prepare(available), endpoint, 0, error);
         //TODO: Handle error message again here
-    } while (error == boost::asio::error::would_block && socket.is_open());
+    } while (error == boost::asio::error::would_block && socket.is_open() && !shutdown);
     return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer);
 }
 
-ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNetworkHandler() {
+ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
+    ChNetworkHandler(),
+    sendQueue([&]{ return socket.is_open() || !shutdown; }){
     std::unique_lock<std::mutex> lock(socketMutex);
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
@@ -104,7 +108,12 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) : ChNet
 }
 
 ChClientHandler::~ChClientHandler() {
-
+    shutdown = true;
+    sendQueue.dumpThreads();
+    socket.close();
+    while (socket.is_open() && !shutdown) {
+    }
+    sendQueue.notifyPredicate();
 }
 
 int ChClientHandler::connectionNumber() {
@@ -113,7 +122,7 @@ int ChClientHandler::connectionNumber() {
 
 void ChClientHandler::beginListen() {
     listener = new std::thread([&, this] {
-        while (socket.is_open()) {
+        while (socket.is_open() && !shutdown) {
             auto recPair = receiveMessage();
             //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
@@ -122,12 +131,13 @@ void ChClientHandler::beginListen() {
             uint8_t messageType;
             stream >> messageType;
 
+            buffer.commit(sizeof(uint32_t));
+            uint32_t size;
+            stream >> size;
+            buffer.commit(size);
+
             switch (messageType) {
-                case MESSAGE_PACKET:
-                    buffer.commit(sizeof(uint32_t));
-                    uint32_t size;
-                    stream >> size;
-                    buffer.commit(size);
+                case MESSAGE_PACKET: {
                     ChronoMessages::MessagePacket packet;
                     packet.ParseFromIstream(&stream);
                     for (size_t i = 0; i < packet.vehiclemessages_size(); i++) {
@@ -141,6 +151,18 @@ void ChClientHandler::beginListen() {
                         DSRCUpdateQueue.enqueue(DMessage);
                     }
                     break;
+                }
+                case VEHICLE_MESSAGE: {
+                    std::cout << "found vehicle message" << std::endl;
+                    auto message = std::make_shared<ChronoMessages::VehicleMessage>();
+                    message->ParseFromIstream(&stream);
+                    simUpdateQueue.enqueue(message);
+                }
+                case DSRC_MESSAGE: {
+                    auto message = std::make_shared<ChronoMessages::DSRCMessage>();
+                    message->ParseFromIstream(&stream);
+                    DSRCUpdateQueue.enqueue(message);
+                }
             }
         }
     });
@@ -148,10 +170,13 @@ void ChClientHandler::beginListen() {
 
 void ChClientHandler::beginSend() {
     sender = new std::thread([&, this] {
-        while (socket.is_open()) {
-            // TODO: break out of dequeue() for destruction.
-            auto buffer = sendQueue.dequeue();
-            sendMessage(serverEndpoint, *buffer);
+        try {
+            while (socket.is_open() && !shutdown) {
+                // TODO: break out of dequeue() for destruction.
+                auto buffer = sendQueue.dequeue();
+                sendMessage(serverEndpoint, *buffer);
+            }
+        } catch (PredicateException ex) {
         }
     });
 }
@@ -176,12 +201,12 @@ void ChClientHandler::pushMessage(google::protobuf::Message& message) {
     sendQueue.enqueue(buffer);
 }
 
-google::protobuf::Message& ChClientHandler::popSimMessage() {
-    return *(simUpdateQueue.dequeue());
+std::shared_ptr<google::protobuf::Message> ChClientHandler::popSimMessage() {
+    return simUpdateQueue.dequeue();
 }
 
-ChronoMessages::DSRCMessage& ChClientHandler::popDSRCMessage() {
-    return *(DSRCUpdateQueue.dequeue());
+std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
+    return DSRCUpdateQueue.dequeue();
 }
 
 ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
