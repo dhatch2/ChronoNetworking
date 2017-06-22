@@ -75,8 +75,57 @@ double debug_step_size = 1.0 / 1;  // FPS = 1
 // POV-Ray output
 bool povray_output = false;
 
+HMMWV_Full generateTestVehicle() {
+    HMMWV_Full my_hmmwv; // Test vehicle for messages
+
+    ChVector<> initLoc1(0, 0, 1.6);
+    ChQuaternion<> initRot1(1, 0, 0, 0);
+
+    my_hmmwv.SetContactMethod(contact_method);
+    my_hmmwv.SetChassisFixed(false);
+    my_hmmwv.SetInitPosition(ChCoordsys<>(initLoc1, initRot1));
+    my_hmmwv.SetPowertrainType(powertrain_model);
+    my_hmmwv.SetDriveType(drive_type);
+    //my_hmmwv.SetTireType(tire_model);
+    my_hmmwv.SetTireStepSize(tire_step_size);
+    my_hmmwv.SetPacejkaParamfile("hmmwv/tire/HMMWV_pacejka.tir");
+    my_hmmwv.Initialize();
+
+    return my_hmmwv;
+}
+
+void generateTestDSRCMessage(ChronoMessages::DSRCMessage *message, HMMWV_Full& my_hmmwv, std::string& DMessage) {
+    message->set_vehicleid(1);
+    message->set_timestamp(time(0));
+    message->set_chtime(my_hmmwv.GetVehicle().GetChTime());
+    messageFromVector(message->mutable_vehiclepos(), my_hmmwv.GetVehicle().GetVehiclePos());
+    message->set_buffer(DMessage);
+}
+
+void serializeDSRC(std::ostream& stream, ChronoMessages::DSRCMessage& message) {
+    uint8_t messageType = DSRC_MESSAGE;
+    stream << messageType;
+    //stream.write((char *)&messageType, sizeof(uint8_t));
+    uint32_t size = message.ByteSize();
+    stream << size;
+    //stream.write((char *)&size, sizeof(uint32_t));
+    message.SerializeToOstream(&stream);
+    stream.flush();
+}
+
+void serializeVehicle(std::ostream& stream, ChronoMessages::VehicleMessage& message) {
+    uint8_t messageType = VEHICLE_MESSAGE;
+    stream << messageType;
+    //stream.write((char *)&messageType, sizeof(uint8_t));
+    uint32_t size = message.ByteSize();
+    stream << size;
+    //stream.write((char *)&size, sizeof(uint32_t));
+    message.SerializeToOstream(&stream);
+    stream.flush();
+}
+
 int main(int argc, char **argv) {
-    // Client connection tests ///////////////////////////////////////////////////////////////////
+    // Client connection tests //////////////////////////////////////////////////////////
     try {
         ChClientHandler clientHandler("dummy_hostname", "24601");
         std::cout << "FAILED -- Client connection test 1" << std::endl;
@@ -205,47 +254,50 @@ int main(int argc, char **argv) {
             ChClientHandler clientHandler("localhost", "8082");
             clientHandler.beginSend();
 
-            HMMWV_Full my_hmmwv1; // Test vehicle for messages
+            HMMWV_Full my_hmmwv = generateTestVehicle(); // Test vehicle for messages
 
-            ChVector<> initLoc1(0, 0, 1.6);
-            ChQuaternion<> initRot1(1, 0, 0, 0);
-
-            my_hmmwv1.SetContactMethod(contact_method);
-            my_hmmwv1.SetChassisFixed(false);
-            my_hmmwv1.SetInitPosition(ChCoordsys<>(initLoc1, initRot1));
-            my_hmmwv1.SetPowertrainType(powertrain_model);
-            my_hmmwv1.SetDriveType(drive_type);
-            //my_hmmwv.SetTireType(tire_model);
-            my_hmmwv1.SetTireStepSize(tire_step_size);
-            my_hmmwv1.SetPacejkaParamfile("hmmwv/tire/HMMWV_pacejka.tir");
-            my_hmmwv1.Initialize();
-
-            ChronoMessages::MessagePacket packet;
+            /*ChronoMessages::MessagePacket packet;
             packet.add_dsrcmessages();
+            generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
 
-            ChronoMessages::DSRCMessage *message = packet.mutable_dsrcmessages(0);
-            message->set_vehicleid(1);
-            message->set_timestamp(time(0));
-            message->set_chtime(my_hmmwv1.GetVehicle().GetChTime());
-            messageFromVector(message->mutable_vehiclepos(), my_hmmwv1.GetVehicle().GetVehiclePos());
-            message->set_buffer(Dmessage1);
-
-            clientHandler.pushMessage(packet);
+            clientHandler.pushMessage(packet);*/
+            ChronoMessages::DSRCMessage dsrcMessage;
+            generateTestDSRCMessage(&dsrcMessage, my_hmmwv, Dmessage1);
+            clientHandler.pushMessage(dsrcMessage);
 
             clientHandler.beginListen();
             auto newMessage = clientHandler.popDSRCMessage();
+
             if (newMessage->buffer().compare(Dmessage1) == 0) {
                 std::cout << "PASSED -- Client communication test 2" << std::endl;
             } else std::cout << "FAILED -- Client communication test 2" << std::endl;
 
-            clientHandler.popSimMessage();
             auto vMessage = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
-            if (vMessage->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv1.GetVehicle(), 0).DebugString()) == 0) {
+            if (vMessage->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0) {
                 std::cout << "PASSED -- Client communication test 3" << std::endl;
             } else std::cout << "FAILED -- Client communication test 3" << std::endl;
+
+            std::cout << "popping DSRC messages..." << std::endl;
+            auto newMessage1 = clientHandler.popDSRCMessage();
+            std::cout << "popped 1 DSRC message" << std::endl;
+            auto newMessage2 = clientHandler.popDSRCMessage();
+            std::cout << "popped 2 DSRC messages" << std::endl;
+            auto newMessage3 = clientHandler.popDSRCMessage();
+            auto newMessage4 = clientHandler.popDSRCMessage();
+
+            std::cout << "popped DSRC messages" << std::endl;
+
+            auto vMessage1 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
+            auto vMessage2 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
+            auto vMessage3 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
+
+            if (newMessage1->buffer().compare(Dmessage1) == 0 && newMessage2->buffer().compare(Dmessage1) == 0 && newMessage3->buffer().compare(Dmessage1) == 0 && newMessage4->buffer().compare(Dmessage1) == 0 && vMessage1->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage2->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage3->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0) {
+                std::cout << "PASSED -- Client communication test 4" << std::endl;
+            } else std::cout << "FAILED -- Client communication test 4" << std::endl;
         } catch (ConnectionException& exp) {
             std::cout << "FAILED -- Client communication test 2" << std::endl;
             std::cout << "FAILED -- Client communication test 3" << std::endl;
+            std::cout << "FAILED -- Client communication test 4" << std::endl;
         }
     });
 
@@ -282,60 +334,86 @@ int main(int argc, char **argv) {
     buff.commit(sizeof(uint32_t));
     inStream >> length;
     buff.commit(length);
-    ChronoMessages::MessagePacket pack;
+    //ChronoMessages::MessagePacket pack;
+    ChronoMessages::DSRCMessage pack;
     pack.ParseFromIstream(&inStream);
 
-    if (pack.dsrcmessages(0).buffer().compare(Dmessage1) == 0) {
+    if (pack./*dsrcmessages(0).*/buffer().compare(Dmessage1) == 0) {
         std::cout << "PASSED -- Client communication test 1" << std::endl;
     } else std::cout << "FAILED -- Client communication test 1" << std::endl;
 
-    HMMWV_Full my_hmmwv1; // Test vehicle for messages
+    // Comm test 2 -- DSRC
+    HMMWV_Full my_hmmwv = generateTestVehicle(); // Test vehicle for messages
+    //ChronoMessages::MessagePacket packet;
+    //packet.add_dsrcmessages();
+    //generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
 
-    ChVector<> initLoc1(0, 0, 1.6);
-    ChQuaternion<> initRot1(1, 0, 0, 0);
-
-    my_hmmwv1.SetContactMethod(contact_method);
-    my_hmmwv1.SetChassisFixed(false);
-    my_hmmwv1.SetInitPosition(ChCoordsys<>(initLoc1, initRot1));
-    my_hmmwv1.SetPowertrainType(powertrain_model);
-    my_hmmwv1.SetDriveType(drive_type);
-    //my_hmmwv.SetTireType(tire_model);
-    my_hmmwv1.SetTireStepSize(tire_step_size);
-    my_hmmwv1.SetPacejkaParamfile("hmmwv/tire/HMMWV_pacejka.tir");
-    my_hmmwv1.Initialize();
-
-    ChronoMessages::MessagePacket packet;
-    packet.add_dsrcmessages();
-
-    ChronoMessages::DSRCMessage *message = packet.mutable_dsrcmessages(0);
-    message->set_vehicleid(1);
-    message->set_timestamp(time(0));
-    message->set_chtime(my_hmmwv1.GetVehicle().GetChTime());
-    messageFromVector(message->mutable_vehiclepos(), my_hmmwv1.GetVehicle().GetVehiclePos());
-    message->set_buffer(Dmessage1);
+    ChronoMessages::DSRCMessage dsrcMessage;
+    //generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
+    generateTestDSRCMessage(&dsrcMessage, my_hmmwv, Dmessage1);
 
     boost::asio::streambuf buffer;
-    std::ostream stream(&buffer);
+    std::ostream outStream(&buffer);
 
-    uint8_t messageType = MESSAGE_PACKET;
-    stream << messageType;
-    uint32_t size = packet.ByteSize();
-    stream << size;
-    packet.SerializeToOstream(&stream);
-    stream.flush();
+    uint8_t messageType = DSRC_MESSAGE;
+    outStream << messageType;
+    uint32_t size = dsrcMessage.ByteSize();
+    outStream << size;
+    dsrcMessage.SerializeToOstream(&outStream);
+    uint8_t end = NULL_MESSAGE;
+    outStream << end;
+    uint32_t endSize = 0;
+    outStream << endSize;
+    outStream.flush();
 
-    udpSocket.send_to(buffer.data(), recEndpoint);
+    int sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
+    buffer.consume(sentSize);
 
-    ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv1.GetVehicle(), 0);
+    // Comm test 3 -- vehicle
+    ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
+    sendVehicle.CheckInitialized();
 
     messageType = VEHICLE_MESSAGE;
-    stream << messageType;
+    outStream << messageType;
     size = sendVehicle.ByteSize();
-    stream << size;
-    packet.SerializeToOstream(&stream);
-    stream.flush();
+    outStream << size;
+    sendVehicle.SerializeToOstream(&outStream);
+    outStream << end;
+    outStream << endSize;
+    outStream.flush();
 
-    udpSocket.send_to(buffer.data(), recEndpoint);
+    sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
+    buffer.consume(sentSize);
+
+    // Comm test 4
+
+    auto vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
+
+    serializeDSRC(outStream, dsrcMessage);
+    serializeDSRC(outStream, dsrcMessage);
+    serializeVehicle(outStream, vehicle);
+    serializeDSRC(outStream, dsrcMessage);
+    serializeVehicle(outStream, vehicle);
+    serializeVehicle(outStream, vehicle);
+    serializeDSRC(outStream, dsrcMessage);
+    outStream << end;
+    outStream << endSize;
+
+    /*ChronoMessages::MessagePacket newPacket;
+    std::istream stream(&buffer);
+    buffer.commit(sizeof(uint8_t));
+    stream >> messageType;
+    buffer.commit(sizeof(uint32_t));
+    stream >> size;
+    buffer.commit(size);
+    std::cout << "parse test: " << newPacket.ParseFromIstream(&stream) << std::endl;
+    std::cout << "DSRCMessage count: " << newPacket.dsrcmessages_size() << std::endl;
+    std::cout << "vehicleMessage count: " << newPacket.vehiclemessages_size() << std::endl;*/
+
+    //std::cout << "large packet size: " << size << std::endl;
+    sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
+    std::cout << "sent large packet" << std::endl;
+    buffer.consume(sentSize);
 
     client3.join();
 

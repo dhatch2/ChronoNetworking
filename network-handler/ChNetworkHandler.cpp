@@ -69,7 +69,10 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
         //TODO: Handle error message here
         boost::system::error_code availableError;
         int available = socket.available(availableError);
-        if (!availableError && available != 0) socket.receive_from(buffer->prepare(available), endpoint, 0, error);
+        if (!availableError && available != 0) {
+            std::cout << "available: " << available << std::endl;
+            socket.receive_from(buffer->prepare(available), endpoint, 0, error);
+        }
         //TODO: Handle error message again here
     } while (error == boost::asio::error::would_block && socket.is_open() && !shutdown);
     return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer);
@@ -124,8 +127,65 @@ void ChClientHandler::beginListen() {
     listener = new std::thread([&, this] {
         while (socket.is_open() && !shutdown) {
             auto recPair = receiveMessage();
-            //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
+            std::istream stream(&buffer);
+
+            bool parse = true;
+            while (parse) {
+                std::cout << "original buffer size: " << buffer.size() << std::endl;
+                std::cout << "committing " << sizeof(uint8_t) << std::endl;
+                buffer.commit(sizeof(uint8_t));
+                std::cout << "post commit buffer size: " << buffer.size() << std::endl;
+                uint8_t messageType;
+                stream >> messageType;
+                //stream.read((char *)&messageType, sizeof(uint8_t));
+                std::cout << "post read buffer size: " << buffer.size() << std::endl;
+                //buffer.consume(buffer.size());
+
+                buffer.commit(sizeof(uint32_t));
+                std::cout << "post size commit buffer size: " << buffer.size() << std::endl;
+                uint32_t size;
+                stream >> size;
+                //stream.read((char *)&size, sizeof(uint32_t));
+                //buffer.consume(buffer.size());
+                std::cout << "supposedly empty buffer size: " << buffer.size() << std::endl;
+                buffer.commit(size);
+
+                std::cout << "message size: " << size << std::endl;
+                std::cout << "buffer size: " << buffer.size() << std::endl;
+
+                if (buffer.size() != size) parse = false;
+
+                switch (messageType) {
+                    case VEHICLE_MESSAGE: {
+                        std::cout << "found vehicle" << std::endl;
+                        auto message = std::make_shared<ChronoMessages::VehicleMessage>();
+                        message->ParseFromIstream(&stream);
+                        simUpdateQueue.enqueue(message);
+                        break;
+                    }
+                    case DSRC_MESSAGE: {
+                        std::cout << "found dsrc message" << std::endl;
+                        auto message = std::make_shared<ChronoMessages::DSRCMessage>();
+                        message->ParseFromIstream(&stream);
+                        DSRCUpdateQueue.enqueue(message);
+                        break;
+                    }
+                    case NULL_MESSAGE: {
+                        std::cout << "end of packet" << std::endl;
+                        parse = false;
+                        break;
+                    }
+                    default: {
+                        std::cout << "default to end of packet" << std::endl;
+                        parse = false;
+                        break;
+                    }
+                }
+            }
+            std::cout << "packet ended" << std::endl;
+            //TODO: Handle endpoint information here
+            /*boost::asio::streambuf& buffer = *(recPair.second);
             std::istream stream(&buffer);
             buffer.commit(sizeof(uint8_t));
             uint8_t messageType;
@@ -138,14 +198,22 @@ void ChClientHandler::beginListen() {
 
             switch (messageType) {
                 case MESSAGE_PACKET: {
+                    std::cout << "found packet" << std::endl;
+                    std::cout << "apparent size: " << size << std::endl;
+                    std::cout << "buffer size: " << buffer.size() << std::endl;
                     ChronoMessages::MessagePacket packet;
-                    packet.ParseFromIstream(&stream);
+                    std::cout << packet.ParseFromIstream(&stream) << std::endl;
+                    std::cout << "packet size: " << packet.ByteSize() << std::endl;
+                    std::cout << "DSRCMessage count: " << packet.dsrcmessages_size() << std::endl;
+                    std::cout << "vehicleMessage count: " << packet.vehiclemessages_size() << std::endl;
                     for (size_t i = 0; i < packet.vehiclemessages_size(); i++) {
+                        std::cout << "found vehicleMessage" << std::endl;
                         auto vehicleMessage = std::make_shared<ChronoMessages::VehicleMessage>();
                         vehicleMessage->CopyFrom(packet.vehiclemessages(i));
                         simUpdateQueue.enqueue(vehicleMessage);
                     }
                     for (size_t i = 0; i < packet.dsrcmessages_size(); i++) {
+                        std::cout << "found DSRCMessage" << std::endl;
                         auto DMessage = std::make_shared<ChronoMessages::DSRCMessage>();
                         DMessage->CopyFrom(packet.dsrcmessages(i));
                         DSRCUpdateQueue.enqueue(DMessage);
@@ -153,17 +221,18 @@ void ChClientHandler::beginListen() {
                     break;
                 }
                 case VEHICLE_MESSAGE: {
-                    std::cout << "found vehicle message" << std::endl;
                     auto message = std::make_shared<ChronoMessages::VehicleMessage>();
                     message->ParseFromIstream(&stream);
                     simUpdateQueue.enqueue(message);
+                    break;
                 }
                 case DSRC_MESSAGE: {
                     auto message = std::make_shared<ChronoMessages::DSRCMessage>();
                     message->ParseFromIstream(&stream);
                     DSRCUpdateQueue.enqueue(message);
+                    break;
                 }
-            }
+            }*/
         }
     });
 }
@@ -187,7 +256,7 @@ void ChClientHandler::pushMessage(google::protobuf::Message& message) {
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
     else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
-    else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
+    //else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
     // TODO: else throw some exception about how this message type isn't supported.
     messageSize = message.ByteSize();
 
