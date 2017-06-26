@@ -105,10 +105,6 @@ void generateTestDSRCMessage(ChronoMessages::DSRCMessage *message, HMMWV_Full& m
 void serializeDSRC(std::ostream& stream, ChronoMessages::DSRCMessage& message) {
     uint8_t messageType = DSRC_MESSAGE;
     stream << messageType;
-    //stream.write((char *)&messageType, sizeof(uint8_t));
-    uint32_t size = message.ByteSize();
-    stream << size;
-    //stream.write((char *)&size, sizeof(uint32_t));
     message.SerializeToOstream(&stream);
     stream.flush();
 }
@@ -116,10 +112,6 @@ void serializeDSRC(std::ostream& stream, ChronoMessages::DSRCMessage& message) {
 void serializeVehicle(std::ostream& stream, ChronoMessages::VehicleMessage& message) {
     uint8_t messageType = VEHICLE_MESSAGE;
     stream << messageType;
-    //stream.write((char *)&messageType, sizeof(uint8_t));
-    uint32_t size = message.ByteSize();
-    stream << size;
-    //stream.write((char *)&size, sizeof(uint32_t));
     message.SerializeToOstream(&stream);
     stream.flush();
 }
@@ -255,12 +247,6 @@ int main(int argc, char **argv) {
             clientHandler.beginSend();
 
             HMMWV_Full my_hmmwv = generateTestVehicle(); // Test vehicle for messages
-
-            /*ChronoMessages::MessagePacket packet;
-            packet.add_dsrcmessages();
-            generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
-
-            clientHandler.pushMessage(packet);*/
             ChronoMessages::DSRCMessage dsrcMessage;
             generateTestDSRCMessage(&dsrcMessage, my_hmmwv, Dmessage1);
             clientHandler.pushMessage(dsrcMessage);
@@ -277,15 +263,11 @@ int main(int argc, char **argv) {
                 std::cout << "PASSED -- Client communication test 3" << std::endl;
             } else std::cout << "FAILED -- Client communication test 3" << std::endl;
 
-            std::cout << "popping DSRC messages..." << std::endl;
             auto newMessage1 = clientHandler.popDSRCMessage();
-            std::cout << "popped 1 DSRC message" << std::endl;
             auto newMessage2 = clientHandler.popDSRCMessage();
-            std::cout << "popped 2 DSRC messages" << std::endl;
             auto newMessage3 = clientHandler.popDSRCMessage();
             auto newMessage4 = clientHandler.popDSRCMessage();
 
-            std::cout << "popped DSRC messages" << std::endl;
 
             auto vMessage1 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
             auto vMessage2 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
@@ -334,7 +316,6 @@ int main(int argc, char **argv) {
     buff.commit(sizeof(uint32_t));
     inStream >> length;
     buff.commit(length);
-    //ChronoMessages::MessagePacket pack;
     ChronoMessages::DSRCMessage pack;
     pack.ParseFromIstream(&inStream);
 
@@ -344,27 +325,12 @@ int main(int argc, char **argv) {
 
     // Comm test 2 -- DSRC
     HMMWV_Full my_hmmwv = generateTestVehicle(); // Test vehicle for messages
-    //ChronoMessages::MessagePacket packet;
-    //packet.add_dsrcmessages();
-    //generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
 
     ChronoMessages::DSRCMessage dsrcMessage;
-    //generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
     generateTestDSRCMessage(&dsrcMessage, my_hmmwv, Dmessage1);
-
     boost::asio::streambuf buffer;
     std::ostream outStream(&buffer);
-
-    uint8_t messageType = DSRC_MESSAGE;
-    outStream << messageType;
-    uint32_t size = dsrcMessage.ByteSize();
-    outStream << size;
-    dsrcMessage.SerializeToOstream(&outStream);
-    uint8_t end = NULL_MESSAGE;
-    outStream << end;
-    uint32_t endSize = 0;
-    outStream << endSize;
-    outStream.flush();
+    serializeDSRC(outStream, dsrcMessage);
 
     int sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
     buffer.consume(sentSize);
@@ -373,46 +339,35 @@ int main(int argc, char **argv) {
     ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
     sendVehicle.CheckInitialized();
 
-    messageType = VEHICLE_MESSAGE;
-    outStream << messageType;
-    size = sendVehicle.ByteSize();
-    outStream << size;
-    sendVehicle.SerializeToOstream(&outStream);
-    outStream << end;
-    outStream << endSize;
-    outStream.flush();
+    serializeVehicle(outStream, sendVehicle);
 
     sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
     buffer.consume(sentSize);
 
     // Comm test 4
 
-    auto vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
+    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
 
-    serializeDSRC(outStream, dsrcMessage);
-    serializeDSRC(outStream, dsrcMessage);
-    serializeVehicle(outStream, vehicle);
-    serializeDSRC(outStream, dsrcMessage);
-    serializeVehicle(outStream, vehicle);
-    serializeVehicle(outStream, vehicle);
-    serializeDSRC(outStream, dsrcMessage);
-    outStream << end;
-    outStream << endSize;
+    ChronoMessages::MessagePacket packet;
+    packet.add_dsrcmessages();
+    generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
+    packet.add_dsrcmessages();
+    generateTestDSRCMessage(packet.mutable_dsrcmessages(1), my_hmmwv, Dmessage1);
+    packet.add_dsrcmessages();
+    generateTestDSRCMessage(packet.mutable_dsrcmessages(2), my_hmmwv, Dmessage1);
+    packet.add_dsrcmessages();
+    generateTestDSRCMessage(packet.mutable_dsrcmessages(3), my_hmmwv, Dmessage1);
+    packet.add_vehiclemessages();
+    packet.mutable_vehiclemessages(0)->CopyFrom(vehicle);
+    packet.add_vehiclemessages();
+    packet.mutable_vehiclemessages(1)->CopyFrom(vehicle);
+    packet.add_vehiclemessages();
+    packet.mutable_vehiclemessages(2)->CopyFrom(vehicle);
 
-    /*ChronoMessages::MessagePacket newPacket;
-    std::istream stream(&buffer);
-    buffer.commit(sizeof(uint8_t));
-    stream >> messageType;
-    buffer.commit(sizeof(uint32_t));
-    stream >> size;
-    buffer.commit(size);
-    std::cout << "parse test: " << newPacket.ParseFromIstream(&stream) << std::endl;
-    std::cout << "DSRCMessage count: " << newPacket.dsrcmessages_size() << std::endl;
-    std::cout << "vehicleMessage count: " << newPacket.vehiclemessages_size() << std::endl;*/
-
-    //std::cout << "large packet size: " << size << std::endl;
+    uint8_t messageType = MESSAGE_PACKET;
+    outStream << messageType;
+    packet.SerializeToOstream(&outStream);
     sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
-    std::cout << "sent large packet" << std::endl;
     buffer.consume(sentSize);
 
     client3.join();

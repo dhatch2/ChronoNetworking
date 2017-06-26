@@ -60,6 +60,7 @@ void ChNetworkHandler::sendMessage(boost::asio::ip::udp::endpoint& endpoint, boo
 std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>> ChNetworkHandler::receiveMessage() {
     boost::system::error_code error;
     boost::asio::ip::udp::endpoint endpoint;
+    size_t received;
     auto buffer = std::make_shared<boost::asio::streambuf>();
     // Lock Starts
     do {
@@ -70,17 +71,17 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
         boost::system::error_code availableError;
         int available = socket.available(availableError);
         if (!availableError && available != 0) {
-            std::cout << "available: " << available << std::endl;
-            socket.receive_from(buffer->prepare(available), endpoint, 0, error);
+            received = socket.receive_from(buffer->prepare(available), endpoint, 0, error);
         }
         //TODO: Handle error message again here
     } while (error == boost::asio::error::would_block && socket.is_open() && !shutdown);
+    buffer->commit(received);
     return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer);
 }
 
 ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
     ChNetworkHandler(),
-    sendQueue([&]{ return socket.is_open() || !shutdown; }){
+    sendQueue([&]{ return socket.is_open() || !shutdown; }) {
     std::unique_lock<std::mutex> lock(socketMutex);
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
@@ -114,8 +115,7 @@ ChClientHandler::~ChClientHandler() {
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
-    while (socket.is_open() && !shutdown) {
-    }
+    while (socket.is_open() && !shutdown);
     sendQueue.notifyPredicate();
 }
 
@@ -127,93 +127,22 @@ void ChClientHandler::beginListen() {
     listener = new std::thread([&, this] {
         while (socket.is_open() && !shutdown) {
             auto recPair = receiveMessage();
+            //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
             std::istream stream(&buffer);
-
-            bool parse = true;
-            while (parse) {
-                std::cout << "original buffer size: " << buffer.size() << std::endl;
-                std::cout << "committing " << sizeof(uint8_t) << std::endl;
-                buffer.commit(sizeof(uint8_t));
-                std::cout << "post commit buffer size: " << buffer.size() << std::endl;
-                uint8_t messageType;
-                stream >> messageType;
-                //stream.read((char *)&messageType, sizeof(uint8_t));
-                std::cout << "post read buffer size: " << buffer.size() << std::endl;
-                //buffer.consume(buffer.size());
-
-                buffer.commit(sizeof(uint32_t));
-                std::cout << "post size commit buffer size: " << buffer.size() << std::endl;
-                uint32_t size;
-                stream >> size;
-                //stream.read((char *)&size, sizeof(uint32_t));
-                //buffer.consume(buffer.size());
-                std::cout << "supposedly empty buffer size: " << buffer.size() << std::endl;
-                buffer.commit(size);
-
-                std::cout << "message size: " << size << std::endl;
-                std::cout << "buffer size: " << buffer.size() << std::endl;
-
-                if (buffer.size() != size) parse = false;
-
-                switch (messageType) {
-                    case VEHICLE_MESSAGE: {
-                        std::cout << "found vehicle" << std::endl;
-                        auto message = std::make_shared<ChronoMessages::VehicleMessage>();
-                        message->ParseFromIstream(&stream);
-                        simUpdateQueue.enqueue(message);
-                        break;
-                    }
-                    case DSRC_MESSAGE: {
-                        std::cout << "found dsrc message" << std::endl;
-                        auto message = std::make_shared<ChronoMessages::DSRCMessage>();
-                        message->ParseFromIstream(&stream);
-                        DSRCUpdateQueue.enqueue(message);
-                        break;
-                    }
-                    case NULL_MESSAGE: {
-                        std::cout << "end of packet" << std::endl;
-                        parse = false;
-                        break;
-                    }
-                    default: {
-                        std::cout << "default to end of packet" << std::endl;
-                        parse = false;
-                        break;
-                    }
-                }
-            }
-            std::cout << "packet ended" << std::endl;
-            //TODO: Handle endpoint information here
-            /*boost::asio::streambuf& buffer = *(recPair.second);
-            std::istream stream(&buffer);
-            buffer.commit(sizeof(uint8_t));
             uint8_t messageType;
             stream >> messageType;
 
-            buffer.commit(sizeof(uint32_t));
-            uint32_t size;
-            stream >> size;
-            buffer.commit(size);
-
             switch (messageType) {
                 case MESSAGE_PACKET: {
-                    std::cout << "found packet" << std::endl;
-                    std::cout << "apparent size: " << size << std::endl;
-                    std::cout << "buffer size: " << buffer.size() << std::endl;
                     ChronoMessages::MessagePacket packet;
-                    std::cout << packet.ParseFromIstream(&stream) << std::endl;
-                    std::cout << "packet size: " << packet.ByteSize() << std::endl;
-                    std::cout << "DSRCMessage count: " << packet.dsrcmessages_size() << std::endl;
-                    std::cout << "vehicleMessage count: " << packet.vehiclemessages_size() << std::endl;
+                    packet.ParseFromIstream(&stream);
                     for (size_t i = 0; i < packet.vehiclemessages_size(); i++) {
-                        std::cout << "found vehicleMessage" << std::endl;
                         auto vehicleMessage = std::make_shared<ChronoMessages::VehicleMessage>();
                         vehicleMessage->CopyFrom(packet.vehiclemessages(i));
                         simUpdateQueue.enqueue(vehicleMessage);
                     }
                     for (size_t i = 0; i < packet.dsrcmessages_size(); i++) {
-                        std::cout << "found DSRCMessage" << std::endl;
                         auto DMessage = std::make_shared<ChronoMessages::DSRCMessage>();
                         DMessage->CopyFrom(packet.dsrcmessages(i));
                         DSRCUpdateQueue.enqueue(DMessage);
@@ -232,7 +161,10 @@ void ChClientHandler::beginListen() {
                     DSRCUpdateQueue.enqueue(message);
                     break;
                 }
-            }*/
+                default:
+                    // TODO: Deal with gibberish message.
+                    break;
+            }
         }
     });
 }
@@ -241,7 +173,6 @@ void ChClientHandler::beginSend() {
     sender = new std::thread([&, this] {
         try {
             while (socket.is_open() && !shutdown) {
-                // TODO: break out of dequeue() for destruction.
                 auto buffer = sendQueue.dequeue();
                 sendMessage(serverEndpoint, *buffer);
             }
@@ -256,7 +187,7 @@ void ChClientHandler::pushMessage(google::protobuf::Message& message) {
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
     else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
-    //else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
+    else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
     // TODO: else throw some exception about how this message type isn't supported.
     messageSize = message.ByteSize();
 
@@ -279,6 +210,7 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
 }
 
 ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
+    sendQueue([&]{ return socket.is_open() || !shutdown; }),
     acceptor([&, this] {
         std::unique_lock<std::mutex> lock(socketMutex);
         initVar.wait(lock, [&]{ return socket.is_open(); });
@@ -324,12 +256,74 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
 ChServerHandler::~ChServerHandler() {
     socket.close();
     acceptor.join();
+    shutdown = true;
+    sendQueue.dumpThreads();
+    socket.close();
+    while (socket.is_open() && !shutdown);
+    sendQueue.notifyPredicate();
 }
 
 void ChServerHandler::beginListen() {
-
+    listener = new std::thread([&, this] {
+        while (socket.is_open() && !shutdown)
+            receiveQueue.enqueue(receiveMessage());
+    });
 }
 
 void ChServerHandler::beginSend() {
+    sender = new std::thread([&, this] {
+        while (socket.is_open() && !shutdown) {
+            auto sendPair = sendQueue.dequeue();
+            sendMessage(sendPair.first, *sendPair.second);
+        }
+    });
+}
 
+std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>> ChServerHandler::popMessage() {
+    auto recPair = receiveQueue.dequeue();
+    boost::asio::streambuf& buffer = *(recPair.second);
+    std::istream stream(&buffer);
+    uint8_t messageType;
+    stream >> messageType;
+
+    switch (messageType) {
+        case MESSAGE_PACKET: {
+            auto packet = std::make_shared<ChronoMessages::MessagePacket>();
+            packet->ParseFromIstream(&stream);
+            return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>>(recPair.first, packet);
+        }
+        case VEHICLE_MESSAGE: {
+            auto message = std::make_shared<ChronoMessages::VehicleMessage>();
+            message->ParseFromIstream(&stream);
+            return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>>(recPair.first, message);
+        }
+        case DSRC_MESSAGE: {
+            auto message = std::make_shared<ChronoMessages::DSRCMessage>();
+            message->ParseFromIstream(&stream);
+            return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>>(recPair.first, message);
+        }
+        default:
+            throw CommunicationException(recPair.first);
+            break;
+    }
+}
+
+void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message) {
+    uint8_t messageType;
+    uint32_t messageSize;
+    std::string type = message.GetDescriptor()->full_name();
+    if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
+    else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
+    else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
+    // TODO: else throw some exception about how this message type isn't supported.
+    messageSize = message.ByteSize();
+
+    auto buffer = std::make_shared<boost::asio::streambuf>();
+    std::ostream stream(buffer.get());
+    stream << messageType;
+    stream << messageSize;
+    message.SerializeToOstream(&stream);
+    stream.flush();
+
+    sendQueue.enqueue(std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer));
 }

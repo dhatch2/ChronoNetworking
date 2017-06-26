@@ -106,7 +106,7 @@ public:
     void beginSend();
 
     // Returns message recieved from the network.
-    std::pair<boost::asio::ip::udp::endpoint, google::protobuf::Message>& popMessage();
+    std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>> popMessage();
 
     // Pushes message to queue to be sent.
     void pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message);
@@ -140,6 +140,24 @@ public:
 
 private:
     int m_type;
+};
+
+class CommunicationException : public std::exception {
+public:
+    CommunicationException(boost::asio::ip::udp::endpoint endpoint) {
+        m_endpoint = endpoint;
+    }
+
+    boost::asio::ip::udp::endpoint endpoint() { return m_endpoint; }
+
+    virtual const char* what() const throw() {
+        std::stringstream buffer;
+        buffer << "Cannot parse message from endpoint " << m_endpoint;
+        return buffer.str().c_str();
+    }
+
+private:
+    boost::asio::ip::udp::endpoint m_endpoint;
 };
 
 #endif // CHNETWORKHANDLER_H
