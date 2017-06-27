@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
     delete clientHandler2;
     delete serverHandler2;
 
-    // Communication tests //////////////////////////////////////////////////////////////////////
+    // Client Communication tests //////////////////////////////////////////////////////////////////////
 
     std::string Dmessage1 = "Yeeeeaaaahhhh boiiiiiiiiiiiiiii";
     std::thread client3([&] {
@@ -306,16 +306,13 @@ int main(int argc, char **argv) {
     udpSocket.receive(boost::asio::null_buffers());
     int available = udpSocket.available();
     boost::asio::ip::udp::endpoint recEndpoint;
-    udpSocket.receive_from(buff.prepare(available), recEndpoint);
+    size_t recSize = udpSocket.receive_from(buff.prepare(available), recEndpoint);
     std::istream inStream(&buff);
 
     uint8_t inMessageType;
     buff.commit(sizeof(uint8_t));
     inStream >> inMessageType;
-    uint32_t length;
-    buff.commit(sizeof(uint32_t));
-    inStream >> length;
-    buff.commit(length);
+    buff.commit(recSize - 1);
     ChronoMessages::DSRCMessage pack;
     pack.ParseFromIstream(&inStream);
 
@@ -370,7 +367,109 @@ int main(int argc, char **argv) {
     sentSize = udpSocket.send_to(buffer.data(), recEndpoint);
     buffer.consume(sentSize);
 
+    udpSocket.close();
+
     client3.join();
+
+    // Server Communication Tests /////////////////////////////////////////////////////////
+    std::condition_variable var;
+    std::mutex initMutex;
+    bool isReady = false;
+
+    std::thread server([&] {
+        std::unique_lock<std::mutex> lock(initMutex);
+        ChServerHandler serverHandler(8082);
+        isReady = true;
+        var.notify_one();
+        lock.unlock();
+        serverHandler.beginListen();
+        serverHandler.beginSend();
+
+        auto recPair1 = serverHandler.popMessage();
+        auto message1 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(recPair1.second);
+        if (message1->DebugString().compare(sendVehicle.DebugString()) == 0) {
+            std::cout << "PASSED -- Server communication test 1" << std::endl;
+        } else std::cout << "FAILED -- Server communication test 1" << std::endl;
+        auto recPair2 = serverHandler.popMessage();
+        auto message2 = std::static_pointer_cast<ChronoMessages::DSRCMessage>(recPair2.second);
+        if (message2->DebugString().compare(dsrcMessage.DebugString()) == 0) {
+            std::cout << "PASSED -- Server communication test 2" << std::endl;
+        } else std::cout << "FAILED -- Server communication test 2" << std::endl;
+
+        serverHandler.pushMessage(recPair2.first, packet);
+        serverHandler.pushMessage(recPair2.first, sendVehicle);
+        std::cout << "pushed" << std::endl;
+
+        auto recPair3 = serverHandler.popMessage();
+        auto message3 = std::static_pointer_cast<ChronoMessages::MessagePacket>(recPair3.second);
+        if (message3->DebugString().compare(packet.DebugString()) == 0) {
+            std::cout << "PASSED -- Server communication test 4" << std::endl;
+        } else std::cout << "FAILED -- Server communication test 4" << std::endl;
+
+    });
+
+    std::unique_lock<std::mutex> lock(initMutex);
+    var.wait(lock, [&] { return isReady; });
+    boost::asio::ip::tcp::socket tcpSocket5(ioService);
+    boost::asio::connect(tcpSocket5, endpointIterator);
+
+    connectionRequest = CONNECTION_REQUEST;
+    // TODO: Figure out why this crashes
+    tcpSocket5.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
+    tcpSocket5.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+    tcpSocket5.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
+
+    tcpSocket5.close();
+    boost::asio::ip::udp::socket udpSocket2(ioService);
+
+    boost::asio::ip::udp::resolver udpResolver(ioService);
+    boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), "localhost", "8082");
+    boost::asio::ip::udp::endpoint serverEndpoint = *udpResolver.resolve(udpQuery);
+    udpSocket2.open(boost::asio::ip::udp::v4());
+
+    serializeVehicle(outStream, sendVehicle);
+    sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
+    buffer.consume(sentSize);
+
+    serializeDSRC(outStream, dsrcMessage);
+    sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
+    buffer.consume(sentSize);
+
+    boost::asio::streambuf newBuffer;
+    udpSocket2.receive_from(boost::asio::null_buffers(), serverEndpoint);
+    available = udpSocket2.available();
+    recSize = udpSocket2.receive_from(newBuffer.prepare(available), serverEndpoint);
+    std::istream newIstream(&newBuffer);
+
+    newBuffer.commit(sizeof(uint8_t));
+    newIstream >> inMessageType;
+    newBuffer.commit(recSize - 1);
+    ChronoMessages::MessagePacket recPacket;
+    recPacket.ParseFromIstream(&newIstream);
+    if (recPacket.DebugString().compare(packet.DebugString()) == 0 && inMessageType == MESSAGE_PACKET) {
+        std::cout << "PASSED -- Server communication test 3" << std::endl;
+    } else std::cout << "FAILED -- Server communication test 3" << std::endl;
+
+    messageType = MESSAGE_PACKET;
+    outStream << messageType;
+    packet.SerializeToOstream(&outStream);
+    sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
+    buffer.consume(sentSize);
+
+    udpSocket2.receive_from(boost::asio::null_buffers(), serverEndpoint);
+    available = udpSocket2.available();
+    recSize = udpSocket2.receive_from(newBuffer.prepare(available), serverEndpoint);
+    std::cout << "received" << std::endl;
+    newBuffer.commit(recSize);
+    std::cout << "buffer size: " << newBuffer.size() << std::endl;
+    newIstream >> inMessageType;
+    ChronoMessages::VehicleMessage recVehicle;
+    recVehicle.ParseFromIstream(&newIstream);
+    if (recVehicle.DebugString().compare(sendVehicle.DebugString()) == 0 && inMessageType == VEHICLE_MESSAGE) {
+        std::cout << "PASSED -- Server communication test 5" << std::endl;
+    } else std::cout << "FAILED -- Server communication test 5" << std::endl;
+
+    server.join();
 
     return 0;
 }

@@ -38,6 +38,7 @@ public:
     T& dequeue();
     int size();
     void dumpThreads();
+    bool empty();
 
 private:
     std::function<bool()> predicate;
@@ -88,6 +89,10 @@ template<class T> int ChSafeQueue<T>::size() {
 template<class T> void ChSafeQueue<T>::dumpThreads() {
     dump = true;
     var.notify_one();
+}
+
+template<class T> bool ChSafeQueue<T>::empty() {
+    return queue.empty();
 }
 
 #endif

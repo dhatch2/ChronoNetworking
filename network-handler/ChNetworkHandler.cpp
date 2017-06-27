@@ -183,18 +183,15 @@ void ChClientHandler::beginSend() {
 
 void ChClientHandler::pushMessage(google::protobuf::Message& message) {
     uint8_t messageType;
-    uint32_t messageSize;
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
     else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
     else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
     // TODO: else throw some exception about how this message type isn't supported.
-    messageSize = message.ByteSize();
 
     auto buffer = std::make_shared<boost::asio::streambuf>();
     std::ostream stream(buffer.get());
     stream << messageType;
-    stream << messageSize;
     message.SerializeToOstream(&stream);
     stream.flush();
 
@@ -256,6 +253,8 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
 ChServerHandler::~ChServerHandler() {
     socket.close();
     acceptor.join();
+    while (!sendQueue.empty());
+    std::cout << "sendQueue is empty" << std::endl;
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
@@ -272,9 +271,14 @@ void ChServerHandler::beginListen() {
 
 void ChServerHandler::beginSend() {
     sender = new std::thread([&, this] {
-        while (socket.is_open() && !shutdown) {
-            auto sendPair = sendQueue.dequeue();
-            sendMessage(sendPair.first, *sendPair.second);
+        try {
+            while (socket.is_open() && !shutdown) {
+                auto sendPair = sendQueue.dequeue();
+                sendMessage(sendPair.first, *sendPair.second);
+                std::cout << "message sent" << std::endl;
+            }
+        } catch (PredicateException& ex) {
+            std::cout << "caught" << std::endl;
         }
     });
 }
@@ -310,18 +314,15 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Mess
 
 void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message) {
     uint8_t messageType;
-    uint32_t messageSize;
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
     else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
     else if (type.compare(MESSAGE_PACKET_TYPE) == 0) messageType = MESSAGE_PACKET;
     // TODO: else throw some exception about how this message type isn't supported.
-    messageSize = message.ByteSize();
 
     auto buffer = std::make_shared<boost::asio::streambuf>();
     std::ostream stream(buffer.get());
     stream << messageType;
-    stream << messageSize;
     message.SerializeToOstream(&stream);
     stream.flush();
 
