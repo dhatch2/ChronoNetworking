@@ -34,6 +34,7 @@ ChNetworkHandler::~ChNetworkHandler() {
     socket.close();
     shutdown = true;
     delete &socket.get_io_service();
+    // Closing all message handling threads.
     if (listener != nullptr) {
         listener->join();
         delete listener;
@@ -48,6 +49,7 @@ void ChNetworkHandler::sendMessage(boost::asio::ip::udp::endpoint& endpoint, boo
     boost::system::error_code error;
     // Lock Starts
     std::unique_lock<std::mutex> lock(socketMutex);
+    // Wait for the socket to be open before we try to send anything
     initVar.wait(lock, [&] { return socket.is_open(); });
     socket.send_to(message.data(), endpoint, 0, error);
     // Lock Ends
@@ -65,11 +67,14 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
     // Lock Starts
     do {
         std::unique_lock<std::mutex> lock(socketMutex);
+        // Wait for socket to be open before we try to receive
         initVar.wait(lock, [&]{ return socket.is_open(); });
+        // Receives bytes into the udp stack without removing any
         socket.receive(boost::asio::null_buffers(), 0, error);
         //TODO: Handle error message here
         boost::system::error_code availableError;
         int available = socket.available(availableError);
+        // Once the udp stack has something, we receive it into the buffer and return.
         if (!availableError && available != 0) {
             received = socket.receive_from(buffer->prepare(available), endpoint, 0, error);
         }
@@ -81,6 +86,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
 
 ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
     ChNetworkHandler() {
+    // Lock begins -- the udp socket cannot open during the tcp connection process
     std::unique_lock<std::mutex> lock(socketMutex);
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
@@ -92,8 +98,11 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
         uint8_t connectionRequest = CONNECTION_REQUEST;
         tcpSocket.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
         tcpSocket.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+        // Any problems with network connection must throw
     } catch (std::exception& err) { throw ConnectionException(FAILED_CONNECTION); }
+    // If the connection is refused, the clientHandler cannot be constructed
     if(requestResponse == CONNECTION_DECLINE) throw ConnectionException(REFUSED_CONNECTION);
+    // After connection is accepted, other information can then be sent
     if(requestResponse == CONNECTION_ACCEPT) {
         uint32_t connectionNumber;
         tcpSocket.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
@@ -123,13 +132,16 @@ int ChClientHandler::connectionNumber() {
 void ChClientHandler::beginListen() {
     listener = new std::thread([&, this] {
         while (socket.is_open() && !shutdown) {
+            // This is a pair of a buffer and the endpoint it came from
             auto recPair = receiveMessage();
             //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
             std::istream stream(&buffer);
+            // Every buffer will contain its message type in the first byte
             uint8_t messageType;
             stream >> messageType;
 
+            // Message is parsed based on its type.
             switch (messageType) {
                 case MESSAGE_PACKET: {
                     ChronoMessages::MessagePacket packet;
@@ -169,6 +181,7 @@ void ChClientHandler::beginListen() {
 void ChClientHandler::beginSend() {
     sender = new std::thread([&, this] {
         try {
+            // Constantly sends messages until handler is shut down or socket is closed
             while (socket.is_open() && !shutdown) {
                 auto buffer = sendQueue.dequeue();
                 sendMessage(serverEndpoint, *buffer);
@@ -180,6 +193,7 @@ void ChClientHandler::beginSend() {
 
 void ChClientHandler::pushMessage(google::protobuf::Message& message) {
     uint8_t messageType;
+    // Identify the type using protobuf's introspective functions
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
     else if (type.compare(DSRC_MESSAGE_TYPE) == 0) messageType = DSRC_MESSAGE;
@@ -205,6 +219,8 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
 
 ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
     acceptor([&, this] {
+        // This acceptor code is executed on another thread once the constructor has finished
+        // Mutex locks and waits for socket to open
         std::unique_lock<std::mutex> lock(socketMutex);
         initVar.wait(lock, [&]{ return socket.is_open(); });
         connectionCount = 0;
@@ -212,9 +228,11 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
         boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
         acceptor.non_blocking(true);
 
+        // Mutex unlocks
         lock.unlock();
 
-        while (socket.is_open()) {
+        // Listen for new connections, accepting them over tcp
+        while (socket.is_open() && !shutdown) {
             boost::asio::ip::tcp::socket tcpSocket(socket.get_io_service());
             boost::system::error_code acceptError;
             acceptor.accept(tcpSocket, acceptError);
@@ -239,6 +257,8 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
         }
         acceptor.close();
     } ) {
+    // Constructor beginning
+    // Lock mutex
     std::unique_lock<std::mutex> lock(socketMutex);
     socket.open(boost::asio::ip::udp::v4());
     socket.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), portNumber));
@@ -258,6 +278,7 @@ ChServerHandler::~ChServerHandler() {
 
 void ChServerHandler::beginListen() {
     listener = new std::thread([&, this] {
+        // Constantly receives until shutdown
         while (socket.is_open() && !shutdown) {
             auto recpair = receiveMessage();
             receiveQueue.enqueue(recpair);
@@ -268,6 +289,7 @@ void ChServerHandler::beginListen() {
 void ChServerHandler::beginSend() {
     sender = new std::thread([&, this] {
         try {
+            // Constantly sends until shutdown
             while (socket.is_open() && !shutdown) {
                 auto sendPair = sendQueue.dequeue();
                 sendMessage(sendPair.first, *sendPair.second);
@@ -285,6 +307,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Mess
     uint8_t messageType;
     stream >> messageType;
 
+    // Parse message according to type
     switch (messageType) {
         case MESSAGE_PACKET: {
             auto packet = std::make_shared<ChronoMessages::MessagePacket>();
@@ -308,6 +331,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Mess
 }
 
 void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message) {
+    // Uses protobuf's introspective functions to determine type and enqueue message
     uint8_t messageType;
     std::string type = message.GetDescriptor()->full_name();
     if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) messageType = VEHICLE_MESSAGE;
