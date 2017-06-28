@@ -254,7 +254,6 @@ ChServerHandler::~ChServerHandler() {
     socket.close();
     acceptor.join();
     while (!sendQueue.empty());
-    std::cout << "sendQueue is empty" << std::endl;
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
@@ -275,10 +274,9 @@ void ChServerHandler::beginSend() {
             while (socket.is_open() && !shutdown) {
                 auto sendPair = sendQueue.dequeue();
                 sendMessage(sendPair.first, *sendPair.second);
-                std::cout << "message sent" << std::endl;
             }
         } catch (PredicateException& ex) {
-            std::cout << "caught" << std::endl;
+            //std::cout << "caught" << std::endl;
         }
     });
 }

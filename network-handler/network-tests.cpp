@@ -398,13 +398,12 @@ int main(int argc, char **argv) {
 
         serverHandler.pushMessage(recPair2.first, packet);
         serverHandler.pushMessage(recPair2.first, sendVehicle);
-        std::cout << "pushed" << std::endl;
 
         auto recPair3 = serverHandler.popMessage();
         auto message3 = std::static_pointer_cast<ChronoMessages::MessagePacket>(recPair3.second);
         if (message3->DebugString().compare(packet.DebugString()) == 0) {
-            std::cout << "PASSED -- Server communication test 4" << std::endl;
-        } else std::cout << "FAILED -- Server communication test 4" << std::endl;
+            std::cout << "PASSED -- Server communication test 5" << std::endl;
+        } else std::cout << "FAILED -- Server communication test 5" << std::endl;
 
     });
 
@@ -414,7 +413,6 @@ int main(int argc, char **argv) {
     boost::asio::connect(tcpSocket5, endpointIterator);
 
     connectionRequest = CONNECTION_REQUEST;
-    // TODO: Figure out why this crashes
     tcpSocket5.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
     tcpSocket5.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
     tcpSocket5.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
@@ -427,13 +425,19 @@ int main(int argc, char **argv) {
     boost::asio::ip::udp::endpoint serverEndpoint = *udpResolver.resolve(udpQuery);
     udpSocket2.open(boost::asio::ip::udp::v4());
 
+    // Comm test 1
+
     serializeVehicle(outStream, sendVehicle);
     sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
     buffer.consume(sentSize);
 
+    // Comm test 2
+
     serializeDSRC(outStream, dsrcMessage);
     sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
     buffer.consume(sentSize);
+
+    // Comm test 3
 
     boost::asio::streambuf newBuffer;
     udpSocket2.receive_from(boost::asio::null_buffers(), serverEndpoint);
@@ -450,24 +454,27 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- Server communication test 3" << std::endl;
     } else std::cout << "FAILED -- Server communication test 3" << std::endl;
 
+    // Comm test 5
+
     messageType = MESSAGE_PACKET;
     outStream << messageType;
     packet.SerializeToOstream(&outStream);
     sentSize = udpSocket2.send_to(buffer.data(), serverEndpoint);
     buffer.consume(sentSize);
 
+    // Comm test 4
+    boost::asio::streambuf anotherBuffer;
+    std::istream anotherIstream(&anotherBuffer);
     udpSocket2.receive_from(boost::asio::null_buffers(), serverEndpoint);
     available = udpSocket2.available();
-    recSize = udpSocket2.receive_from(newBuffer.prepare(available), serverEndpoint);
-    std::cout << "received" << std::endl;
-    newBuffer.commit(recSize);
-    std::cout << "buffer size: " << newBuffer.size() << std::endl;
-    newIstream >> inMessageType;
+    recSize = udpSocket2.receive_from(anotherBuffer.prepare(available), serverEndpoint);
+    anotherBuffer.commit(recSize);
+    anotherIstream >> inMessageType;
     ChronoMessages::VehicleMessage recVehicle;
-    recVehicle.ParseFromIstream(&newIstream);
+    recVehicle.ParseFromIstream(&anotherIstream);
     if (recVehicle.DebugString().compare(sendVehicle.DebugString()) == 0 && inMessageType == VEHICLE_MESSAGE) {
-        std::cout << "PASSED -- Server communication test 5" << std::endl;
-    } else std::cout << "FAILED -- Server communication test 5" << std::endl;
+        std::cout << "PASSED -- Server communication test 4" << std::endl;
+    } else std::cout << "FAILED -- Server communication test 4" << std::endl;
 
     server.join();
 
