@@ -80,8 +80,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
 }
 
 ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
-    ChNetworkHandler(),
-    sendQueue([&]{ return socket.is_open() || !shutdown; }) {
+    ChNetworkHandler() {
     std::unique_lock<std::mutex> lock(socketMutex);
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
@@ -115,8 +114,6 @@ ChClientHandler::~ChClientHandler() {
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
-    while (socket.is_open() && !shutdown);
-    sendQueue.notifyPredicate();
 }
 
 int ChClientHandler::connectionNumber() {
@@ -207,7 +204,6 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
 }
 
 ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
-    sendQueue([&]{ return socket.is_open() || !shutdown; }),
     acceptor([&, this] {
         std::unique_lock<std::mutex> lock(socketMutex);
         initVar.wait(lock, [&]{ return socket.is_open(); });
@@ -247,6 +243,7 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
     socket.open(boost::asio::ip::udp::v4());
     socket.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), portNumber));
     socket.non_blocking(true);
+    lock.unlock();
     initVar.notify_one();
 }
 
@@ -257,14 +254,14 @@ ChServerHandler::~ChServerHandler() {
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
-    while (socket.is_open() && !shutdown);
-    sendQueue.notifyPredicate();
 }
 
 void ChServerHandler::beginListen() {
     listener = new std::thread([&, this] {
-        while (socket.is_open() && !shutdown)
-            receiveQueue.enqueue(receiveMessage());
+        while (socket.is_open() && !shutdown) {
+            auto recpair = receiveMessage();
+            receiveQueue.enqueue(recpair);
+        }
     });
 }
 
