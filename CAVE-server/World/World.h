@@ -22,15 +22,12 @@
 #include <boost/asio.hpp>
 #include <google/protobuf/message.h>
 
-typedef struct {
-    int connectionNumber;
-    boost::asio::ip::udp::endpoint endpoint;
-    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator first;
-    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator last;
-} endpointProfile;
+struct endpointProfile;
 
 class World {
 public:
+    ~World();
+
     // Adds new connection number to list of numbers server can receive from.
     // Returns true (success) if the provided number has not already been
     // registered.
@@ -45,7 +42,7 @@ public:
     // Updates existing world element, or adds one if new.
     // Returns true (success) if connectionNumber is the correct owner of the
     // element, and if message is of the same type as the original element.
-    bool updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile& profile, int idNumber, int connectionNumber);
+    bool updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile *profile, int idNumber);
 
     // Removes and element from the world. Returns true (success) if element
     // exists and connectionNumber is the correct owner.
@@ -55,9 +52,9 @@ public:
     // Returns true (success) if connectionNumber has been registered.
     bool removeConnection(int connectionNumber);
 
-    // Returns true if connectionNumber is registered with the endpoint.
-    // Leaves reference to the endpoint profile in the world in profile.
-    bool verifyConnection(int connectionNumber, boost::asio::ip::udp::endpoint endpoint, endpointProfile& profile);
+    // Returns a pointer to a valid profile if connectionNumber is registered
+    // with the endpoint. Returns NULL on failure.
+    endpointProfile *verifyConnection(int connectionNumber, boost::asio::ip::udp::endpoint endpoint);
 
     // Number of elements
     int elementCount();
@@ -69,7 +66,7 @@ private:
     // Set of connection numbers with no endpoints
     std::set<int> registeredConnectionNumbers;
     // Maps connection numbers to endpoints and owned element idNumbers
-    std::map<int, endpointProfile> endpoints;
+    std::map<int, endpointProfile *> endpoints;
     // Maps connection number-id number pair to elements in the world
     std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>> elements;
 };

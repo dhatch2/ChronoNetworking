@@ -18,6 +18,19 @@
 
 #include "World.h"
 
+struct endpointProfile {
+    int connectionNumber;
+    boost::asio::ip::udp::endpoint endpoint;
+    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator first;
+    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator last;
+};
+
+World::~World() {
+    for (auto endpointPair : endpoints) {
+        delete endpointPair.second;
+    }
+}
+
 bool World::registerConnectionNumber(int connectionNumber) {
     if (registeredConnectionNumbers.find(connectionNumber) != registeredConnectionNumbers.end()) {
         return false;
@@ -38,31 +51,31 @@ bool World::registerEndpoint(boost::asio::ip::udp::endpoint& endpoint, int conne
         return false;
     }
     registeredConnectionNumbers.erase(num);
-    endpointProfile profile;
-    profile.endpoint = endpoint;
-    profile.first = elements.end();
-    profile.last = elements.end();
+    endpointProfile *profile = new endpointProfile;
+    profile->endpoint = endpoint;
+    profile->first = elements.end();
+    profile->last = elements.end();
     endpoints[connectionNumber] = profile;
     return true;
 }
 
-bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile& profile, int idNumber, int connectionNumber) {
-    auto mess = elements.find(std::pair<int, int>(connectionNumber, idNumber));
+bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile *profile, int idNumber) {
+    auto mess = elements.find(std::pair<int, int>(profile->connectionNumber, idNumber));
     if (mess != elements.end() && mess->second->GetDescriptor()->full_name().compare(message->GetDescriptor()->full_name()) != 0) {
         return false;
     } else if (mess == elements.end()) {
-        auto empPair = elements.emplace(std::make_pair(std::make_pair(connectionNumber, idNumber), message));
+        auto empPair = elements.emplace(std::make_pair(std::make_pair(profile->connectionNumber, idNumber), message));
         if (!empPair.second) return false;
         mess = empPair.first;
-        if (mess->first.second >= profile.last->first.second) {
-            profile.last = ++mess;
-        } else if (profile.first == elements.end()) {
-            profile.first = mess;
-            profile.last = ++mess;
+        if (mess->first.second >= profile->last->first.second) {
+            profile->last = ++mess;
+        } else if (profile->first == elements.end()) {
+            profile->first = mess;
+            profile->last = ++mess;
         }
         return true;
     }
-    elements[std::make_pair(connectionNumber, idNumber)] = message;
+    elements[std::make_pair(profile->connectionNumber, idNumber)] = message;
     return true;
 }
 
@@ -80,15 +93,15 @@ bool World::removeConnection(int connectionNumber) {
     if (prof == endpoints.end()) {
         return false;
     }
-    endpointProfile& profile = prof->second;
-    elements.erase(profile.first, profile.last);
-    endpoints.erase(connectionNumber);
+    endpointProfile *profile = prof->second;
+    elements.erase(profile->first, profile->last);
+    endpoints.erase(prof);
+    delete profile;
     return true;
 }
 
-bool World::verifyConnection(int connectionNumber, boost::asio::ip::udp::endpoint endpoint, endpointProfile& profile) {
+endpointProfile *World::verifyConnection(int connectionNumber, boost::asio::ip::udp::endpoint endpoint) {
     auto prof = endpoints.find(connectionNumber);
-    if (prof == endpoints.end()) return false;
-    profile = prof->second;
-    return true;
+    if (prof == endpoints.end()) return NULL;
+    return prof->second;
 }
