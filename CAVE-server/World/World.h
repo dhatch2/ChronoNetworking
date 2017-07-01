@@ -46,11 +46,12 @@ public:
 
     // Removes and element from the world. Returns true (success) if element
     // exists and connectionNumber is the correct owner.
-    bool removeElement(int idNumber, int connectionNumber);
+    bool removeElement(int idNumber, endpointProfile *profile);
 
     // Removes endpoint and all elements associated with connectionNumber.
     // Returns true (success) if connectionNumber has been registered.
-    bool removeConnection(int connectionNumber);
+    // Invalidates profile.
+    bool removeConnection(endpointProfile *profile);
 
     // Returns a pointer to a valid profile if connectionNumber is registered
     // with the endpoint. Returns NULL on failure.
@@ -58,6 +59,9 @@ public:
 
     // Number of elements
     int elementCount();
+
+    // Returns the number of elements associated with this endpointProfile
+    int profileElementCount(endpointProfile *profile);
 
     // Number of client connections
     int connectionCount();

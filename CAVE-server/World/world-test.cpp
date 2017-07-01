@@ -114,5 +114,67 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- World test 3" << std::endl;
     } else std::cout << "FAILED -- World test 3" << std::endl;
 
+    endpointProfile *fakeProfile = world.verifyConnection(1, serverEndpoint);
+    if (fakeProfile == NULL) {
+        std::cout << "PASSED -- World test 4" << '\n';
+    } else std::cout << "FAILED -- World test 4" << '\n';
+
+    world.registerConnectionNumber(1);
+    world.registerConnectionNumber(2);
+    world.registerConnectionNumber(3);
+    world.registerConnectionNumber(4);
+    world.registerConnectionNumber(5);
+
+    world.registerEndpoint(serverEndpoint, 1);
+    endpointProfile *profile1 = world.verifyConnection(1, serverEndpoint);
+    bool updateOnce = world.updateElement(vehiclePtr, profile1, 0);
+    bool updateTwice = world.updateElement(vehiclePtr, profile1, 0);
+    if (updateOnce && updateTwice && world.elementCount() == 2) {
+        std::cout << "PASSED -- World test 5" << '\n';
+    } else std::cout << "FAILED -- World test 5" << '\n';
+
+    world.updateElement(vehiclePtr, profile1, 1);
+    if (world.elementCount() == 3 && world.connectionCount() == 2) {
+        std::cout << "PASSED -- World test 6" << '\n';
+    } else std::cout << "FAILED -- World test 6" << '\n';
+
+    if (world.profileElementCount(profile) == 1 && world.profileElementCount(profile1) == 2) {
+        std::cout << "PASSED -- World test 7" << '\n';
+    } else std::cout << "FAILED -- World test 7" << '\n';
+
+    bool registered = world.registerEndpoint(serverEndpoint, 2);
+    endpointProfile *profile2 = world.verifyConnection(2, serverEndpoint);
+    if (registered && profile2 != NULL) {
+        std::cout << "PASSED -- World test 8" << '\n';
+    } else std::cout << "FAILED -- World test 8" << '\n';
+
+    if (world.updateElement(vehiclePtr, profile2, 0) &&
+    world.updateElement(vehiclePtr, profile2, 1) &&
+    world.updateElement(vehiclePtr, profile2, 2) &&
+    world.updateElement(vehiclePtr, profile2, 3) &&
+    world.updateElement(vehiclePtr, profile2, 4)) {
+        std::cout << "PASSED -- World test 9" << '\n';
+    } else std::cout << "FAILED -- World test 9" << '\n';
+
+    if (world.elementCount() == 8 && world.profileElementCount(profile2) == 5 && world.connectionCount() == 3) {
+        std::cout << "PASSED -- World test 10" << '\n';
+    } else std::cout << "FAILED -- World test 10" << '\n';
+
+    bool removed = world.removeElement(0, profile2);
+    if (removed && world.elementCount() == 7 && world.profileElementCount(profile2) == 4) {
+        std::cout << "PASSED -- World test 11" << '\n';
+    } else std::cout << "FAILED -- World test 11" << '\n';
+
+    removed = world.removeConnection(profile2);
+    if (removed && world.elementCount() == 3 && world.connectionCount() == 2) {
+        std::cout << "PASSED -- World test 12" << '\n';
+    } else std::cout << "FAILED -- World test 12" << '\n';
+
+    world.removeConnection(profile);
+    world.removeConnection(profile1);
+    if (world.elementCount() == 0 && world.connectionCount() == 0) {
+        std::cout << "PASSED -- World test 13" << '\n';
+    } else std::cout << "FAILED -- World test 13" << '\n';
+
     return 0;
 }
