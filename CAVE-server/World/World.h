@@ -22,6 +22,8 @@
 #include <boost/asio.hpp>
 #include <google/protobuf/message.h>
 
+#include "ChronoMessages.pb.h"
+
 struct endpointProfile;
 
 class World {
@@ -43,6 +45,16 @@ public:
     // Returns true (success) if connectionNumber is the correct owner of the
     // element, and if message is of the same type as the original element.
     bool updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile *profile, int idNumber);
+
+    // Updates all the elements in the given profile with the message packet.
+    // Efficient, as long as the elemnts are sorted correctly in the packet
+    bool updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<ChronoMessages::MessagePacket> packet);
+
+    // Returns a shared_ptr to the corresponding element
+    std::shared_ptr<google::protobuf::Message> getElement(int connectionNumber, int idNumber);
+
+    // Returns a packet containing all world elements
+    std::shared_ptr<ChronoMessages::MessagePacket> generateWorldPacket();
 
     // Removes and element from the world. Returns true (success) if element
     // exists and connectionNumber is the correct owner.

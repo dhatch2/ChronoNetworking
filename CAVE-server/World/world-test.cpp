@@ -66,15 +66,18 @@ double debug_step_size = 1.0 / 1;  // FPS = 1
 // POV-Ray output
 bool povray_output = false;
 
-HMMWV_Full generateTestVehicle() {
-    HMMWV_Full my_hmmwv; // Test vehicle for messages
+ChVector<> initLoc1(0, 0, 1.6);
+ChQuaternion<> initRot1(1, 0, 0, 0);
 
-    ChVector<> initLoc1(0, 0, 1.6);
-    ChQuaternion<> initRot1(1, 0, 0, 0);
+ChVector<> initLoc2(1, 1, 1.6);
+ChQuaternion<> initRot2(0, 1, 0, 0);
+
+HMMWV_Full generateTestVehicle(ChVector<> initLoc, ChQuaternion<> initRot) {
+    HMMWV_Full my_hmmwv; // Test vehicle for messages
 
     my_hmmwv.SetContactMethod(contact_method);
     my_hmmwv.SetChassisFixed(false);
-    my_hmmwv.SetInitPosition(ChCoordsys<>(initLoc1, initRot1));
+    my_hmmwv.SetInitPosition(ChCoordsys<>(initLoc, initRot));
     my_hmmwv.SetPowertrainType(powertrain_model);
     my_hmmwv.SetDriveType(drive_type);
     //my_hmmwv.SetTireType(tire_model);
@@ -104,7 +107,7 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- World test 2" << std::endl;
     } else std::cout << "FAILED -- World test 2" << std::endl;
 
-    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle().GetVehicle(), 0);
+    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc1, initRot1).GetVehicle(), 0);
     auto vehiclePtr = std::make_shared<ChronoMessages::VehicleMessage>();
     *vehiclePtr = vehicle;
 
@@ -148,33 +151,63 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- World test 8" << '\n';
     } else std::cout << "FAILED -- World test 8" << '\n';
 
-    if (world.updateElement(vehiclePtr, profile2, 0) &&
-    world.updateElement(vehiclePtr, profile2, 1) &&
-    world.updateElement(vehiclePtr, profile2, 2) &&
-    world.updateElement(vehiclePtr, profile2, 3) &&
-    world.updateElement(vehiclePtr, profile2, 4)) {
+    world.updateElement(vehiclePtr, profile2, 0);
+    vehiclePtr->set_vehicleid(1);
+    world.updateElement(vehiclePtr, profile2, 1);
+    vehiclePtr->set_vehicleid(2);
+    world.updateElement(vehiclePtr, profile2, 2);
+    vehiclePtr->set_vehicleid(3);
+    world.updateElement(vehiclePtr, profile2, 3);
+    vehiclePtr->set_vehicleid(4);
+    world.updateElement(vehiclePtr, profile2, 4);
+
+    if (world.elementCount() == 8 && world.profileElementCount(profile2) == 5 && world.connectionCount() == 3) {
         std::cout << "PASSED -- World test 9" << '\n';
     } else std::cout << "FAILED -- World test 9" << '\n';
 
-    if (world.elementCount() == 8 && world.profileElementCount(profile2) == 5 && world.connectionCount() == 3) {
+    bool removed = world.removeElement(0, profile2);
+    if (removed && world.elementCount() == 7 && world.profileElementCount(profile2) == 4) {
         std::cout << "PASSED -- World test 10" << '\n';
     } else std::cout << "FAILED -- World test 10" << '\n';
 
-    bool removed = world.removeElement(0, profile2);
-    if (removed && world.elementCount() == 7 && world.profileElementCount(profile2) == 4) {
-        std::cout << "PASSED -- World test 11" << '\n';
-    } else std::cout << "FAILED -- World test 11" << '\n';
+    if (world.getElement(2, 4)->DebugString().compare(vehiclePtr->DebugString()) == 0) {
+        std::cout << "PASSED -- World test 11" << std::endl;
+    } else std::cout << "FAILED -- World test 11" << std::endl;
+
+    ChronoMessages::VehicleMessage newVehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc2, initRot2).GetVehicle(), 0);
+
+    auto packet = std::make_shared<ChronoMessages::MessagePacket>();
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(0)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(1);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(1)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(2);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(2)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(3);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(3)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(4);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(4)->CopyFrom(newVehicle);
+
+    updated = world.updateElementsOfProfile(profile2, packet);
+
+    if (world.getElement(2, 4)->DebugString().compare(newVehicle.DebugString()) == 0) {
+        std::cout << "PASSED -- World test 12" << std::endl;
+    } else std::cout << "FAILED -- World test 12" << std::endl;
 
     removed = world.removeConnection(profile2);
     if (removed && world.elementCount() == 3 && world.connectionCount() == 2) {
-        std::cout << "PASSED -- World test 12" << '\n';
-    } else std::cout << "FAILED -- World test 12" << '\n';
+        std::cout << "PASSED -- World test 13" << '\n';
+    } else std::cout << "FAILED -- World test 13" << '\n';
 
     world.removeConnection(profile);
     world.removeConnection(profile1);
     if (world.elementCount() == 0 && world.connectionCount() == 0) {
-        std::cout << "PASSED -- World test 13" << '\n';
-    } else std::cout << "FAILED -- World test 13" << '\n';
+        std::cout << "PASSED -- World test 14" << '\n';
+    } else std::cout << "FAILED -- World test 14" << '\n';
 
     return 0;
 }

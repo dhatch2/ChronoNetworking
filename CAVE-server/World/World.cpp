@@ -17,6 +17,8 @@
 // =============================================================================
 
 #include "World.h"
+#include "MessageCodes.h"
+#include <iostream>
 
 struct endpointProfile {
     int connectionNumber;
@@ -93,6 +95,34 @@ bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, en
     }
     elements[std::make_pair(profile->connectionNumber, idNumber)] = message;
     return true;
+}
+
+bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<ChronoMessages::MessagePacket> packet) {
+    // TODO: Handle cases of duplicate idNumbers and extra messages after all pre-existing elements have been updated.
+    auto finish = profile->first;
+    finish--;
+    for (auto curr = profile->last; curr != finish; curr--) {
+        std::shared_ptr<google::protobuf::Message>& message = curr->second;
+        std::string type = message->GetDescriptor()->full_name();
+        int idNumber = curr->first.second;
+        if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) {
+            ChronoMessages::VehicleMessage *vehicle = packet->mutable_vehiclemessages()->ReleaseLast();
+            while (vehicle->vehicleid() > idNumber) {
+                std::shared_ptr<ChronoMessages::VehicleMessage> vehiclePtr;
+                vehiclePtr.reset(vehicle);
+                updateElement(vehiclePtr, profile, vehicle->vehicleid());
+                vehicle = packet->mutable_vehiclemessages()->ReleaseLast();
+            }
+            if (vehicle->vehicleid() == idNumber) {
+                message.reset(vehicle);
+            } else removeElement(idNumber, profile);
+        } else return false;
+    }
+    return true;
+}
+
+std::shared_ptr<google::protobuf::Message> World::getElement(int connectionNumber, int idNumber) {
+    return elements[std::make_pair(connectionNumber, idNumber)];
 }
 
 bool World::removeElement(int idNumber, endpointProfile *profile) {
