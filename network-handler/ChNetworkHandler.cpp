@@ -217,7 +217,7 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }
 
-ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
+ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, int portNumber) : ChNetworkHandler(),
     acceptor([&, this] {
         // This acceptor code is executed on another thread once the constructor has finished
         // Mutex locks and waits for socket to open
@@ -244,9 +244,7 @@ ChServerHandler::ChServerHandler(int portNumber) : ChNetworkHandler(),
                     uint8_t acceptMessage = CONNECTION_ACCEPT;
                     tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
                     tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
-                    boost::asio::ip::tcp::endpoint tcpEndpoint = tcpSocket.remote_endpoint();
-                    boost::asio::ip::udp::endpoint udpEndpoint(tcpEndpoint.address(), tcpEndpoint.port());
-                    // TODO: Add udp endpoint information to world object map.
+                    worldQueue.enqueue([&] { world.registerConnectionNumber(connectionCount); });
                     connectionCount++;
                 } else {
                     uint8_t declineMessage = CONNECTION_DECLINE;

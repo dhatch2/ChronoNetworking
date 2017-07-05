@@ -31,6 +31,7 @@
 #include "MessageCodes.h"
 #include "ChronoMessages.pb.h"
 #include "ChSafeQueue.h"
+#include "World.h"
 
 #define REFUSED_CONNECTION 0
 #define UNDETERMINED_CONNECTION 1
@@ -96,7 +97,7 @@ private:
 
 class ChServerHandler : public ChNetworkHandler {
 public:
-    ChServerHandler(int portNumber);
+    ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, int portNumber);
     ~ChServerHandler();
 
     // Begins receiving messages.

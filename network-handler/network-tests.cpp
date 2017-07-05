@@ -12,6 +12,8 @@
 #include "ChronoMessages.pb.h"
 #include "MessageCodes.h"
 #include "MessageConversions.h"
+#include "World.h"
+#include "ChSafeQueue.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
@@ -117,6 +119,9 @@ void serializeVehicle(std::ostream& stream, ChronoMessages::VehicleMessage& mess
 }
 
 int main(int argc, char **argv) {
+    World world;
+    ChSafeQueue<std::function<void()>> worldQueue;
+
     // Client connection tests //////////////////////////////////////////////////////////
     try {
         ChClientHandler clientHandler("dummy_hostname", "24601");
@@ -177,7 +182,7 @@ int main(int argc, char **argv) {
     acceptor.close();
 
     // Server connection tests ///////////////////////////////////////////////////////////////////
-    ChServerHandler *serverHandler = new ChServerHandler(8082);
+    ChServerHandler *serverHandler = new ChServerHandler(world, worldQueue, 8082);
 
     boost::asio::ip::tcp::socket tcpSocket3(ioService);
     boost::asio::ip::tcp::resolver tcpResolver(ioService);
@@ -228,7 +233,7 @@ int main(int argc, char **argv) {
     delete clientHandler;
     delete serverHandler;
 
-    ChServerHandler *serverHandler2 = new ChServerHandler(8082);
+    ChServerHandler *serverHandler2 = new ChServerHandler(world, worldQueue, 8082);
     ChClientHandler *clientHandler2 = new ChClientHandler("localhost", "8082");
 
     if (clientHandler2->connectionNumber() == 0) {
@@ -378,7 +383,7 @@ int main(int argc, char **argv) {
 
     std::thread server([&] {
         std::unique_lock<std::mutex> lock(initMutex);
-        ChServerHandler serverHandler(8082);
+        ChServerHandler serverHandler(world, worldQueue, 8082);
         isReady = true;
         var.notify_one();
         lock.unlock();
