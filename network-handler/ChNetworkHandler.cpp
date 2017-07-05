@@ -225,7 +225,7 @@ ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>
         initVar.wait(lock, [&]{ return socket.is_open(); });
         connectionCount = 0;
 
-        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
+        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), portNumber));
         acceptor.non_blocking(true);
 
         // Mutex unlocks
