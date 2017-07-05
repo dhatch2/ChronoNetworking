@@ -24,6 +24,7 @@
 
 #include "ChronoMessages.pb.h"
 
+// Uniquely identifies any registered endoint in the world.
 struct endpointProfile;
 
 class World {
@@ -50,7 +51,8 @@ public:
     // Efficient, as long as the elemnts are sorted correctly in the packet
     bool updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<ChronoMessages::MessagePacket> packet);
 
-    // Returns a shared_ptr to the corresponding element
+    // Returns a shared_ptr to the corresponding element. If element does not
+    // exist, returns a shared_ptr to NULL.
     std::shared_ptr<google::protobuf::Message> getElement(int connectionNumber, int idNumber);
 
     // Returns a packet containing all world elements
@@ -85,6 +87,12 @@ private:
     std::map<int, endpointProfile *> endpoints;
     // Maps connection number-id number pair to elements in the world
     std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>> elements;
+};
+
+class OutOfBoundsException : std::exception {
+    virtual const char* what() const throw() {
+        return "No element matching given information.";
+    }
 };
 
 #endif

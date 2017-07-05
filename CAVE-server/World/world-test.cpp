@@ -194,20 +194,49 @@ int main(int argc, char **argv) {
 
     updated = world.updateElementsOfProfile(profile2, packet);
 
-    if (world.getElement(2, 4)->DebugString().compare(newVehicle.DebugString()) == 0) {
+    if (world.getElement(2, 4)->DebugString().compare(newVehicle.DebugString()) == 0 && packet->vehiclemessages_size() == 0) {
         std::cout << "PASSED -- World test 12" << std::endl;
     } else std::cout << "FAILED -- World test 12" << std::endl;
 
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(0)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(1);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(1)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(2);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(2)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(3);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(3)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(4);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(4)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(5);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(5)->CopyFrom(newVehicle);
+    newVehicle.set_vehicleid(6);
+    packet->add_vehiclemessages();
+    packet->mutable_vehiclemessages(6)->CopyFrom(newVehicle);
+
+    world.updateElementsOfProfile(profile2, packet);
+
+    if (world.getElement(2, 6)->DebugString().compare(newVehicle.DebugString()) == 0) {
+        std::cout << "PASSED -- World test 13" << std::endl;
+    } else std::cout << "FAILED -- World test 13" << std::endl;
+
+    //world.generateWorldPacket()->PrintDebugString();
+
     removed = world.removeConnection(profile2);
     if (removed && world.elementCount() == 3 && world.connectionCount() == 2) {
-        std::cout << "PASSED -- World test 13" << '\n';
-    } else std::cout << "FAILED -- World test 13" << '\n';
+        std::cout << "PASSED -- World test 14" << '\n';
+    } else std::cout << "FAILED -- World test 14" << '\n';
 
     world.removeConnection(profile);
     world.removeConnection(profile1);
     if (world.elementCount() == 0 && world.connectionCount() == 0) {
-        std::cout << "PASSED -- World test 14" << '\n';
-    } else std::cout << "FAILED -- World test 14" << '\n';
+        std::cout << "PASSED -- World test 15" << '\n';
+    } else std::cout << "FAILED -- World test 15" << '\n';
 
     return 0;
 }
