@@ -35,21 +35,22 @@ message MQuaternion {
 
 message VehicleMessage {
 	required int32 timestamp = 1;
-	required int32 vehicleId = 2;
-	required double chTime = 3;
-	required double speed = 4;
+	required int32 connectionNumber = 2;
+	required int32 vehicleId = 3;
+	required double chTime = 4;
+	required double speed = 5;
 
-	required MVector ChassisCOM = 5;
-	required MVector FrontRightWheelCOM = 6;
-	required MVector FrontLeftWheelCOM = 7;
-	required MVector BackRightWheelCOM = 8;
-	required MVector BackLeftWheelCOM = 9;
+	required MVector ChassisCOM = 6;
+	required MVector FrontRightWheelCOM = 7;
+	required MVector FrontLeftWheelCOM = 8;
+	required MVector BackRightWheelCOM = 9;
+	required MVector BackLeftWheelCOM = 10;
 
-	required MQuaternion ChassisRot = 10;
-	required MQuaternion FrontRightWheelRot = 11;
-	required MQuaternion FrontLeftWheelRot = 12;
-	required MQuaternion BackRightWheelRot = 13;
-	required MQuaternion BackLeftWheelRot = 14;
+	required MQuaternion ChassisRot = 11;
+	required MQuaternion FrontRightWheelRot = 12;
+	required MQuaternion FrontLeftWheelRot = 13;
+	required MQuaternion BackRightWheelRot = 14;
+	required MQuaternion BackLeftWheelRot = 15;
 }
 
 message DSRCMessage {

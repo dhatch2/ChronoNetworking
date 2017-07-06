@@ -4,8 +4,8 @@ SET(MODEL_FILES
     ../../Vehicle_Protobuf_Messages/${PROTO_SRCS}
     ../../Vehicle_Protobuf_Messages/${PROTO_HDRS}
     ../../Vehicle_Protobuf_Messages/MessageCodes.h
-    ../../ChronoClient/MessageConversions.h
-    ../../ChronoClient/MessageConversions.cpp
+    ../chrono-sim/MessageConversions.h
+    ../chrono-sim/MessageConversions.cpp
     ChDSRCAgent.cpp
     ChDSRCAgent.h
     ../../network-handler/ChSafeQueue.h
@@ -59,7 +59,7 @@ SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 # of the requested modules.
 #--------------------------------------------------------------
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} .. ../../Vehicle_Protobuf_Messages ../../ChronoClient ../../network-handler)
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} .. ../../Vehicle_Protobuf_Messages ../chrono-sim ../../network-handler)
 
 #--------------------------------------------------------------
 # === 3 ===

@@ -189,8 +189,8 @@ int main(int argc, char **argv) {
     boost::asio::ip::tcp::resolver::query tcpQuery("localhost", "8082");
     uint8_t requestResponse;
     boost::asio::ip::tcp::resolver::iterator endpointIterator = tcpResolver.resolve(tcpQuery);
-
     boost::asio::connect(tcpSocket3, endpointIterator);
+    
     uint8_t connectionRequest = CONNECTION_REQUEST;
     tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
     tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
             } else std::cout << "FAILED -- Client communication test 2" << std::endl;
 
             auto vMessage = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
-            if (vMessage->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0) {
+            if (vMessage->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0) {
                 std::cout << "PASSED -- Client communication test 3" << std::endl;
             } else std::cout << "FAILED -- Client communication test 3" << std::endl;
 
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
             auto vMessage2 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
             auto vMessage3 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(clientHandler.popSimMessage());
 
-            if (newMessage1->buffer().compare(Dmessage1) == 0 && newMessage2->buffer().compare(Dmessage1) == 0 && newMessage3->buffer().compare(Dmessage1) == 0 && newMessage4->buffer().compare(Dmessage1) == 0 && vMessage1->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage2->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage3->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0) {
+            if (newMessage1->buffer().compare(Dmessage1) == 0 && newMessage2->buffer().compare(Dmessage1) == 0 && newMessage3->buffer().compare(Dmessage1) == 0 && newMessage4->buffer().compare(Dmessage1) == 0 && vMessage1->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0 && vMessage2->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0 && vMessage3->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0) {
                 std::cout << "PASSED -- Client communication test 4" << std::endl;
             } else std::cout << "FAILED -- Client communication test 4" << std::endl;
         } catch (ConnectionException& exp) {
@@ -338,7 +338,7 @@ int main(int argc, char **argv) {
     buffer.consume(sentSize);
 
     // Comm test 3 -- vehicle
-    ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
+    ChronoMessages::VehicleMessage sendVehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0);
     sendVehicle.CheckInitialized();
 
     serializeVehicle(outStream, sendVehicle);
@@ -348,7 +348,7 @@ int main(int argc, char **argv) {
 
     // Comm test 4
 
-    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0);
+    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0);
 
     ChronoMessages::MessagePacket packet;
     packet.add_dsrcmessages();
@@ -525,7 +525,7 @@ int main(int argc, char **argv) {
     auto vMessage2 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(handler.popSimMessage());
     auto vMessage3 = std::static_pointer_cast<ChronoMessages::VehicleMessage>(handler.popSimMessage());
 
-    if (newMessage1->buffer().compare(Dmessage1) == 0 && newMessage2->buffer().compare(Dmessage1) == 0 && newMessage3->buffer().compare(Dmessage1) == 0 && newMessage4->buffer().compare(Dmessage1) == 0 && vMessage1->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage2->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0 && vMessage3->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0).DebugString()) == 0) {
+    if (newMessage1->buffer().compare(Dmessage1) == 0 && newMessage2->buffer().compare(Dmessage1) == 0 && newMessage3->buffer().compare(Dmessage1) == 0 && newMessage4->buffer().compare(Dmessage1) == 0 && vMessage1->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0 && vMessage2->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0 && vMessage3->DebugString().compare(generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0).DebugString()) == 0) {
         std::cout << "PASSED -- Server - client communication test 4" << std::endl;
     } else std::cout << "FAILED -- Server - client communication test 4" << std::endl;
 

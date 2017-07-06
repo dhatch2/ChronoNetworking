@@ -217,7 +217,7 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }
 
-ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, int portNumber) : ChNetworkHandler(),
+ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, unsigned short portNumber) : ChNetworkHandler(),
     acceptor([&, this] {
         // This acceptor code is executed on another thread once the constructor has finished
         // Mutex locks and waits for socket to open
@@ -225,7 +225,7 @@ ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>
         initVar.wait(lock, [&]{ return socket.is_open(); });
         connectionCount = 0;
 
-        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), portNumber));
+        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
         acceptor.non_blocking(true);
 
         // Mutex unlocks

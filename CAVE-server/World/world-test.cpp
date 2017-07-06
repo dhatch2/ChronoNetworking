@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- World test 2" << std::endl;
     } else std::cout << "FAILED -- World test 2" << std::endl;
 
-    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc1, initRot1).GetVehicle(), 0);
+    ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc1, initRot1).GetVehicle(), 0, 0);
     auto vehiclePtr = std::make_shared<ChronoMessages::VehicleMessage>();
     *vehiclePtr = vehicle;
 
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
         std::cout << "PASSED -- World test 11" << std::endl;
     } else std::cout << "FAILED -- World test 11" << std::endl;
 
-    ChronoMessages::VehicleMessage newVehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc2, initRot2).GetVehicle(), 0);
+    ChronoMessages::VehicleMessage newVehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc2, initRot2).GetVehicle(), 0, 0);
 
     auto packet = std::make_shared<ChronoMessages::MessagePacket>();
     packet->add_vehiclemessages();

@@ -97,7 +97,7 @@ private:
 
 class ChServerHandler : public ChNetworkHandler {
 public:
-    ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, int portNumber);
+    ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, unsigned short portNumber);
     ~ChServerHandler();
 
     // Begins receiving messages.

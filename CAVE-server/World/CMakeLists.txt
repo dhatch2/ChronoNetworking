@@ -3,15 +3,15 @@
 SET(MODEL_FILES
     ../../Vehicle_Protobuf_Messages/${PROTO_SRCS}
     ../../Vehicle_Protobuf_Messages/${PROTO_HDRS}
-    ../../ChronoClient/MessageConversions.h
-    ../../ChronoClient/MessageConversions.cpp
+    ../../CAVE-client/chrono-sim/MessageConversions.h
+    ../../CAVE-client/chrono-sim/MessageConversions.cpp
     World.cpp
     World.h
 )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../../Vehicle_Protobuf_Messages ../../ChronoClient)
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ../../Vehicle_Protobuf_Messages ../../CAVE-client/chrono-sim)
 
 add_executable(world-test world-test.cpp ${MODEL_FILES})
 
