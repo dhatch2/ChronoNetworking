@@ -96,8 +96,10 @@ bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, en
     return true;
 }
 
-bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<ChronoMessages::MessagePacket> packet) {
+bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<google::protobuf::Message> message) {
     // TODO: Handle cases of duplicate idNumbers and extra messages after all pre-existing elements have been updated.
+    if (message->GetDescriptor()->full_name().compare(MESSAGE_PACKET_TYPE)) return false;
+    auto packet = std::static_pointer_cast<ChronoMessages::MessagePacket>(message);
     auto finish = profile->first;
     finish--;
     for (auto curr = profile->last; curr != finish; curr--) {
@@ -107,14 +109,14 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<Ch
         if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) {
             ChronoMessages::VehicleMessage *vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
             // Adds vehicle if not already present in elements
-            while (vehicle != NULL && vehicle->vehicleid() > idNumber) {
+            while (vehicle != NULL && vehicle->idnumber() > idNumber) {
                 std::shared_ptr<ChronoMessages::VehicleMessage> vehiclePtr;
                 vehiclePtr.reset(packet->mutable_vehiclemessages()->ReleaseLast());
-                updateElement(vehiclePtr, profile, vehicle->vehicleid());
+                updateElement(vehiclePtr, profile, vehicle->idnumber());
                 vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
             }
             // Updates vehicle if present
-            if (vehicle != NULL && vehicle->vehicleid() == idNumber) {
+            if (vehicle != NULL && vehicle->idnumber() == idNumber) {
                 message.reset(packet->mutable_vehiclemessages()->ReleaseLast());
             } else {
                 removeElement(idNumber, profile);
@@ -125,7 +127,7 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<Ch
     while (!packet->vehiclemessages().empty()) {
         std::shared_ptr<ChronoMessages::VehicleMessage> vehiclePtr;
         vehiclePtr.reset(packet->mutable_vehiclemessages()->ReleaseLast());
-        updateElement(vehiclePtr, profile, vehiclePtr->vehicleid());
+        updateElement(vehiclePtr, profile, vehiclePtr->idnumber());
     }
     return true;
 }

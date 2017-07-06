@@ -38,12 +38,12 @@ World::~World()
 
 void World::addVehicle(int sectionX, int sectionY, std::shared_ptr<ChronoMessages::VehicleMessage> message) {
     numVehicles_++;
-    sectionGrid[sectionX][sectionY].insert(std::pair<int, std::shared_ptr<ChronoMessages::VehicleMessage>>(message->vehicleid(), message));
+    sectionGrid[sectionX][sectionY].insert(std::pair<int, std::shared_ptr<ChronoMessages::VehicleMessage>>(message->idnumber(), message));
     //std::cout << "Vehicle added" << std::endl;
 }
 
 void World::updateVehicle(int sectionX, int sectionY, std::shared_ptr<ChronoMessages::VehicleMessage> message) {
-    if(message->IsInitialized()) sectionGrid[sectionX][sectionY][message->vehicleid()]->MergeFrom(*message);
+    if(message->IsInitialized()) sectionGrid[sectionX][sectionY][message->idnumber()]->MergeFrom(*message);
 }
 
 void World::removeVehicle(int sectionX, int sectionY, int id) {

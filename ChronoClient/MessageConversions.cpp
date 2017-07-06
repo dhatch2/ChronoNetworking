@@ -26,7 +26,7 @@ ChronoMessages::VehicleMessage generateVehicleMessageFromWheeledVehicle(
     ChronoMessages::VehicleMessage message;
 
     message.set_timestamp(time(0));
-    message.set_vehicleid(connectionNumber);
+    message.set_idnumber(connectionNumber);
     message.set_chtime(vehicle->GetChTime());
     message.set_speed(vehicle->GetVehicleSpeed());
 

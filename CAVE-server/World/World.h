@@ -49,7 +49,7 @@ public:
 
     // Updates all the elements in the given profile with the message packet.
     // Efficient, as long as the elemnts are sorted correctly in the packet
-    bool updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<ChronoMessages::MessagePacket> packet);
+    bool updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<google::protobuf::Message> packet);
 
     // Returns a shared_ptr to the corresponding element. If element does not
     // exist, returns a shared_ptr to NULL.

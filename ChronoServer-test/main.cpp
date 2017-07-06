@@ -157,7 +157,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
 
         // Pushes addVehicle to queue so that the vehicle may be added to the world
         // The client only has one chance to identify it's connection number correctly
-        if(newVehicle->vehicleid() == connectionNumber) {
+        if(newVehicle->idnumber() == connectionNumber) {
             {
                 std::lock_guard<std::mutex> guard(*queueMutex);
                 queue.push([&world, newVehicle] { world.addVehicle(0, 0, newVehicle); });
@@ -187,7 +187,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
                         std::cout << "Serialization Error" << std::endl;
                         messageCode = VEHICLE_ID;
                         socket->send(boost::asio::buffer(&messageCode, sizeof(uint8_t)));
-                        uint32_t id = vehicle->vehicleid();
+                        uint32_t id = vehicle->idnumber();
                         socket->send(boost::asio::buffer(&id, sizeof(uint32_t)));
                     }
                 }
@@ -219,7 +219,7 @@ void processConnection(World& world, std::queue<std::function<void()>>& queue, s
 
                     // Pushes updateVehicle to queue to update the vehicle state in the world
                     // If the id does not correspond to the connection number, it is not updated
-                    if(vehicle->vehicleid() == connectionNumber) {
+                    if(vehicle->idnumber() == connectionNumber) {
                         std::lock_guard<std::mutex> guard(*queueMutex);
                         queue.push([&world, vehicle] { world.updateVehicle(0, 0, vehicle); messagesRecieved++; });
                         emptyqueueCV->notify_all();

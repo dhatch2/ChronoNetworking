@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         vehicle.set_timestamp(time(nullptr));
         vehicle.set_chtime(10.235);
         vehicle.set_speed(41236136436436673);
-        vehicle.set_vehicleid(24601);
+        vehicle.set_idnumber(24601);
         
         ChronoMessages::VehicleMessage_MVector vector;
         vector.set_x(3.14);

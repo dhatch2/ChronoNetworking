@@ -36,7 +36,7 @@ message MQuaternion {
 message VehicleMessage {
 	required int32 timestamp = 1;
 	required int32 connectionNumber = 2;
-	required int32 vehicleId = 3;
+	required int32 idNumber = 3;
 	required double chTime = 4;
 	required double speed = 5;
 
@@ -56,12 +56,13 @@ message VehicleMessage {
 message DSRCMessage {
 	required int32 timestamp = 1;
 	required double chTime = 2;
-	required int32 vehicleId = 3;
+	required int32 idNumber = 3;
 	required MVector vehiclePos = 4;
 	required bytes buffer = 5;
 }
 
 message MessagePacket {
-	repeated VehicleMessage vehicleMessages = 1;
-	repeated DSRCMessage DSRCMessages = 2;
+	required int32 connectionNumber = 1;
+	repeated VehicleMessage vehicleMessages = 2;
+	repeated DSRCMessage DSRCMessages = 3;
 }

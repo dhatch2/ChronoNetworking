@@ -39,4 +39,7 @@
 #define DSRC_MESSAGE_TYPE "ChronoMessages.DSRCMessage"
 #define MESSAGE_PACKET_TYPE "ChronoMessages.MessagePacket"
 
+#define CONNECTION_NUMBER_FIELD "connectionNumber"
+#define ID_NUMBER_FIELD "idNumber"
+
 #endif

@@ -53,7 +53,7 @@ int ChDSRCAgent::vehicleNumber() {
 // Broadcasts a message. All vehicles within range will be able to recieve it.
 void ChDSRCAgent::broadcastMessage(std::vector<uint8_t> buffer) {
     ChronoMessages::DSRCMessage message;
-    message.set_vehicleid(m_vehicleNumber);
+    message.set_idnumber(m_vehicleNumber);
     message.set_timestamp(time(0));
     message.set_chtime(vehicle->GetChTime());
     messageFromVector(message.mutable_vehiclepos(), vehicle->GetVehiclePos());

@@ -152,13 +152,13 @@ int main(int argc, char **argv) {
     } else std::cout << "FAILED -- World test 8" << '\n';
 
     world.updateElement(vehiclePtr, profile2, 0);
-    vehiclePtr->set_vehicleid(1);
+    vehiclePtr->set_idnumber(1);
     world.updateElement(vehiclePtr, profile2, 1);
-    vehiclePtr->set_vehicleid(2);
+    vehiclePtr->set_idnumber(2);
     world.updateElement(vehiclePtr, profile2, 2);
-    vehiclePtr->set_vehicleid(3);
+    vehiclePtr->set_idnumber(3);
     world.updateElement(vehiclePtr, profile2, 3);
-    vehiclePtr->set_vehicleid(4);
+    vehiclePtr->set_idnumber(4);
     world.updateElement(vehiclePtr, profile2, 4);
 
     if (world.elementCount() == 8 && world.profileElementCount(profile2) == 5 && world.connectionCount() == 3) {
@@ -177,18 +177,19 @@ int main(int argc, char **argv) {
     ChronoMessages::VehicleMessage newVehicle = generateVehicleMessageFromWheeledVehicle(&generateTestVehicle(initLoc2, initRot2).GetVehicle(), 0, 0);
 
     auto packet = std::make_shared<ChronoMessages::MessagePacket>();
+    packet->set_connectionnumber(2);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(0)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(1);
+    newVehicle.set_idnumber(1);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(1)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(2);
+    newVehicle.set_idnumber(2);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(2)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(3);
+    newVehicle.set_idnumber(3);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(3)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(4);
+    newVehicle.set_idnumber(4);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(4)->CopyFrom(newVehicle);
 
@@ -200,22 +201,22 @@ int main(int argc, char **argv) {
 
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(0)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(1);
+    newVehicle.set_idnumber(1);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(1)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(2);
+    newVehicle.set_idnumber(2);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(2)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(3);
+    newVehicle.set_idnumber(3);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(3)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(4);
+    newVehicle.set_idnumber(4);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(4)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(5);
+    newVehicle.set_idnumber(5);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(5)->CopyFrom(newVehicle);
-    newVehicle.set_vehicleid(6);
+    newVehicle.set_idnumber(6);
     packet->add_vehiclemessages();
     packet->mutable_vehiclemessages(6)->CopyFrom(newVehicle);
 

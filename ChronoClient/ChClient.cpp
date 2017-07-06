@@ -71,7 +71,7 @@ int ChClient::connectToServer(std::string name, std::string port) {
 
 void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Message>>& serverMessages) {
     listener = std::make_shared<std::thread>([&serverMessages, this] {
-        std::set<uint32_t> vehicleIds;
+        std::set<uint32_t> idnumbers;
         //std::ofstream outputFile;
         //outputFile.open("scaling-client-output.csv");
         while (m_socket.is_open()) {
@@ -91,30 +91,30 @@ void ChClient::asyncListen(std::map<int, std::shared_ptr<google::protobuf::Messa
                     worldBuffer.commit(VEHICLE_MESSAGE_SIZE);
                     std::shared_ptr<ChronoMessages::VehicleMessage> worldVehicle = std::make_shared<ChronoMessages::VehicleMessage>();
                     worldVehicle->ParseFromIstream(&inStream);
-                    if(serverMessages.find(worldVehicle->vehicleid()) == serverMessages.end()) {
-                        serverMessages.insert(std::pair<int, std::shared_ptr<google::protobuf::Message>>(worldVehicle->vehicleid(), worldVehicle));
+                    if(serverMessages.find(worldVehicle->idnumber()) == serverMessages.end()) {
+                        serverMessages.insert(std::pair<int, std::shared_ptr<google::protobuf::Message>>(worldVehicle->idnumber(), worldVehicle));
                     } else {
-                        worldVehicle->GetReflection()->Swap(serverMessages[worldVehicle->vehicleid()].get(), worldVehicle.get());
+                        worldVehicle->GetReflection()->Swap(serverMessages[worldVehicle->idnumber()].get(), worldVehicle.get());
                     }
-                    vehicleIds.insert(worldVehicle->vehicleid());
+                    idnumbers.insert(worldVehicle->idnumber());
                     break;
                 }
                 // For the last vehicle in a group. Removes all vehicles that didn't receive updates.
                 case VEHICLE_MESSAGE_END: {
                     for(std::map<int, std::shared_ptr<google::protobuf::Message>>::iterator it = serverMessages.begin(); it != serverMessages.end();) {
-                        if(vehicleIds.find(it->first) == vehicleIds.end()){
+                        if(idnumbers.find(it->first) == idnumbers.end()){
                             it = serverMessages.erase(it);
                             std::cout << "Vehicle removed" << std::endl;
                         } else ++it;
                     }
-                    vehicleIds.erase(vehicleIds.begin(), vehicleIds.end());
+                    idnumbers.erase(idnumbers.begin(), idnumbers.end());
                     break;
                 }
                 // If the whole message cannot be sent, the server just sends the id so that the client knows to keep the vehicle.
                 case VEHICLE_ID: {
                     int32_t id;
                     m_socket.receive(boost::asio::buffer(&id, sizeof(uint32_t)));
-                    vehicleIds.insert(id);
+                    idnumbers.insert(id);
                     break;
                 }
                 // Calculate the heartrate from the heartbeat

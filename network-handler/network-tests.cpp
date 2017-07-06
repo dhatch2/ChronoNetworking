@@ -97,7 +97,7 @@ HMMWV_Full generateTestVehicle() {
 }
 
 void generateTestDSRCMessage(ChronoMessages::DSRCMessage *message, HMMWV_Full& my_hmmwv, std::string& DMessage) {
-    message->set_vehicleid(1);
+    message->set_idnumber(1);
     message->set_timestamp(time(0));
     message->set_chtime(my_hmmwv.GetVehicle().GetChTime());
     messageFromVector(message->mutable_vehiclepos(), my_hmmwv.GetVehicle().GetVehiclePos());
@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
     uint8_t requestResponse;
     boost::asio::ip::tcp::resolver::iterator endpointIterator = tcpResolver.resolve(tcpQuery);
     boost::asio::connect(tcpSocket3, endpointIterator);
-    
+
     uint8_t connectionRequest = CONNECTION_REQUEST;
     tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
     tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
@@ -351,6 +351,7 @@ int main(int argc, char **argv) {
     ChronoMessages::VehicleMessage vehicle = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), 0, 0);
 
     ChronoMessages::MessagePacket packet;
+    packet.set_connectionnumber(0);
     packet.add_dsrcmessages();
     generateTestDSRCMessage(packet.mutable_dsrcmessages(0), my_hmmwv, Dmessage1);
     packet.add_dsrcmessages();
