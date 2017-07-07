@@ -88,6 +88,7 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
     ChNetworkHandler() {
     // Lock begins -- the udp socket cannot open during the tcp connection process
     std::unique_lock<std::mutex> lock(socketMutex);
+    m_connectionNumber = -1;
     boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
     boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
     uint8_t requestResponse;
@@ -126,6 +127,7 @@ ChClientHandler::~ChClientHandler() {
 }
 
 int ChClientHandler::connectionNumber() {
+    while (m_connectionNumber == -1);
     return m_connectionNumber;
 }
 
@@ -244,7 +246,8 @@ ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>
                     uint8_t acceptMessage = CONNECTION_ACCEPT;
                     tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
                     tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
-                    worldQueue.enqueue([&] { world.registerConnectionNumber(connectionCount); });
+                    worldQueue.enqueue([&world, c=connectionCount] { world.registerConnectionNumber(c); });
+                    std::cout << "connectionNumber " << connectionCount << " has been registered" << std::endl;
                     connectionCount++;
                 } else {
                     uint8_t declineMessage = CONNECTION_DECLINE;
@@ -299,7 +302,9 @@ void ChServerHandler::beginSend() {
 }
 
 std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>> ChServerHandler::popMessage() {
+    std::cout << "receiveQueue size: " << receiveQueue.size() << std::endl;
     auto recPair = receiveQueue.dequeue();
+    std::cout << "message dequeued." << std::endl;
     boost::asio::streambuf& buffer = *(recPair.second);
     std::istream stream(&buffer);
     uint8_t messageType;
@@ -314,7 +319,12 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Mess
         }
         case VEHICLE_MESSAGE: {
             auto message = std::make_shared<ChronoMessages::VehicleMessage>();
+            message->Clear();
+            std::cout << "parsing vehicle..." << std::endl;
+            std::cout << "use count: " << message.use_count() << std::endl;
+            std::cout << "buffer size: " << buffer.size() << std::endl;
             message->ParseFromIstream(&stream);
+            std::cout << "vehicle parsed" << std::endl;
             return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>>(recPair.first, message);
         }
         case DSRC_MESSAGE: {

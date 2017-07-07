@@ -36,14 +36,18 @@ World::~World() {
 
 bool World::registerConnectionNumber(int connectionNumber) {
     // connectionNumber can't already be registered
+    std::cout << "registering " << connectionNumber << std::endl;
     if (registeredConnectionNumbers.find(connectionNumber) != registeredConnectionNumbers.end()) {
+        std::cout << "connectionNumber already registered" << std::endl;
         return false;
     }
     // An endpoint can't already be registered under connectionNumber
     if (endpoints.find(connectionNumber) != endpoints.end()) {
+        std::cout << "endpoint already registered" << std::endl;
         return false;
     }
     registeredConnectionNumbers.insert(connectionNumber);
+    std::cout << "registered " << connectionNumber << std::endl;
     return true;
 }
 
@@ -51,10 +55,12 @@ bool World::registerEndpoint(boost::asio::ip::udp::endpoint& endpoint, int conne
     auto num = registeredConnectionNumbers.find(connectionNumber);
     // connectionNumber has to be registered
     if (num == registeredConnectionNumbers.end()) {
+        std::cout << "connectionNumber not found" << std::endl;
         return false;
     }
     // An endpoint can't already be registered under connectionNumber
     if (endpoints.find(connectionNumber) != endpoints.end()) {
+        std::cout << "already registered" << std::endl;
         return false;
     }
     registeredConnectionNumbers.erase(num);
@@ -144,6 +150,7 @@ std::shared_ptr<google::protobuf::Message> World::getElement(int connectionNumbe
 
 std::shared_ptr<ChronoMessages::MessagePacket> World::generateWorldPacket() {
     auto packet = std::make_shared<ChronoMessages::MessagePacket>();
+    packet->set_connectionnumber(-1);
     // Iterate through every element and add it to the packet
     for (auto curr : elements) {
         std::string type = curr.second->GetDescriptor()->full_name();
