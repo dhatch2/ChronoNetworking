@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
         handler.pushMessage(message);
         messageFromVector(message.mutable_chassiscom(), initLoc2);
         //message.set_connectionnumber(1);
-        sleep(1);
+        //sleep(1);
     }
     pop.join();
     return 0;

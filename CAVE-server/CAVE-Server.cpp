@@ -49,12 +49,11 @@ int main(int argc, char **argv) {
 }
 
 void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueue, ChServerHandler& handler) {
+    // TODO: Fix major memory issues. Make copies of everything to avoid memory errors.
     while (true) {
-        std::cout << "popping..." << std::endl;
         auto messagePair = handler.popMessage();
         boost::asio::ip::udp::endpoint& endpoint = messagePair.first;
         std::shared_ptr<google::protobuf::Message>& message = messagePair.second;
-        std::cout << "popped" << std::endl;
 
         auto reflection = message->GetReflection();
         auto descriptor = message->GetDescriptor();
@@ -63,14 +62,10 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
         auto idDesc = descriptor->FindFieldByName(ID_NUMBER_FIELD);
         int idNumber = reflection->GetInt32(*message, idDesc);
         std::string type = descriptor->full_name();
-        std::cout << "done doing all that stuff" << std::endl;
-        std::cout << "connectionNumber = " << connectionNumber << std::endl;
 
         endpointProfile *profile = world.verifyConnection(connectionNumber, endpoint);
         if (profile == NULL) {
-            std::cout << "profile is null" << std::endl;
-            worldQueue.enqueue([&] {
-                std::cout << "executing lambda thing" << std::endl;
+            worldQueue.enqueue([&, message] {
                 if(world.registerEndpoint(endpoint, connectionNumber)) {
                     profile = world.verifyConnection(connectionNumber, endpoint);
                     if (profile != NULL) {
@@ -84,10 +79,9 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
                 }
             });
         } else if (type.compare(MESSAGE_PACKET_TYPE) == 0) {
-            worldQueue.enqueue([&] { world.updateElementsOfProfile(profile, message); });
+            worldQueue.enqueue([&, message] { world.updateElementsOfProfile(profile, message); });
         } else {
-            std::cout << "updating element..." << std::endl;
-            worldQueue.enqueue([&] { world.updateElement(message, profile, idNumber); });
+            worldQueue.enqueue([&, message] { world.updateElement(message, profile, idNumber); });
         }
         if (profile != NULL) {
             handler.pushMessage(endpoint, *world.generateWorldPacket());

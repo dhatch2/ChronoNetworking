@@ -36,18 +36,14 @@ World::~World() {
 
 bool World::registerConnectionNumber(int connectionNumber) {
     // connectionNumber can't already be registered
-    std::cout << "registering " << connectionNumber << std::endl;
     if (registeredConnectionNumbers.find(connectionNumber) != registeredConnectionNumbers.end()) {
-        std::cout << "connectionNumber already registered" << std::endl;
         return false;
     }
     // An endpoint can't already be registered under connectionNumber
     if (endpoints.find(connectionNumber) != endpoints.end()) {
-        std::cout << "endpoint already registered" << std::endl;
         return false;
     }
     registeredConnectionNumbers.insert(connectionNumber);
-    std::cout << "registered " << connectionNumber << std::endl;
     return true;
 }
 
@@ -55,12 +51,10 @@ bool World::registerEndpoint(boost::asio::ip::udp::endpoint& endpoint, int conne
     auto num = registeredConnectionNumbers.find(connectionNumber);
     // connectionNumber has to be registered
     if (num == registeredConnectionNumbers.end()) {
-        std::cout << "connectionNumber not found" << std::endl;
         return false;
     }
     // An endpoint can't already be registered under connectionNumber
     if (endpoints.find(connectionNumber) != endpoints.end()) {
-        std::cout << "already registered" << std::endl;
         return false;
     }
     registeredConnectionNumbers.erase(num);
@@ -81,7 +75,9 @@ bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, en
         return false;
         // Else adds the update as a new element if not already found
     } else if (mess == elements.end()) {
-        auto empPair = elements.emplace(std::make_pair(std::make_pair(profile->connectionNumber, idNumber), message));
+        std::shared_ptr<google::protobuf::Message> newMess(message->New());
+        newMess->CopyFrom(*message);
+        auto empPair = elements.insert(std::make_pair(std::make_pair(profile->connectionNumber, idNumber), newMess));
         if (!empPair.second) return false;
         profile->count++;
         // Moves profile's iterators to re-encompass it's owned elements
@@ -98,7 +94,7 @@ bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, en
         profile->last = --curr;
         return true;
     }
-    elements[std::make_pair(profile->connectionNumber, idNumber)] = message;
+    elements[std::make_pair(profile->connectionNumber, idNumber)]->CopyFrom(*message);
     return true;
 }
 
@@ -113,17 +109,23 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<go
         std::string type = message->GetDescriptor()->full_name();
         int idNumber = curr->first.second;
         if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) {
-            ChronoMessages::VehicleMessage *vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
+            ChronoMessages::VehicleMessage *vehicle;
+            if (packet->vehiclemessages_size() > 0) {
+                vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
+            } else vehicle = NULL;
             // Adds vehicle if not already present in elements
             while (vehicle != NULL && vehicle->idnumber() > idNumber) {
                 std::shared_ptr<ChronoMessages::VehicleMessage> vehiclePtr;
                 vehiclePtr.reset(packet->mutable_vehiclemessages()->ReleaseLast());
                 updateElement(vehiclePtr, profile, vehicle->idnumber());
-                vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
+                if (packet->vehiclemessages_size() > 0) {
+                    vehicle = *(--packet->mutable_vehiclemessages()->pointer_end());
+                } else vehicle = NULL;
             }
             // Updates vehicle if present
             if (vehicle != NULL && vehicle->idnumber() == idNumber) {
-                message.reset(packet->mutable_vehiclemessages()->ReleaseLast());
+                message->CopyFrom(*vehicle);
+                packet->mutable_vehiclemessages()->RemoveLast();
             } else {
                 removeElement(idNumber, profile);
             }
@@ -141,6 +143,8 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<go
 std::shared_ptr<google::protobuf::Message> World::getElement(int connectionNumber, int idNumber) {
     auto el = elements.find(std::make_pair(connectionNumber, idNumber));
     if (el != elements.end()) {
+        std::shared_ptr<google::protobuf::Message> mess(el->second->New());
+        mess->CopyFrom(*el->second);
         return el->second;
     } else {
         // Throws if this element doesn't exist
