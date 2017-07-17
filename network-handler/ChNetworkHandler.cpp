@@ -215,6 +215,10 @@ std::shared_ptr<google::protobuf::Message> ChClientHandler::popSimMessage() {
     return simUpdateQueue.dequeue();
 }
 
+int ChClientHandler::waitingMessages() {
+    return simUpdateQueue.size();
+}
+
 std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }

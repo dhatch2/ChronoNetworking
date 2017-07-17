@@ -68,7 +68,6 @@ public:
     ChClientHandler(std::string hostname, std::string port);
     ~ChClientHandler();
 
-    bool connectToServer(std::string name, std::string port);
     bool isConnected();
     int connectionNumber();
 
@@ -83,6 +82,9 @@ public:
 
     // Returns message related to physical simulation.
     std::shared_ptr<google::protobuf::Message> popSimMessage();
+
+    // Returns the number of waiting simulation messages.
+    int waitingMessages();
 
     // Returns simulated DSRC message.
     std::shared_ptr<ChronoMessages::DSRCMessage> popDSRCMessage();
