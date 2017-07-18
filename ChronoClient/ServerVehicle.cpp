@@ -5,44 +5,46 @@
 using namespace chrono;
 
 ServerVehicle::ServerVehicle(ChSystem* system) {
-  std::cout << "Creating new ServerVehicle" << std::endl;
-  m_chassis = std::make_shared<ChBody>();
-  m_chassis->SetBodyFixed(true);
-  m_hitbox = std::make_shared<ChBodyEasyBox>(4.55, 2.2, 1.3, 3000, true, true);
-  m_hitbox->SetBodyFixed(true);
-  m_hitbox->SetCollide(true);
-  m_hitbox->SetPos(ChVector<>(0, 0, 1));
+    std::cout << "Creating new ServerVehicle..." << std::endl;
+    m_chassis = std::make_shared<ChBody>();
+    m_chassis->SetBodyFixed(true);
+    m_hitbox = std::make_shared<ChBodyEasyBox>(4.55, 2.2, 1.3, 3000, true, true);
+    m_hitbox->SetBodyFixed(true);
+    m_hitbox->SetCollide(true);
+    m_hitbox->SetPos(ChVector<>(0, 0, 1));
 
-  for (int i = 0; i < VEH_NUM_WHEELS; i++) {
-    std::shared_ptr<ChBody> wheel = std::make_shared<ChBody>();
-    wheel->SetBodyFixed(true);
-    auto cyl = std::make_shared<ChCylinderShape>();
-    cyl->GetCylinderGeometry().rad = 0.0254 * 18.15;
-    cyl->GetCylinderGeometry().p1 = ChVector<>(0, 0.0254 * 10 / 2, 0);
-    cyl->GetCylinderGeometry().p2 = ChVector<>(0, -0.0254 * 10 / 2, 0);
-    wheel->AddAsset(cyl);
+    for (int i = 0; i < VEH_NUM_WHEELS; i++) {
+        std::shared_ptr<ChBody> wheel = std::make_shared<ChBody>();
+        wheel->SetBodyFixed(true);
+        auto cyl = std::make_shared<ChCylinderShape>();
+        cyl->GetCylinderGeometry().rad = 0.0254 * 18.15;
+        cyl->GetCylinderGeometry().p1 = ChVector<>(0, 0.0254 * 10 / 2, 0);
+        cyl->GetCylinderGeometry().p2 = ChVector<>(0, -0.0254 * 10 / 2, 0);
+        wheel->AddAsset(cyl);
+
+        auto tex = std::make_shared<ChTexture>();
+        tex->SetTextureFilename(GetChronoDataFile("bluwhite.png"));
+        wheel->AddAsset(tex);
+        m_wheels.push_back(wheel);
+        system->Add(wheel);
+    }
+
+    auto sphere = std::make_shared<ChSphereShape>();
+    sphere->GetSphereGeometry().rad = 0.1;
+
+    sphere->Pos = ChVector<>(0.055765, 0, 0.52349);
+
+    m_chassis->AddAsset(sphere);
 
     auto tex = std::make_shared<ChTexture>();
-    tex->SetTextureFilename(GetChronoDataFile("bluwhite.png"));
-    wheel->AddAsset(tex);
-    m_wheels.push_back(wheel);
-    system->Add(wheel);
-  }
-
-  auto sphere = std::make_shared<ChSphereShape>();
-  sphere->GetSphereGeometry().rad = 0.1;
-
-  sphere->Pos = ChVector<>(0.055765, 0, 0.52349);
-
-  m_chassis->AddAsset(sphere);
-
-  auto tex = std::make_shared<ChTexture>();
-  tex->SetTextureFilename(GetChronoDataFile("pinkwhite.png"));
-  m_chassis->AddAsset(tex);
-  system->Add(m_chassis);
-  system->Add(m_hitbox);
-  m_system = system;
+    tex->SetTextureFilename(GetChronoDataFile("pinkwhite.png"));
+    m_chassis->AddAsset(tex);
+    system->Add(m_chassis);
+    system->Add(m_hitbox);
+    m_system = system;
+    std::cout << "server vehicle created." << std::endl;
 }
+
 ServerVehicle::~ServerVehicle() {
   std::cout << "Destroying ServerVehicle" << std::endl;
   for(std::shared_ptr<ChBody> wheel : m_wheels)

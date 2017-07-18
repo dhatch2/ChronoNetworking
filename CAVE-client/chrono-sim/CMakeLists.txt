@@ -9,11 +9,13 @@ SET(MODEL_FILES
     MessageConversions.cpp
     ../../CAVE-server/World/World.h
     ../../CAVE-server/World/World.cpp
+    ../../ChronoClient/ServerVehicle.cpp
+    ../../ChronoClient/ServerVehicle.h
     )
 
 SOURCE_GROUP("subsystems" FILES ${MODEL_FILES})
 
-include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ${PROTOBUF_INCLUDE_DIRS} ../../Vehicle_Protobuf_Messages ../../network-handler ../../CAVE-server/World)
+include_directories(${CHRONO_INCLUDE_DIRS} ${BOOST_DIR} ${PROTOBUF_INCLUDE_DIRS} ../../Vehicle_Protobuf_Messages ../../network-handler ../../CAVE-server/World ../../ChronoClient)
 
 add_executable(sim-tests sim-tests.cpp ${MODEL_FILES})
 

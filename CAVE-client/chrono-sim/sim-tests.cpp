@@ -2,6 +2,7 @@
 #include "ChNetworkHandler.h"
 #include "ChronoMessages.pb.h"
 #include "MessageConversions.h"
+#include "ServerVehicle.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
@@ -104,6 +105,9 @@ int main(int argc, char **argv) {
     handler.beginListen();
 
     std::cout << "Connected." << std::endl;
+
+    // Create map of vehicles received over the network
+    std::map<std::pair<int, int>, std::shared_ptr<ServerVehicle>> otherVehicles;
 
     // --------------
     // Create systems
@@ -289,12 +293,29 @@ int main(int argc, char **argv) {
         if (step_number % send_steps == 0) {
             auto message = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), handler.connectionNumber(), 0);
             handler.pushMessage(message);
+
             while (handler.waitingMessages() > 0) {
                 auto newMessage = std::static_pointer_cast<ChronoMessages::VehicleMessage>(handler.popSimMessage()); // TODO: Make this crap more general
-                if (newMessage->connectionnumber() == handler.connectionNumber()) {
+                if (newMessage->connectionnumber() != handler.connectionNumber()) {
                     // TODO: Do thing with maps or something
+                    auto idPair = std::make_pair(newMessage->connectionnumber(), newMessage->idnumber());
+                    if (otherVehicles.find(idPair) == otherVehicles.end()) {
+                        auto newVehicle = std::make_shared<ServerVehicle>(my_hmmwv.GetVehicle().GetSystem());
+                        otherVehicles.insert(std::make_pair(idPair, newVehicle));
+                        app.AssetBindAll();
+                        app.AssetUpdateAll();
+                        newVehicle->update(*newMessage);
+                        std::cout << "New vehicle updated." << std::endl;
+                    }
+                    else otherVehicles[idPair]->update(*newMessage);
                 }
             }
+
+            /*for (auto it = otherVehicles.begin(); it != otherVehicles.end(); it++) {
+                if (otherVehicles.find(it->first) == otherVehicles.end()) {
+                    it = otherVehicles.erase(it);
+                } else ++it;
+            }*/
         }
 
         // Advance simulation for one timestep for all modules
