@@ -20,6 +20,8 @@ bool WorldObject::update(google::protobuf::Message& message) {
     if (descriptor->full_name().compare(message->GetDescriptor()->full_name()) == 0) {
         if (descriptor->full_name().compare(VEHICLE_MESSAGE_TYPE) == 0) {
             // TODO: Set bodies for vehicle case
+            
+            bodies[0].SetPos(vectorFromMessage())
         }
         return true;
     }

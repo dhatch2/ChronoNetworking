@@ -64,18 +64,18 @@ message VehicleMessage {
 	required double speed = 5;
 
 	required MVector ChassisCOM = 6;
-//	required MVector FrontRightWheelCOM = 7;
-//	required MVector FrontLeftWheelCOM = 8;
-//	required MVector BackRightWheelCOM = 9;
-//	required MVector BackLeftWheelCOM = 10;
+	required MVector FrontRightWheelCOM = 7;
+	required MVector FrontLeftWheelCOM = 8;
+	required MVector BackRightWheelCOM = 9;
+	required MVector BackLeftWheelCOM = 10;
 
-	required MQuaternion ChassisRot = 7;
-//	required MQuaternion FrontRightWheelRot = 12;
-//	required MQuaternion FrontLeftWheelRot = 13;
-//	required MQuaternion BackRightWheelRot = 14;
-//	required MQuaternion BackLeftWheelRot = 15;
+	required MQuaternion ChassisRot = 11;
+	required MQuaternion FrontRightWheelRot = 12;
+	required MQuaternion FrontLeftWheelRot = 13;
+	required MQuaternion BackRightWheelRot = 14;
+	required MQuaternion BackLeftWheelRot = 15;
 
-	repeated MWheel wheels = 8;
+//	repeated MWheel wheels = 8;
 }
 
 message DSRCMessage {
